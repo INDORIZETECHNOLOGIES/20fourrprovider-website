@@ -16,9 +16,19 @@ building or reviewing any UI, use the design skills available in this environmen
 charts/analytics views) rather than defaulting to generic component-library output. Avoid
 templated "AI slop" layouts — get a deliberate aesthetic direction, then execute it consistently.
 
-The project was scaffolded with `create-next-app` (Next.js App Router, TypeScript, ESLint) and is
-otherwise a blank slate: no API client or auth flow exist yet beyond the placeholder home page in
-`src/app/`.
+The project was scaffolded with `create-next-app` (Next.js App Router, TypeScript, ESLint). The
+auth feature (login/register) is built; everything else (profile, documents, pricing, availability,
+bookings, duty, earnings) is still unbuilt.
+
+### Design direction established by the auth feature
+
+Deep navy (`--color-navy`) + muted brass (`--color-brass`) against a cool paper surface, laid out as
+a split panel (brand on one side, form on the other) — a credential/verification register, not a
+generic SaaS look. Wordmark and headings use the slab-serif display font (`--font-display`, Roboto
+Slab); body copy and form UI use the civic sans (`--font-body`, Public Sans). See
+`src/components/auth/AuthShell.tsx` for the pattern. Keep new UI consistent with this direction
+rather than introducing a second visual language — extend the token set in `globals.css` if a new
+need comes up, don't hardcode one-off colors.
 
 ### Styling: raw CSS, not Tailwind
 
@@ -31,12 +41,16 @@ token set as new needs come up instead of introducing a second styling system.
 
 ## Commands
 
-- `npm run dev` — start the dev server (Turbopack)
+- `npm run dev` — start the dev server (Turbopack). The backend runs locally on `:3000`, so the
+  frontend dev server should run on a different port, e.g. `npm run dev -- -p 3001`.
 - `npm run build` — production build
 - `npm start` — run a production build
 - `npm run lint` — ESLint (flat config, `eslint.config.mjs`)
+- `npm test` — Vitest (jsdom environment, config in `vitest.config.mts`). Tests live next to the
+  code as `*.test.ts(x)`. Run a single file with `npx vitest run path/to/file.test.ts`.
 
-No test runner is configured yet — don't assume one exists.
+`NEXT_PUBLIC_API_BASE_URL` (see `.env.example`) points the API client at the backend; defaults to
+`http://localhost:3000/api/v1` for local dev.
 
 `AGENTS.md` at the repo root is auto-generated/rewritten by `next dev` itself (see the comment
 inside it) — don't hand-edit it expecting the change to stick, and expect it to show as modified
@@ -73,6 +87,20 @@ exists:
 
 ### Frontend structure
 
-App Router under `src/app/`, path alias `@/*` → `src/*`. Nothing beyond the default template exists
-yet — there's no established folder convention for API clients, feature modules, or shared UI to
-follow, so the first real feature built here effectively sets that convention.
+App Router under `src/app/`, path alias `@/*` → `src/*`. The auth feature set the convention other
+features should follow:
+
+- `src/lib/api/client.ts` — shared `apiRequest` fetch wrapper: builds the `Authorization` header,
+  parses the `{success, data}` / `{success, error}` envelope, and throws `ApiError` (with `.status`
+  and `.code`) on failure. Add new endpoint calls as functions in `src/lib/api/<domain>.ts` (see
+  `auth.ts`) that call `apiRequest`, not raw `fetch`.
+- `src/lib/validation/<domain>.ts` — plain functions returning `string | null` (an error message or
+  no error), used for client-side field validation before hitting the API.
+- `src/lib/auth/session.ts` — interim client-side session storage (tokens + user name in
+  `localStorage`), read via the `useSession()` hook (`useSyncExternalStore`-based, so it's
+  SSR/hydration-safe). This is a placeholder until the app has a real session strategy — likely
+  httpOnly cookies via a backend-for-frontend — don't build further on `localStorage` tokens without
+  revisiting this.
+- `src/components/ui/` — generic form primitives (`Field`, `Button`) shared across features.
+- `src/components/<feature>/` — feature-specific components (e.g. `auth/AuthShell`, `LoginForm`,
+  `RegisterForm`), each with a colocated `*.module.css`.
