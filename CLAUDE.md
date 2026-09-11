@@ -21,16 +21,13 @@ The project was scaffolded with `create-next-app` (Next.js App Router, TypeScrip
 **Built**: auth, provider profile setup, KYC document upload, availability, bookings (list, detail
 view, accept/reject, mark-complete), duty (OTP + gate-guard start/end), earnings/settlements,
 per-booking chat, support tickets, notifications, account/DPDP (data export, consent withdrawal,
-erasure request).
+erasure request), duty safety (SOS + live check-in), incident reporting, absence-alert.
 
 **Not built yet** — a previous status note here claimed the provider surface was fully complete;
 it wasn't, and a full pass against the reference doc turned up real gaps, roughly in order of how
 much they matter for a working provider app:
-- `/protection/*` — SOS, GPS heartbeat during duty, incident reporting. Safety-critical, currently
-  has zero UI.
 - `/ratings/*` — a provider can't rate the client after a completed booking, or see their own
   public rating.
-- `POST /bookings/:id/absence-alert` — no way to report a client no-show.
 - `/provider/tax-profile`, `/provider/psara-coverage`, `/documents/*` (tax documents) — the v6
   compliance surfaces the reference doc explicitly says to build against; none are built.
 - `POST /provider/bank-details/confirm` — required (alongside admin verification) before any
@@ -178,6 +175,26 @@ not (yet) reflect this:
   worth flagging: it sets `user.isSuspended = true` synchronously, in the same request, before the
   30-day deletion window even starts (confirmed live: the test account couldn't log in immediately
   after). Never call it against an account you want to keep using — test with a disposable one.
+- **`POST /bookings/:id/absence-alert` also really does what it says, and is just as destructive**:
+  confirmed live that it sets `user.isSuspended = true` on the *provider* and `booking.absence.
+  penaltyApplied = true` **regardless of which party (client or provider) calls it** — a provider
+  filing an absence alert against a no-show client still gets their own account suspended. See
+  `AbsenceAlertControl.tsx`'s two-step confirm and warning copy; the API function
+  (`raiseAbsenceAlert` in `src/lib/api/bookings.ts`) also carries this warning in a comment. Never
+  call this against an account you want to keep using — test with a disposable one, same as
+  erasure-request.
+- **`POST /protection/:bookingId/location` 404s with "Duty session not found" unless a
+  `DutySession` document exists for the booking** — a booking whose `status` is `duty_started` but
+  was seeded/created without going through the real duty-start OTP flow (so no `DutySession` row
+  exists) will fail check-in even though the UI gates on booking status alone, matching the
+  reference doc. Not a frontend bug: in the real flow duty-start always creates the session first.
+  Only matters when seeding test data directly in Mongo.
+- **`POST /protection/:bookingId/incidents`'s response doesn't populate `reporter`** — it returns
+  the raw created document, where `reporter` is a bare ObjectId, while `GET
+  /protection/:bookingId/incidents` (`listIncidents`) populates it to `{name, role}`. Using the
+  create response directly to update UI state renders a blank reporter name until the next reload.
+  `IncidentsSection.tsx` works around this by refetching the full list via `listIncidents` after a
+  successful `createIncident` rather than trusting the create response's shape.
 
 ### Frontend structure
 
@@ -228,6 +245,12 @@ features should follow:
   /provider/bookings/:id/complete`) each take a booking id/object + `accessToken` + `onUpdated` and
   render identically in both places. Add a new per-booking action the same way rather than
   duplicating the state/handler logic inline in both call sites.
+- **Duty safety, incidents, and absence-alert live only on the booking detail page**
+  (`src/components/bookings/SosControl.tsx`, `IncidentsSection.tsx`, `AbsenceAlertControl.tsx`,
+  wired into `BookingDetail.tsx`), gated on `booking.status`: SOS/check-in only `duty_started`
+  (matches the backend's own gate); incidents `duty_started`/`duty_ended`/`completed`; absence-alert
+  `payment_done`/`duty_started`. All three share `SafetyControls.module.css`. Absence-alert is the
+  one genuinely destructive control here — see the divergence note above before touching it.
 - **Two flex-layout components inline-block elements with no gap between them** was a real bug
   (`BookingRow`'s "View details"/"Chat with…" links rendered flush against each other with zero
   spacing, since adjacent `display: inline-block` elements in JSX have no whitespace node between
