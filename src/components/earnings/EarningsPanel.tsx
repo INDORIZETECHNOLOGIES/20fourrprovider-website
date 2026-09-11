@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Select } from "@/components/ui/Select";
 import { SETTLEMENT_STATES, SETTLEMENT_STATE_LABELS, type SettlementState } from "@/lib/constants/settlementState";
 import { SettlementsList } from "./SettlementsList";
+import { BankDetailsSection } from "./BankDetailsSection";
 import styles from "./EarningsPanel.module.css";
 
 export function EarningsPanel({ accessToken }: { accessToken: string }) {
@@ -16,6 +17,8 @@ export function EarningsPanel({ accessToken }: { accessToken: string }) {
         <p className={styles.subtext}>
           Settlements for your completed bookings, including tax withheld and payout timing.
         </p>
+
+        <BankDetailsSection accessToken={accessToken} />
 
         <div className={styles.filterRow}>
           <Select

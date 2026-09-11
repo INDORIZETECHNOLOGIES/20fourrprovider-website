@@ -290,7 +290,7 @@ export default function DashboardPage() {
             ))
           ) : recentBookings.length === 0 ? (
             <div className={styles.emptyState}>
-              No bookings yet. Once clients book you, they'll appear here.
+              No bookings yet. Once clients book you, they&apos;ll appear here.
             </div>
           ) : (
             recentBookings.map((b) => (

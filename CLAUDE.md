@@ -21,22 +21,23 @@ The project was scaffolded with `create-next-app` (Next.js App Router, TypeScrip
 **Built**: auth, provider profile setup, KYC document upload, availability, bookings (list, detail
 view, accept/reject, mark-complete), duty (OTP + gate-guard start/end), earnings/settlements,
 per-booking chat, support tickets, notifications, account/DPDP (data export, consent withdrawal,
-erasure request), duty safety (SOS + live check-in), incident reporting, absence-alert.
+erasure request), duty safety (SOS + live check-in), incident reporting, absence-alert, ratings
+(submit + own-ratings view), payout bank details (submit + one-tap confirm), payment status, tax
+profile (PAN + GST tier + turnover declaration), PSARA state coverage, tax documents (list +
+detail + PDF download), forgot/reset password, email verification, profile photo.
 
 **Not built yet** — a previous status note here claimed the provider surface was fully complete;
 it wasn't, and a full pass against the reference doc turned up real gaps, roughly in order of how
 much they matter for a working provider app:
-- `/ratings/*` — a provider can't rate the client after a completed booking, or see their own
-  public rating.
-- `/provider/tax-profile`, `/provider/psara-coverage`, `/documents/*` (tax documents) — the v6
-  compliance surfaces the reference doc explicitly says to build against; none are built.
-- `POST /provider/bank-details/confirm` — required (alongside admin verification) before any
-  payout fires; not built.
-- `GET /payments/booking/:bookingId` — no way to see what a client actually paid.
 - Gallery (`/provider/gallery*`), firm staff-availability (`/provider/staff-availability*`),
   replacement requests, penalties/appeals, premium analytics, wallet (v1 legacy), referral
-  program, MFA, forgot/reset password, email verification, profile photo — lower priority, none
-  built.
+  program, MFA — lower priority, none built.
+- Within ratings: no detailed sub-ratings (professionalism/punctuality/etc.), no photo
+  attachments, no report-a-rating flow. `submitRating` only sends `rating`, `review`, `tags`.
+- Within PSARA coverage: no way to attach a specific uploaded document to a state licence
+  (`licences[].documentId` in the request body) — there's no endpoint that lists a provider's own
+  uploaded documents by `_id` for a picker to select from (see the existing documents divergence
+  note below). `updatePsaraCoverage` never sends `documentId`.
 
 Before claiming a feature area is "complete" in this file, verify against the actual route list in
 the reference doc's table of contents (or grep the backend's route files) rather than trusting
@@ -195,6 +196,49 @@ not (yet) reflect this:
   create response directly to update UI state renders a blank reporter name until the next reload.
   `IncidentsSection.tsx` works around this by refetching the full list via `listIncidents` after a
   successful `createIncident` rather than trusting the create response's shape.
+- **`PUT /provider/profile`'s response never includes `bankDetails.accountNumber`** — the schema
+  field is `select: false` (so it's excluded from every query by default), and unlike `getMyProfile`
+  (which does `.select('+bankDetails.accountNumber')` then masks it before responding),
+  `updateProfile`'s `findOneAndUpdate` never re-selects it. Confirmed live: a successful bank-details
+  save returns `bankDetails` with `ifscCode`/`accountName` present but `accountNumber` silently
+  missing, even though the write itself succeeded (a follow-up `GET /provider/profile` shows the
+  masked value correctly). `BankDetailsSection.tsx` works around this by calling
+  `getProviderProfile()` again after a successful `updateBankDetails()` rather than trusting the PUT
+  response for display — do this for any other bank-details-writing UI too.
+- **`GET /ratings/my-status`'s documented `page`/`limit` query params are validated but never
+  applied** — same shape of bug as the tickets/notifications filters above: the handler fetches
+  *all* of the caller's completed bookings and filters client-side, unpaginated. Not an issue at
+  today's data volumes, but don't build "load more" UI around this endpoint expecting it to
+  actually page.
+- **`POST /ratings/:ratingId/report`'s validator and the `Rating` model's `reportReason` enum
+  disagree** — the validator (matching the reference doc) accepts `'inappropriate'|'spam'|'fake'|
+  'offensive'|'other'`, but the schema enum is `'abusive'|'spam'|'inappropriate'|'false'|'other'`.
+  `'fake'`/`'offensive'` aren't in the schema enum, yet the controller writes them anyway via
+  `findByIdAndUpdate` without `runValidators`, so they save without error despite falling outside
+  the declared enum. Not built in this frontend yet (see "Not built yet" above); if it is, use the
+  validator's list, not the model's.
+- **`POST /auth/send-email-verification` fails the whole request on an email-delivery failure**,
+  even though the OTP and rate-limit cooldown are already durably persisted before the send is
+  attempted — unlike `forgotPassword`, which wraps its `sendEmailViaMsg91` call in try/catch and
+  never lets delivery failure surface as a request failure. Confirmed live: with this environment's
+  configured `MSG91_AUTH_KEY` invalid (`sendEmail: MSG91 request failed ... 401 Unauthorized` in
+  the backend logs on every attempt), every "Send verification code" click 500s with `SC_502`
+  ("OTP service is temporarily unavailable"), yet the cooldown is still set — so a retry within 60s
+  correctly reports the cooldown instead, and the user is stuck until it expires with a code they
+  were never actually sent. `POST /auth/verify-email` itself works correctly once a valid OTP
+  exists (confirmed by seeding `CoordinationKey` directly and calling it) — the bug is specifically
+  in the unguarded send path. Local dev testing of this flow therefore requires seeding
+  `CoordinationKey` (`_id: "email-otp:<userId>"`, `value: sha256(otp)`, a future `expiresAt`) rather
+  than actually receiving a code — see git history around this note for the exact seed script shape
+  if you need to redo it. **Not something to work around in the frontend** — the fix belongs in
+  `authService.sendEmailVerification` (wrap the send in try/catch, matching `forgotPassword`), which
+  wasn't done here per the "only fix backend bugs with explicit go-ahead" rule.
+- **OTP/reset-token/rate-limit state for `/auth/*` lives in MongoDB (`CoordinationKey` collection,
+  `src/config/coordination.ts`'s `setValue`/`getValue`/`claimOnce`/`incrementCounter`), not Redis**
+  — despite `config/redis.ts`'s own docstring describing Redis as the home for "rate-limit counters,
+  caches." Don't go looking in Redis for an email OTP hash, a password-reset token, or an OTP-resend
+  cooldown while debugging locally; query `CoordinationKey` by `_id` instead (the key names match
+  what the service code uses, e.g. `email-otp:<userId>`, `password-reset:<token>`).
 
 ### Frontend structure
 
@@ -251,6 +295,30 @@ features should follow:
   (matches the backend's own gate); incidents `duty_started`/`duty_ended`/`completed`; absence-alert
   `payment_done`/`duty_started`. All three share `SafetyControls.module.css`. Absence-alert is the
   one genuinely destructive control here — see the divergence note above before touching it.
+- **Rate-the-client (`RateBookingControl.tsx`) also lives on the booking detail page**, gated on
+  `booking.status === "completed"`. There's no per-booking "have I rated this" endpoint — it checks
+  membership in `GET /ratings/my-status`'s `pendingRatings` array (all of the caller's completed
+  bookings not yet rated, unpaginated — see the divergence note above) on mount, and fails closed
+  (treats an error as "already rated") rather than risk showing a form that 400s with `SC_1002` on
+  submit. `toUserId` for the rating is `booking.clientId._id` — `BookingClient` was extended with
+  `_id` for this (Mongoose `.populate(field, 'name email phone')` includes `_id` by default, so this
+  was always present on the wire, just not modeled).
+- **Payment status (`PaymentStatusSection.tsx`) is a small addition inside the existing "Payment"
+  card**, not a separate section — it shows the live Razorpay-side `status` (Created/Authorized/
+  Paid/Failed/Refunded) next to the amounts breakdown that's computed from the `Booking` doc itself.
+  Gated on `CHAT_ALLOWED_STATUSES` (payment must exist by then); renders nothing if the fetch fails
+  (e.g. `SC_501` no Payment doc), so a booking pre-payment just shows the existing breakdown as
+  before.
+- **Payout bank details (`src/components/earnings/BankDetailsSection.tsx`) live on the Earnings
+  page**, above the settlements list — it's payout configuration, not account/DPDP settings, so it
+  sits with the money surface rather than on `/account`. Submitting any field resets
+  `bankDetails.verified` server-side (see the existing profile divergence note above); the "Confirm
+  this is my account" button only appears once `verified && !confirmedByProvider`.
+- **"Your ratings" is a new page** (`/ratings`, `RatingsPanel.tsx`) showing the provider's own
+  average/count (`ProviderProfile.rating`, added to the `ProviderProfile` type along with the
+  populated `userId` object) and their full received-ratings list via `GET /ratings/user/:userId`
+  using their own id — there's no "ratings about me" shortcut endpoint, so this calls
+  `getProviderProfile()` first purely to read `profile.userId._id`.
 - **Two flex-layout components inline-block elements with no gap between them** was a real bug
   (`BookingRow`'s "View details"/"Chat with…" links rendered flush against each other with zero
   spacing, since adjacent `display: inline-block` elements in JSX have no whitespace node between
@@ -283,3 +351,44 @@ features should follow:
   attachment keys on read. This mirrors the chat attachment flow but is two separate requests
   instead of one, because unlike chat, a ticket message's attachments are a field on the message
   body, not a dedicated "send with attachment" endpoint.
+- **Tax profile, PSARA coverage, and tax documents are three separate pages** (`/tax-profile`,
+  `/tax-documents`), not folded into `/documents` (which is KYC document *uploads* — a different
+  concept from tax profile data entry or reading auto-generated invoices). `TaxProfilePanel.tsx`
+  fetches `GET /provider/tax-profile` once and passes it down to `TaxProfileForm.tsx` (PAN/tier/
+  GSTIN/turnover) and `PsaraCoverageSection.tsx` (state licences, full-array replace on every
+  save), both of which call back up with the response's updated tax profile rather than each
+  re-fetching. GSTIN comes back **unmasked** in the tax-profile response (unlike PAN, which is
+  always masked) — safe to prefill the GSTIN field, never the PAN field. `src/lib/constants/
+  indianStates.ts` now carries two lists: `INDIAN_STATES` (free-text names, pre-existing, used by
+  profile setup) and `GST_STATES` (name+two-digit-code pairs, mirroring the backend's
+  `GST_STATE_CODES` table) — PSARA coverage and anything else keyed on a GST state code needs the
+  latter, not the former.
+- **Tax documents are read-only and PDF downloads need a raw-binary fetch**, not the JSON
+  `{success,data}` envelope every other endpoint uses. `apiDownload()` (`src/lib/api/client.ts`)
+  is a third fetch wrapper alongside `apiRequest`/`apiUpload` for this — returns a `Blob`, then
+  `TaxDocumentRow.tsx` triggers the save via the same `URL.createObjectURL` + `<a download>`
+  pattern `AccountPanel.tsx`'s data export already uses. `TaxDocumentRow` also lazy-fetches
+  `GET /documents/:id` (full line items/tax lines) only when a row is expanded, rather than
+  fetching every document's detail up front. Credit notes aren't nested under the document they
+  reverse (`reversesDocumentId`) — the list renders flat, sorted by `issuedAt desc` same as the
+  backend's default.
+- **Forgot/reset password are unauthenticated pages** (`/forgot-password`, `/reset-password/
+  [token]`) using `AuthShell` like login/register. The reset link the backend emails is path-based
+  (`${APP_URL}/reset-password/:token}`, from `auth.service.ts`'s `forgotPassword`) — the dynamic
+  route here mirrors that shape exactly (`ResetPasswordRoute` awaits `props.params` server-side,
+  same split pattern as the chat/ticket detail pages, then passes `token` to a client
+  `ResetPasswordForm`). Both `forgotPassword`/`resetPassword`/`sendEmailVerification`/`verifyEmail`
+  are message-only responses (no `data` key at all — see `apiRequest`'s envelope) — these API
+  functions return `Promise<void>`, and the UI shows its own static copy rather than parsing a
+  backend message string. `ForgotPasswordForm` deliberately shows the same "check your email"
+  screen on any successful call regardless of whether the address exists (matching the backend's
+  own enumeration-safety), but does surface a thrown error (rate limit, network) since those aren't
+  an enumeration leak.
+- **Email verification and profile photo live on the Account page** (`EmailVerificationSection.tsx`,
+  `ProfilePhotoSection.tsx`), above the DPDP sections — `AccountPanel.tsx` fetches `GET /auth/me`
+  once (not carried in the localStorage session, which only has tokens + name) and passes the
+  result down; both children call back up to patch that local state rather than re-fetching.
+  `PATCH /auth/profile-photo` needed `apiUpload()` extended with an optional `method` param (it was
+  hardcoded to `POST`; every other existing upload endpoint happens to be `POST`, this one isn't).
+  Both `GET /auth/me` and the photo-upload response return `profilePhoto` **already presigned** —
+  render it directly as an `<img src>`, no separate presign step needed (unlike provider documents).
