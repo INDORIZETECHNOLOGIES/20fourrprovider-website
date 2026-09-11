@@ -37,3 +37,10 @@
   color: var(--color-ink-muted);
   margin-right: var(--space-2);
 }
+
+.manageLink {
+  display: block;
+  margin: var(--space-4) 0 0;
+  font-weight: 600;
+  text-decoration: underline;
+}

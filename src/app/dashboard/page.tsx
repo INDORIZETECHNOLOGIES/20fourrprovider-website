@@ -10,6 +10,7 @@ import {
   type ProviderProfile,
 } from "@/lib/api/provider";
 import { AppTopBar } from "@/components/layout/AppTopBar";
+import Link from "next/link";
 import styles from "./page.module.css";
 
 export default function DashboardPage() {
@@ -65,6 +66,9 @@ export default function DashboardPage() {
                   {profile.serviceCity}, {profile.serviceState}
                 </span>
               </div>
+              <Link href="/documents" className={styles.manageLink}>
+                Manage documents
+              </Link>
             </>
           ) : (
             <p className={styles.subtext}>The rest of the provider dashboard is being built next.</p>

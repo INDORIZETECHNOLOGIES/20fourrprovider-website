@@ -39,6 +39,9 @@ export type ProviderProfile = {
   businessName?: string;
   description?: string;
   isVerified: boolean;
+  // Keyed by `${documentType}Url` (e.g. `aadhaarUrl`) — a presigned GET URL once
+  // uploaded, absent otherwise. See src/lib/constants/providerDocuments.ts.
+  documents?: Record<string, string | undefined>;
 };
 
 // Registration auto-creates a blank ProviderProfile server-side, so
