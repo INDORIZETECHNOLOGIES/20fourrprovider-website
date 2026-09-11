@@ -80,6 +80,9 @@ export default function DashboardPage() {
               <Link href="/tickets" className={styles.manageLink}>
                 Support
               </Link>
+              <Link href="/account" className={styles.manageLink}>
+                Account
+              </Link>
             </>
           ) : (
             <p className={styles.subtext}>The rest of the provider dashboard is being built next.</p>
