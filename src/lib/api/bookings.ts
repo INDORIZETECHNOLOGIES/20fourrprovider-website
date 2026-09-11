@@ -24,6 +24,20 @@ export type Booking = {
   notes?: string | null;
 };
 
+export type ThreatAssessment = {
+  hasKnownThreat: boolean;
+  threatDescription?: string | null;
+  wasAttackedBefore: boolean;
+  attackDescription?: string | null;
+  threatLevel: "low" | "medium" | "high";
+};
+
+export type BookingDetail = Booking & {
+  subtotalAmount: number; // paise
+  platformFee: number; // paise
+  gstAmount: number; // paise
+};
+
 export type Pagination = {
   page: number;
   limit: number;
@@ -57,4 +71,16 @@ export function rejectBooking(
     body: { rejectionReason },
     accessToken,
   });
+}
+
+export function markBookingComplete(bookingId: string, accessToken: string): Promise<void> {
+  return apiRequest(`/provider/bookings/${bookingId}/complete`, { method: "PUT", accessToken });
+}
+
+// Shared client/provider surface — note the base path is /bookings, not /provider/bookings.
+export function getBookingDetail(
+  bookingId: string,
+  accessToken: string,
+): Promise<{ booking: BookingDetail; isContactVisible: boolean; clientThreatProfile: ThreatAssessment | null }> {
+  return apiRequest(`/bookings/${bookingId}`, { accessToken });
 }

@@ -16,12 +16,34 @@ building or reviewing any UI, use the design skills available in this environmen
 charts/analytics views) rather than defaulting to generic component-library output. Avoid
 templated "AI slop" layouts — get a deliberate aesthetic direction, then execute it consistently.
 
-The project was scaffolded with `create-next-app` (Next.js App Router, TypeScript, ESLint). Every
-provider-facing surface in the reference doc is now built: auth, profile setup, KYC documents,
-availability, bookings (accept/reject), duty (OTP + gate-guard start/end), earnings/settlements,
-per-booking chat, support tickets, notifications, and account/DPDP (data export, consent
-withdrawal, erasure request). Nothing here has a payments/checkout flow, admin surfaces, or a
-client-facing app — those are explicitly out of scope (see the API reference doc's own framing).
+The project was scaffolded with `create-next-app` (Next.js App Router, TypeScript, ESLint).
+
+**Built**: auth, provider profile setup, KYC document upload, availability, bookings (list, detail
+view, accept/reject, mark-complete), duty (OTP + gate-guard start/end), earnings/settlements,
+per-booking chat, support tickets, notifications, account/DPDP (data export, consent withdrawal,
+erasure request).
+
+**Not built yet** — a previous status note here claimed the provider surface was fully complete;
+it wasn't, and a full pass against the reference doc turned up real gaps, roughly in order of how
+much they matter for a working provider app:
+- `/protection/*` — SOS, GPS heartbeat during duty, incident reporting. Safety-critical, currently
+  has zero UI.
+- `/ratings/*` — a provider can't rate the client after a completed booking, or see their own
+  public rating.
+- `POST /bookings/:id/absence-alert` — no way to report a client no-show.
+- `/provider/tax-profile`, `/provider/psara-coverage`, `/documents/*` (tax documents) — the v6
+  compliance surfaces the reference doc explicitly says to build against; none are built.
+- `POST /provider/bank-details/confirm` — required (alongside admin verification) before any
+  payout fires; not built.
+- `GET /payments/booking/:bookingId` — no way to see what a client actually paid.
+- Gallery (`/provider/gallery*`), firm staff-availability (`/provider/staff-availability*`),
+  replacement requests, penalties/appeals, premium analytics, wallet (v1 legacy), referral
+  program, MFA, forgot/reset password, email verification, profile photo — lower priority, none
+  built.
+
+Before claiming a feature area is "complete" in this file, verify against the actual route list in
+the reference doc's table of contents (or grep the backend's route files) rather than trusting
+this file's own prior summary — check the current section above for what's since been added.
 
 ### Design direction established by the auth feature
 
@@ -200,6 +222,18 @@ features should follow:
   generates and shares in person (`verify-start-otp`/`verify-end-otp`) — there is no
   provider-facing way to see that OTP, it must come from the client. Errors from these endpoints
   are plain `AppError`s with no `SC_` code (per Appendix A) — just show `error.message` as-is.
+- **Per-booking action controls are shared between the bookings list and the booking detail page**
+  (`src/app/bookings/[bookingId]`) — `PendingBookingActions` (accept/decline), `DutyControls`
+  (start/end), and `CompleteBookingControl` (`duty_ended → completed`, `PUT
+  /provider/bookings/:id/complete`) each take a booking id/object + `accessToken` + `onUpdated` and
+  render identically in both places. Add a new per-booking action the same way rather than
+  duplicating the state/handler logic inline in both call sites.
+- **Two flex-layout components inline-block elements with no gap between them** was a real bug
+  (`BookingRow`'s "View details"/"Chat with…" links rendered flush against each other with zero
+  spacing, since adjacent `display: inline-block` elements in JSX have no whitespace node between
+  them unless the layout itself provides a gap). Fixed by wrapping multi-link/multi-button rows in
+  a flex container with `gap` rather than relying on individual element margins — do this for any
+  new row of adjacent inline links/buttons instead of an `inline-block` + `margin` pattern.
 - `src/components/<feature>/` — feature-specific components (e.g. `auth/AuthShell`, `LoginForm`,
   `RegisterForm`, `profile/ProfileSetupForm`), each with a colocated `*.module.css`.
 - Pages that require a session (`dashboard`, `profile/setup`, `documents`, `availability`,
