@@ -17,8 +17,8 @@ charts/analytics views) rather than defaulting to generic component-library outp
 templated "AI slop" layouts — get a deliberate aesthetic direction, then execute it consistently.
 
 The project was scaffolded with `create-next-app` (Next.js App Router, TypeScript, ESLint). Auth
-(login/register), provider profile setup, KYC document upload, and availability management are
-built; everything else (bookings, duty, earnings) is still unbuilt.
+(login/register), provider profile setup, KYC document upload, availability management, and a
+bookings list (with accept/reject) are built; duty and earnings are still unbuilt.
 
 ### Design direction established by the auth feature
 
@@ -127,6 +127,15 @@ features should follow:
   SSR/hydration-safe). This is a placeholder until the app has a real session strategy — likely
   httpOnly cookies via a backend-for-frontend — don't build further on `localStorage` tokens without
   revisiting this.
+  - **Never gate a redirect-to-`/login` decision on `useSession()`'s value.** On a hard page load,
+    that value is transiently `null` while `useSyncExternalStore` resyncs from the (always-null)
+    server snapshot to the real localStorage value — an effect that redirects on that transient
+    null will occasionally bounce a genuinely logged-in provider back to `/login` (this was a real,
+    intermittent bug, found while testing the bookings feature). Use `useRedirectIfLoggedOut()`
+    instead, which reads `readSession()` directly inside the effect — that read always reflects the
+    true value, since effects only run after hydration completes. Keep `useSession()` for values
+    used in rendering (name, tokens for a fetch), and gate data-fetching effects on `if (!session)
+    return;` (wait for it to resolve) rather than redirecting from that effect.
 - `src/components/ui/` — generic form primitives (`Field`, `Select`, `Textarea`, `Button`, `Banner`,
   `Switch`) shared across features.
 - **`requireProviderVerified`-gated actions** (availability, days-off, accepting bookings, ...):
@@ -138,6 +147,7 @@ features should follow:
   `AuthShell` (split panel) is auth-only; authenticated feature pages use `AppTopBar` instead.
 - `src/components/<feature>/` — feature-specific components (e.g. `auth/AuthShell`, `LoginForm`,
   `RegisterForm`, `profile/ProfileSetupForm`), each with a colocated `*.module.css`.
-- Pages that require a session (`dashboard`, `profile/setup`) follow the same gate: read
-  `useSession()`, redirect to `/login` if absent, and return `null` while an async check (session or
-  profile-completeness) is in flight — see `src/app/dashboard/page.tsx`.
+- Pages that require a session (`dashboard`, `profile/setup`, `documents`, `availability`,
+  `bookings`) follow the same gate: `useSession()` for the value, `useRedirectIfLoggedOut()` for
+  the redirect, and return `null` while an async check (session or profile-completeness) is in
+  flight — see `src/app/dashboard/page.tsx`.

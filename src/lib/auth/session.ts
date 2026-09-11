@@ -1,4 +1,5 @@
-import { useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
+import { useRouter } from "next/navigation";
 import type { AuthTokens } from "@/lib/api/auth";
 
 const STORAGE_KEY = "20fourr.provider.session";
@@ -54,4 +55,18 @@ export function useSession(): StoredSession | null {
   } catch {
     return null;
   }
+}
+
+// Redirects to /login when there's truly no session. Deliberately does NOT
+// key this off useSession()'s value: on a hard page load, that value can be
+// transiently null while useSyncExternalStore resyncs from the server
+// snapshot (always null) to the real localStorage value, and redirecting on
+// that transient null sends a genuinely logged-in provider back to /login.
+// This reads localStorage directly at effect-execution time instead, which
+// is always accurate since effects only run after hydration completes.
+export function useRedirectIfLoggedOut() {
+  const router = useRouter();
+  useEffect(() => {
+    if (!readSession()) router.replace("/login");
+  }, [router]);
 }

@@ -9,6 +9,7 @@ import { Banner } from "@/components/ui/Banner";
 import { ApiError } from "@/lib/api/client";
 import { addDayOff, removeDayOff, setAvailability, type DayOff, type WorkingHours } from "@/lib/api/availability";
 import { validateDayOffDate } from "@/lib/validation/availability";
+import { formatDate } from "@/lib/format";
 import styles from "./AvailabilityPanel.module.css";
 
 type AvailabilityPanelProps = {
@@ -24,10 +25,6 @@ const VERIFICATION_REQUIRED_MESSAGE =
 
 function toDateInputValue(iso: string): string {
   return iso.slice(0, 10);
-}
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 }
 
 export function AvailabilityPanel({
