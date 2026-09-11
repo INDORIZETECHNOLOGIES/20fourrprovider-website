@@ -22,19 +22,23 @@ The project was scaffolded with `create-next-app` (Next.js App Router, TypeScrip
 view, accept/reject, mark-complete), duty (OTP + gate-guard start/end), earnings/settlements,
 per-booking chat, support tickets, notifications, account/DPDP (data export, consent withdrawal,
 erasure request), duty safety (SOS + live check-in), incident reporting, absence-alert, ratings
-(submit + own-ratings view), payout bank details (submit + one-tap confirm), payment status.
+(submit + own-ratings view), payout bank details (submit + one-tap confirm), payment status, tax
+profile (PAN + GST tier + turnover declaration), PSARA state coverage, tax documents (list +
+detail + PDF download).
 
 **Not built yet** — a previous status note here claimed the provider surface was fully complete;
 it wasn't, and a full pass against the reference doc turned up real gaps, roughly in order of how
 much they matter for a working provider app:
-- `/provider/tax-profile`, `/provider/psara-coverage`, `/documents/*` (tax documents) — the v6
-  compliance surfaces the reference doc explicitly says to build against; none are built.
 - Gallery (`/provider/gallery*`), firm staff-availability (`/provider/staff-availability*`),
   replacement requests, penalties/appeals, premium analytics, wallet (v1 legacy), referral
   program, MFA, forgot/reset password, email verification, profile photo — lower priority, none
   built.
 - Within ratings: no detailed sub-ratings (professionalism/punctuality/etc.), no photo
   attachments, no report-a-rating flow. `submitRating` only sends `rating`, `review`, `tags`.
+- Within PSARA coverage: no way to attach a specific uploaded document to a state licence
+  (`licences[].documentId` in the request body) — there's no endpoint that lists a provider's own
+  uploaded documents by `_id` for a picker to select from (see the existing documents divergence
+  note below). `updatePsaraCoverage` never sends `documentId`.
 
 Before claiming a feature area is "complete" in this file, verify against the actual route list in
 the reference doc's table of contents (or grep the backend's route files) rather than trusting
@@ -326,3 +330,24 @@ features should follow:
   attachment keys on read. This mirrors the chat attachment flow but is two separate requests
   instead of one, because unlike chat, a ticket message's attachments are a field on the message
   body, not a dedicated "send with attachment" endpoint.
+- **Tax profile, PSARA coverage, and tax documents are three separate pages** (`/tax-profile`,
+  `/tax-documents`), not folded into `/documents` (which is KYC document *uploads* — a different
+  concept from tax profile data entry or reading auto-generated invoices). `TaxProfilePanel.tsx`
+  fetches `GET /provider/tax-profile` once and passes it down to `TaxProfileForm.tsx` (PAN/tier/
+  GSTIN/turnover) and `PsaraCoverageSection.tsx` (state licences, full-array replace on every
+  save), both of which call back up with the response's updated tax profile rather than each
+  re-fetching. GSTIN comes back **unmasked** in the tax-profile response (unlike PAN, which is
+  always masked) — safe to prefill the GSTIN field, never the PAN field. `src/lib/constants/
+  indianStates.ts` now carries two lists: `INDIAN_STATES` (free-text names, pre-existing, used by
+  profile setup) and `GST_STATES` (name+two-digit-code pairs, mirroring the backend's
+  `GST_STATE_CODES` table) — PSARA coverage and anything else keyed on a GST state code needs the
+  latter, not the former.
+- **Tax documents are read-only and PDF downloads need a raw-binary fetch**, not the JSON
+  `{success,data}` envelope every other endpoint uses. `apiDownload()` (`src/lib/api/client.ts`)
+  is a third fetch wrapper alongside `apiRequest`/`apiUpload` for this — returns a `Blob`, then
+  `TaxDocumentRow.tsx` triggers the save via the same `URL.createObjectURL` + `<a download>`
+  pattern `AccountPanel.tsx`'s data export already uses. `TaxDocumentRow` also lazy-fetches
+  `GET /documents/:id` (full line items/tax lines) only when a row is expanded, rather than
+  fetching every document's detail up front. Credit notes aren't nested under the document they
+  reverse (`reversesDocumentId`) — the list renders flat, sorted by `issuedAt desc` same as the
+  backend's default.

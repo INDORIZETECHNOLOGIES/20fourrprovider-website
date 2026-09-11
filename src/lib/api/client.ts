@@ -71,3 +71,27 @@ export async function apiUpload<T>(
 
   return parseEnvelope<T>(response);
 }
+
+// Raw binary download (PDF, etc.) — the response isn't the {success,data} envelope,
+// so this doesn't go through parseEnvelope.
+export async function apiDownload(path: string, accessToken?: string): Promise<Blob> {
+  const headers: Record<string, string> = {};
+  if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
+
+  const response = await fetch(`${API_BASE_URL}${path}`, { headers });
+  if (!response.ok) {
+    let message = "Couldn't download the file.";
+    let code: string | undefined;
+    try {
+      const envelope = await response.json();
+      if (!envelope.success) {
+        message = envelope.error.message;
+        code = envelope.error.code;
+      }
+    } catch {
+      // Response wasn't JSON — keep the generic message.
+    }
+    throw new ApiError(response.status, message, code);
+  }
+  return response.blob();
+}
