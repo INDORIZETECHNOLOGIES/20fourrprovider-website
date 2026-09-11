@@ -1,3 +1,5 @@
+/* ─── AuthShell layout ───────────────────────────────────────────────── */
+
 .shell {
   min-height: 100%;
   display: grid;
@@ -10,13 +12,17 @@
   }
 }
 
+/* ─── Brand panel ────────────────────────────────────────────────────── */
+
 .brand {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: var(--space-8) var(--space-6);
   background: var(--color-navy);
   color: var(--color-navy-ink);
+  overflow: hidden;
 }
 
 @media (min-width: 960px) {
@@ -25,40 +31,156 @@
   }
 }
 
+/* Subtle angular geometry — a layered CSS texture that evokes a credential
+   card / security insignia without any external image. */
+.brand::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, rgba(169, 120, 46, 0.06) 0%, transparent 60%),
+    linear-gradient(225deg, rgba(169, 120, 46, 0.04) 0%, transparent 50%),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(255, 255, 255, 0.015) 0px,
+      rgba(255, 255, 255, 0.015) 1px,
+      transparent 1px,
+      transparent 32px
+    );
+  pointer-events: none;
+}
+
+/* Radial highlight from top-left — adds depth */
+.brand::after {
+  content: "";
+  position: absolute;
+  top: -120px;
+  left: -80px;
+  width: 480px;
+  height: 480px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(169, 120, 46, 0.12) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.brandTop {
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── Wordmark ───────────────────────────────────────────────────────── */
+
 .wordmark {
   font-family: var(--font-display);
-  font-size: 1.75rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin: 0 0 var(--space-5);
+  color: var(--color-navy-ink);
 }
+
+/* ─── Brass rule — insignia stripe ──────────────────────────────────── */
 
 .rule {
-  width: 40px;
+  position: relative;
+  width: 48px;
   height: 3px;
-  background: var(--color-brass);
   border: none;
-  margin: var(--space-6) 0;
+  margin: 0 0 var(--space-6);
+  border-radius: 2px;
+  background: var(--color-brass);
+  overflow: hidden;
 }
 
-@media (min-width: 960px) {
-  .rule {
-    margin: var(--space-8) 0;
-  }
+/* Shimmer sweep animation on load */
+.rule::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.55),
+    transparent
+  );
+  animation: shimmer 1.8s ease 0.4s forwards;
 }
+
+@keyframes shimmer {
+  0%   { left: -60%; }
+  100% { left: 160%;  }
+}
+
+/* ─── Tagline ────────────────────────────────────────────────────────── */
 
 .tagline {
-  font-size: 1.0625rem;
-  line-height: 1.6;
-  max-width: 34ch;
-  color: color-mix(in srgb, var(--color-navy-ink) 82%, transparent);
+  font-size: 1.125rem;
+  font-weight: 400;
+  line-height: 1.65;
+  max-width: 32ch;
+  color: color-mix(in srgb, var(--color-navy-ink) 78%, transparent);
   margin: 0;
 }
 
-.foot {
+/* ─── Trust strip ────────────────────────────────────────────────────── */
+
+.trustStrip {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-10);
+}
+
+.trustItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.trustIcon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(169, 120, 46, 0.35);
+  background: rgba(169, 120, 46, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 0.875rem;
-  color: color-mix(in srgb, var(--color-navy-ink) 60%, transparent);
+}
+
+.trustText {
+  font-size: 0.875rem;
+  color: color-mix(in srgb, var(--color-navy-ink) 72%, transparent);
+  line-height: 1.4;
+}
+
+.trustText strong {
+  display: block;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--color-navy-ink) 92%, transparent);
+  font-size: 0.8125rem;
+}
+
+/* ─── Footer footnote ────────────────────────────────────────────────── */
+
+.foot {
+  position: relative;
+  z-index: 1;
+  font-size: 0.8125rem;
+  color: color-mix(in srgb, var(--color-navy-ink) 48%, transparent);
   display: none;
+  margin-top: var(--space-10);
+  line-height: 1.5;
 }
 
 @media (min-width: 960px) {
@@ -66,6 +188,8 @@
     display: block;
   }
 }
+
+/* ─── Form panel ─────────────────────────────────────────────────────── */
 
 .formSide {
   display: flex;
@@ -83,5 +207,32 @@
 
 .formColumn {
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
+  background: var(--color-paper-raised);
+  border-radius: var(--radius-md);
+  padding: var(--space-8) var(--space-8);
+  box-shadow: var(--shadow-card);
+  animation: formFadeIn 0.35s ease both;
+}
+
+/* Register page needs more width for its 2-column field rows */
+.formColumnWide {
+  max-width: 560px;
+}
+
+@keyframes formFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (min-width: 960px) {
+  .formColumn {
+    padding: var(--space-10) var(--space-10);
+  }
 }

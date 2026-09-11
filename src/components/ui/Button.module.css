@@ -1,21 +1,62 @@
 .button {
+  position: relative;
+  overflow: hidden;
   width: 100%;
   border: none;
   border-radius: var(--radius-sm);
   padding: var(--space-3) var(--space-4);
   font-size: 1rem;
   font-weight: 600;
+  letter-spacing: 0.01em;
   cursor: pointer;
-  background: var(--color-navy);
+
+  /* Gradient base — flat on rest, shifts on hover */
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-navy) 80%, white) 0%,
+    var(--color-navy) 50%,
+    color-mix(in srgb, var(--color-navy) 88%, black) 100%
+  );
+  background-size: 100% 200%;
+  background-position: 0% 60%;
+
   color: var(--color-navy-ink);
-  transition: opacity 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(0, 0, 0, 0.12);
+  transition:
+    background-position 0.25s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
+}
+
+/* Subtle gloss sheen */
+.button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    transparent 55%
+  );
+  pointer-events: none;
+  border-radius: inherit;
 }
 
 .button:hover:not(:disabled) {
-  opacity: 0.9;
+  background-position: 0% 0%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25), 0 4px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition-duration: 0.08s;
 }
 
 .button:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }

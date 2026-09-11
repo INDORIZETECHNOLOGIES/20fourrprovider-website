@@ -76,34 +76,44 @@ export function RegisterForm() {
       <p className={styles.subtext}>For security professionals — guards, bouncers, gunmen, and PSOs.</p>
       <form className={styles.form} onSubmit={handleSubmit} noValidate>
         {formError ? <p className={styles.banner}>{formError}</p> : null}
-        <Field
-          id="name"
-          label="Full name"
-          autoComplete="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          error={fieldErrors.name}
-        />
-        <Field
-          id="email"
-          label="Email"
-          type="email"
-          autoComplete="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          error={fieldErrors.email}
-        />
-        <Field
-          id="phone"
-          label="Mobile number"
-          type="tel"
-          inputMode="numeric"
-          autoComplete="tel"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          error={fieldErrors.phone}
-          hint={fieldErrors.phone ? undefined : "10-digit Indian mobile number."}
-        />
+        <div className={styles.row}>
+          <Field
+            id="name"
+            label="Full name"
+            autoComplete="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            error={fieldErrors.name}
+          />
+          <Field
+            id="email"
+            label="Email"
+            type="email"
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            error={fieldErrors.email}
+          />
+        </div>
+        <div className={styles.row}>
+          <Field
+            id="phone"
+            label="Mobile number"
+            type="tel"
+            inputMode="numeric"
+            autoComplete="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            error={fieldErrors.phone}
+            hint={fieldErrors.phone ? undefined : "10-digit Indian mobile number."}
+          />
+          <Field
+            id="referralCode"
+            label="Referral code (optional)"
+            value={referralCode}
+            onChange={(e) => setReferralCode(e.target.value)}
+          />
+        </div>
         <div className={styles.row}>
           <Field
             id="password"
@@ -113,7 +123,7 @@ export function RegisterForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             error={fieldErrors.password}
-            hint={fieldErrors.password ? undefined : "8+ characters, with upper, lower, number, and symbol."}
+            hint={fieldErrors.password ? undefined : "8+ chars, upper, lower, number & symbol."}
           />
           <Field
             id="confirmPassword"
@@ -125,12 +135,6 @@ export function RegisterForm() {
             error={fieldErrors.confirmPassword}
           />
         </div>
-        <Field
-          id="referralCode"
-          label="Referral code (optional)"
-          value={referralCode}
-          onChange={(e) => setReferralCode(e.target.value)}
-        />
         <div>
           <label className={styles.checkboxRow}>
             <input

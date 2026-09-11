@@ -1,3 +1,5 @@
+import { clearSession } from "@/lib/auth/session";
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/v1";
 
 export class ApiError extends Error {
@@ -25,6 +27,12 @@ async function parseEnvelope<T>(response: Response): Promise<T> {
   }
 
   if (!envelope.success) {
+    if (response.status === 401) {
+      clearSession();
+      if (typeof window !== "undefined") {
+        window.location.href = "/login?expired=true";
+      }
+    }
     throw new ApiError(response.status, envelope.error.message, envelope.error.code);
   }
 

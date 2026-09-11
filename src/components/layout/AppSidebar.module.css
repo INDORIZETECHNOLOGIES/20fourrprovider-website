@@ -1,0 +1,307 @@
+/* ─── Sidebar shell ──────────────────────────────────────────────────── */
+
+.sidebar {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 240px;
+    background: var(--color-navy);
+    color: var(--color-navy-ink);
+    z-index: 100;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
+
+/* ─── Wordmark ───────────────────────────────────────────────────────── */
+
+.wordmark {
+  display: flex;
+  align-items: center;
+  padding: var(--space-6) var(--space-5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  text-decoration: none;
+}
+
+.wordmarkText {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--color-navy-ink);
+}
+
+.wordmarkDot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-brass);
+  margin-left: 3px;
+  margin-bottom: 2px;
+  vertical-align: middle;
+}
+
+/* ─── Provider status ────────────────────────────────────────────────── */
+
+.statusBadge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: var(--space-4) var(--space-4);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.statusBadgeVerified {
+  background: rgba(74, 222, 128, 0.1);
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.2);
+}
+
+.statusBadgePending {
+  background: rgba(251, 191, 36, 0.08);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.2);
+}
+
+.statusDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.statusDotVerified {
+  background: #4ade80;
+}
+
+.statusDotPending {
+  background: #fbbf24;
+  animation: pulse 2s ease infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+/* ─── Nav section ────────────────────────────────────────────────────── */
+
+.nav {
+  flex: 1;
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.navSection {
+  padding: var(--space-4) var(--space-2) var(--space-1);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-navy-ink) 38%, transparent);
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 9px var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--color-navy-ink) 70%, transparent);
+  text-decoration: none;
+  transition: color var(--transition-base), background var(--transition-base);
+  position: relative;
+}
+
+.navLink:hover {
+  color: var(--color-navy-ink);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.navLinkActive {
+  color: var(--color-navy-ink) !important;
+  background: rgba(255, 255, 255, 0.07) !important;
+}
+
+/* Brass left-border accent on active */
+.navLinkActive::before {
+  content: "";
+  position: absolute;
+  left: -4px;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: var(--color-brass);
+}
+
+.navIcon {
+  width: 18px;
+  text-align: center;
+  font-style: normal;
+  font-size: 1rem;
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+.navLinkActive .navIcon {
+  opacity: 1;
+}
+
+/* ─── Notification badge on nav ──────────────────────────────────────── */
+
+.navBadge {
+  margin-left: auto;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--color-brass);
+  color: var(--color-navy);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ─── Bottom section ─────────────────────────────────────────────────── */
+
+.bottom {
+  padding: var(--space-4) var(--space-3);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.userRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-2);
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-brass);
+  color: var(--color-navy);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.userName {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-navy-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.signOutBtn {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 8px var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--color-navy-ink) 50%, transparent);
+  cursor: pointer;
+  text-align: left;
+  transition: color var(--transition-base), background var(--transition-base);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.signOutBtn:hover {
+  color: var(--color-navy-ink);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ─── Mobile bottom nav ──────────────────────────────────────────────── */
+
+.mobileNav {
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: var(--color-navy);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: var(--space-2) 0;
+  padding-bottom: max(var(--space-2), env(safe-area-inset-bottom));
+}
+
+@media (min-width: 1024px) {
+  .mobileNav {
+    display: none;
+  }
+}
+
+.mobileNavLink {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: var(--space-1) var(--space-2);
+  text-decoration: none;
+  color: color-mix(in srgb, var(--color-navy-ink) 55%, transparent);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  transition: color var(--transition-base);
+  position: relative;
+}
+
+.mobileNavLink:hover,
+.mobileNavLinkActive {
+  color: var(--color-navy-ink);
+}
+
+.mobileNavIcon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.mobileNavBadge {
+  position: absolute;
+  top: 2px;
+  right: calc(50% - 14px);
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  border-radius: 999px;
+  background: var(--color-brass);
+  color: var(--color-navy);
+  font-size: 0.5625rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

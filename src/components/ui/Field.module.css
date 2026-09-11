@@ -5,33 +5,63 @@
 }
 
 .label {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--color-ink);
 }
 
 .input {
-  border: 1px solid var(--color-line);
+  border: 1.5px solid var(--color-line);
   border-radius: var(--radius-sm);
   background: var(--color-paper-raised);
-  padding: var(--space-3) var(--space-3);
+  padding: 11px var(--space-4);
   font-size: 1rem;
   line-height: 1.4;
+  color: var(--color-ink);
+  transition:
+    border-color var(--transition-base),
+    box-shadow var(--transition-base);
+  -webkit-appearance: none;
+  appearance: none;
 }
 
-.input:focus-visible {
+.input::placeholder {
+  color: color-mix(in srgb, var(--color-ink-muted) 60%, transparent);
+}
+
+.input:hover:not(:focus):not(.invalid) {
+  border-color: color-mix(in srgb, var(--color-line) 40%, var(--color-ink-muted));
+}
+
+.input:focus-visible,
+.input:focus {
+  outline: none;
   border-color: var(--color-brass);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brass) 18%, transparent);
 }
 
 .invalid {
   border-color: var(--color-danger);
 }
 
+.invalid:focus-visible,
+.invalid:focus {
+  border-color: var(--color-danger);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-danger) 14%, transparent);
+}
+
 .hint {
   font-size: 0.8125rem;
   color: var(--color-ink-muted);
+  line-height: 1.45;
+  margin: 0;
+  white-space: nowrap;
 }
 
 .error {
   font-size: 0.8125rem;
   color: var(--color-danger);
+  line-height: 1.45;
+  margin: 0;
 }

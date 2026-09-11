@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Create your account — 20fourr" };
 
 export default function RegisterPage() {
   return (
-    <AuthShell tagline="Get verified once. Accept work, track duty, and get paid from one account.">
+    <AuthShell wide tagline="Get verified once. Accept work, track duty, and get paid from one account.">
       <RegisterForm />
     </AuthShell>
   );
