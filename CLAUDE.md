@@ -21,22 +21,20 @@ The project was scaffolded with `create-next-app` (Next.js App Router, TypeScrip
 **Built**: auth, provider profile setup, KYC document upload, availability, bookings (list, detail
 view, accept/reject, mark-complete), duty (OTP + gate-guard start/end), earnings/settlements,
 per-booking chat, support tickets, notifications, account/DPDP (data export, consent withdrawal,
-erasure request), duty safety (SOS + live check-in), incident reporting, absence-alert.
+erasure request), duty safety (SOS + live check-in), incident reporting, absence-alert, ratings
+(submit + own-ratings view), payout bank details (submit + one-tap confirm), payment status.
 
 **Not built yet** — a previous status note here claimed the provider surface was fully complete;
 it wasn't, and a full pass against the reference doc turned up real gaps, roughly in order of how
 much they matter for a working provider app:
-- `/ratings/*` — a provider can't rate the client after a completed booking, or see their own
-  public rating.
 - `/provider/tax-profile`, `/provider/psara-coverage`, `/documents/*` (tax documents) — the v6
   compliance surfaces the reference doc explicitly says to build against; none are built.
-- `POST /provider/bank-details/confirm` — required (alongside admin verification) before any
-  payout fires; not built.
-- `GET /payments/booking/:bookingId` — no way to see what a client actually paid.
 - Gallery (`/provider/gallery*`), firm staff-availability (`/provider/staff-availability*`),
   replacement requests, penalties/appeals, premium analytics, wallet (v1 legacy), referral
   program, MFA, forgot/reset password, email verification, profile photo — lower priority, none
   built.
+- Within ratings: no detailed sub-ratings (professionalism/punctuality/etc.), no photo
+  attachments, no report-a-rating flow. `submitRating` only sends `rating`, `review`, `tags`.
 
 Before claiming a feature area is "complete" in this file, verify against the actual route list in
 the reference doc's table of contents (or grep the backend's route files) rather than trusting
@@ -195,6 +193,27 @@ not (yet) reflect this:
   create response directly to update UI state renders a blank reporter name until the next reload.
   `IncidentsSection.tsx` works around this by refetching the full list via `listIncidents` after a
   successful `createIncident` rather than trusting the create response's shape.
+- **`PUT /provider/profile`'s response never includes `bankDetails.accountNumber`** — the schema
+  field is `select: false` (so it's excluded from every query by default), and unlike `getMyProfile`
+  (which does `.select('+bankDetails.accountNumber')` then masks it before responding),
+  `updateProfile`'s `findOneAndUpdate` never re-selects it. Confirmed live: a successful bank-details
+  save returns `bankDetails` with `ifscCode`/`accountName` present but `accountNumber` silently
+  missing, even though the write itself succeeded (a follow-up `GET /provider/profile` shows the
+  masked value correctly). `BankDetailsSection.tsx` works around this by calling
+  `getProviderProfile()` again after a successful `updateBankDetails()` rather than trusting the PUT
+  response for display — do this for any other bank-details-writing UI too.
+- **`GET /ratings/my-status`'s documented `page`/`limit` query params are validated but never
+  applied** — same shape of bug as the tickets/notifications filters above: the handler fetches
+  *all* of the caller's completed bookings and filters client-side, unpaginated. Not an issue at
+  today's data volumes, but don't build "load more" UI around this endpoint expecting it to
+  actually page.
+- **`POST /ratings/:ratingId/report`'s validator and the `Rating` model's `reportReason` enum
+  disagree** — the validator (matching the reference doc) accepts `'inappropriate'|'spam'|'fake'|
+  'offensive'|'other'`, but the schema enum is `'abusive'|'spam'|'inappropriate'|'false'|'other'`.
+  `'fake'`/`'offensive'` aren't in the schema enum, yet the controller writes them anyway via
+  `findByIdAndUpdate` without `runValidators`, so they save without error despite falling outside
+  the declared enum. Not built in this frontend yet (see "Not built yet" above); if it is, use the
+  validator's list, not the model's.
 
 ### Frontend structure
 
@@ -251,6 +270,30 @@ features should follow:
   (matches the backend's own gate); incidents `duty_started`/`duty_ended`/`completed`; absence-alert
   `payment_done`/`duty_started`. All three share `SafetyControls.module.css`. Absence-alert is the
   one genuinely destructive control here — see the divergence note above before touching it.
+- **Rate-the-client (`RateBookingControl.tsx`) also lives on the booking detail page**, gated on
+  `booking.status === "completed"`. There's no per-booking "have I rated this" endpoint — it checks
+  membership in `GET /ratings/my-status`'s `pendingRatings` array (all of the caller's completed
+  bookings not yet rated, unpaginated — see the divergence note above) on mount, and fails closed
+  (treats an error as "already rated") rather than risk showing a form that 400s with `SC_1002` on
+  submit. `toUserId` for the rating is `booking.clientId._id` — `BookingClient` was extended with
+  `_id` for this (Mongoose `.populate(field, 'name email phone')` includes `_id` by default, so this
+  was always present on the wire, just not modeled).
+- **Payment status (`PaymentStatusSection.tsx`) is a small addition inside the existing "Payment"
+  card**, not a separate section — it shows the live Razorpay-side `status` (Created/Authorized/
+  Paid/Failed/Refunded) next to the amounts breakdown that's computed from the `Booking` doc itself.
+  Gated on `CHAT_ALLOWED_STATUSES` (payment must exist by then); renders nothing if the fetch fails
+  (e.g. `SC_501` no Payment doc), so a booking pre-payment just shows the existing breakdown as
+  before.
+- **Payout bank details (`src/components/earnings/BankDetailsSection.tsx`) live on the Earnings
+  page**, above the settlements list — it's payout configuration, not account/DPDP settings, so it
+  sits with the money surface rather than on `/account`. Submitting any field resets
+  `bankDetails.verified` server-side (see the existing profile divergence note above); the "Confirm
+  this is my account" button only appears once `verified && !confirmedByProvider`.
+- **"Your ratings" is a new page** (`/ratings`, `RatingsPanel.tsx`) showing the provider's own
+  average/count (`ProviderProfile.rating`, added to the `ProviderProfile` type along with the
+  populated `userId` object) and their full received-ratings list via `GET /ratings/user/:userId`
+  using their own id — there's no "ratings about me" shortcut endpoint, so this calls
+  `getProviderProfile()` first purely to read `profile.userId._id`.
 - **Two flex-layout components inline-block elements with no gap between them** was a real bug
   (`BookingRow`'s "View details"/"Chat with…" links rendered flush against each other with zero
   spacing, since adjacent `display: inline-block` elements in JSX have no whitespace node between

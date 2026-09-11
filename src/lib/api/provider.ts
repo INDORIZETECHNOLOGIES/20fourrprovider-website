@@ -29,8 +29,20 @@ export type ProviderProfileDetailsInput = {
   description?: string;
 };
 
+export type BankDetails = {
+  accountNumber?: string | null; // masked to last 4 on read
+  ifscCode?: string | null;
+  accountName?: string | null;
+  bankName?: string | null;
+  accountType?: "savings" | "current" | null;
+  verified?: boolean;
+  confirmedByProvider?: boolean;
+};
+
 export type ProviderProfile = {
   _id: string;
+  userId: { _id: string; name: string; email: string; phone: string; profilePhoto: string | null };
+  rating: { average: number; count: number };
   providerType: ProviderType;
   serviceCategories: ServiceCategory[];
   serviceCity: string;
@@ -43,6 +55,7 @@ export type ProviderProfile = {
   // Keyed by `${documentType}Url` (e.g. `aadhaarUrl`) — a presigned GET URL once
   // uploaded, absent otherwise. See src/lib/constants/providerDocuments.ts.
   documents?: Record<string, string | undefined>;
+  bankDetails?: BankDetails;
   availability: {
     isAvailable: boolean;
     workingHours: WorkingHours;
@@ -70,6 +83,21 @@ export function updateProviderPricing(
 
 export function getProviderProfile(accessToken: string): Promise<{ profile: ProviderProfile }> {
   return apiRequest("/provider/profile", { accessToken });
+}
+
+// Submitting any bankDetails field resets bankDetails.verified to false — only
+// an admin can re-verify. See CLAUDE.md.
+export function updateBankDetails(
+  input: { accountNumber: string; ifscCode: string; accountName: string; bankName?: string; accountType?: "savings" | "current" },
+  accessToken: string,
+): Promise<{ profile: ProviderProfile }> {
+  return apiRequest("/provider/profile", { method: "PUT", body: { bankDetails: input }, accessToken });
+}
+
+// One-tap attestation that the (admin-verified) bank account shown is theirs.
+// 400s until an admin has entered + verified accountNumber/ifscCode. See CLAUDE.md.
+export function confirmBankDetails(accessToken: string): Promise<{ confirmedByProvider: true }> {
+  return apiRequest("/provider/bank-details/confirm", { method: "POST", accessToken });
 }
 
 export function isProfileComplete(profile: ProviderProfile): boolean {

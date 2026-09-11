@@ -1,0 +1,127 @@
+.section {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-paper-raised);
+  padding: var(--space-5);
+  margin-bottom: var(--space-6);
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 var(--space-2);
+}
+
+.sectionText {
+  font-size: 0.875rem;
+  color: var(--color-ink-muted);
+  margin: 0 0 var(--space-4);
+  line-height: 1.5;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: 0.9375rem;
+  padding: var(--space-1) 0;
+}
+
+.rowLabel {
+  color: var(--color-ink-muted);
+}
+
+.statusRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-line);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-top: var(--space-4);
+}
+
+.editButton,
+.confirmButton {
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.editButton {
+  background: none;
+  border: 1px solid var(--color-line);
+  color: var(--color-ink);
+}
+
+.confirmButton {
+  background: var(--color-navy);
+  color: var(--color-navy-ink);
+}
+
+.confirmButton:disabled,
+.editButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.formActions {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.saveButton {
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--color-navy);
+  color: var(--color-navy-ink);
+}
+
+.cancelButton {
+  border: 1px solid var(--color-line);
+  background: none;
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--color-ink);
+}
+
+.saveButton:disabled,
+.cancelButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.hint {
+  font-size: 0.8125rem;
+  color: var(--color-ink-muted);
+  margin-top: var(--space-1);
+}
+
+.error {
+  font-size: 0.8125rem;
+  color: var(--color-danger);
+  margin-top: var(--space-2);
+}

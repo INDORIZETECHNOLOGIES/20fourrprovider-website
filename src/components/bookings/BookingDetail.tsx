@@ -15,6 +15,8 @@ import { CompleteBookingControl } from "./CompleteBookingControl";
 import { SosControl } from "./SosControl";
 import { IncidentsSection } from "./IncidentsSection";
 import { AbsenceAlertControl } from "./AbsenceAlertControl";
+import { RateBookingControl } from "./RateBookingControl";
+import { PaymentStatusSection } from "./PaymentStatusSection";
 import styles from "./BookingDetail.module.css";
 
 type BookingDetailProps = {
@@ -154,6 +156,9 @@ export function BookingDetail({ bookingId, isVerified, accessToken }: BookingDet
             <span>Client paid</span>
             <span>{formatPaise(booking.totalAmount)}</span>
           </div>
+          {CHAT_ALLOWED_STATUSES.includes(booking.status) ? (
+            <PaymentStatusSection bookingId={booking._id} accessToken={accessToken} />
+          ) : null}
         </div>
 
         {CHAT_ALLOWED_STATUSES.includes(booking.status) ? (
@@ -191,6 +196,15 @@ export function BookingDetail({ bookingId, isVerified, accessToken }: BookingDet
 
         {booking.status === "payment_done" || booking.status === "duty_started" ? (
           <AbsenceAlertControl bookingId={booking._id} accessToken={accessToken} />
+        ) : null}
+
+        {booking.status === "completed" ? (
+          <RateBookingControl
+            bookingId={booking._id}
+            clientId={booking.clientId._id}
+            clientName={booking.clientId.name}
+            accessToken={accessToken}
+          />
         ) : null}
       </div>
     </main>
