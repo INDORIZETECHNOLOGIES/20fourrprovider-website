@@ -26,6 +26,14 @@ export const BOOKING_STATUS_LABELS: Record<BookingStatus, string> = {
   disputed: "Disputed",
 };
 
+// Mirrors the backend's CHAT_ALLOWED_STATUSES (chat.controller.ts).
+export const CHAT_ALLOWED_STATUSES: BookingStatus[] = [
+  "payment_done",
+  "duty_started",
+  "duty_ended",
+  "completed",
+];
+
 export type BadgeTone = "action" | "active" | "muted" | "danger";
 
 export const BOOKING_STATUS_TONE: Record<BookingStatus, BadgeTone> = {

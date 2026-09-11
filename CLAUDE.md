@@ -18,8 +18,8 @@ templated "AI slop" layouts — get a deliberate aesthetic direction, then execu
 
 The project was scaffolded with `create-next-app` (Next.js App Router, TypeScript, ESLint). Auth
 (login/register), provider profile setup, KYC document upload, availability management, a bookings
-list (with accept/reject), the duty OTP flow (start/end), and earnings/settlements are built; chat
-and account/support surfaces are still unbuilt.
+list (with accept/reject), the duty OTP flow (start/end), earnings/settlements, and per-booking
+chat are built; account/support surfaces (tickets, notifications, DPDP) are still unbuilt.
 
 ### Design direction established by the auth feature
 
@@ -173,3 +173,17 @@ features should follow:
   `bookings`) follow the same gate: `useSession()` for the value, `useRedirectIfLoggedOut()` for
   the redirect, and return `null` while an async check (session or profile-completeness) is in
   flight — see `src/app/dashboard/page.tsx`.
+- **Chat (`/chat/:bookingId`)** is polling-based (5s interval, `ChatPanel`), not wired to the
+  backend's Socket.IO events — the reference doc calls those emits "best-effort," so HTTP is the
+  reliable source of truth and polling is the correct baseline; a socket connection would only be
+  worth adding later as a latency optimization on top of it, not a replacement. There are two chat
+  route surfaces on the backend (see the reference doc's Chat section) — this frontend only uses
+  `/chat/:bookingId` (the fuller-featured one), never the nested `/bookings/:bookingId/chat/*`
+  polling variant. `CHAT_ALLOWED_STATUSES` in `bookingStatus.ts` mirrors the backend's own gate
+  (`payment_done`/`duty_started`/`duty_ended`/`completed`) and controls when `BookingRow` shows the
+  "Chat" link — a booking outside those statuses has no chat UI entry point in this app.
+- **Dynamic route params are a `Promise` in this Next version** (App Router, typed `PageProps<'/...'>`
+  helper). A page needing client-side interactivity (hooks, state) can't `await` params itself
+  since client components can't be async — split it: an `async` server-component `page.tsx` that
+  awaits `props.params` and passes the resolved value as a prop to a `"use client"` child (see
+  `src/app/bookings/[bookingId]/chat/page.tsx` + `ChatPage`).
