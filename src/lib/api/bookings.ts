@@ -3,6 +3,7 @@ import type { ServiceCategory } from "./provider";
 import type { BookingStatus } from "@/lib/constants/bookingStatus";
 
 export type BookingClient = {
+  _id: string;
   name: string;
   email: string;
   phone: string;
