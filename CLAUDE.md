@@ -18,7 +18,7 @@ templated "AI slop" layouts — get a deliberate aesthetic direction, then execu
 
 The project was scaffolded with `create-next-app` (Next.js App Router, TypeScript, ESLint). Auth
 (login/register), provider profile setup, KYC document upload, availability management, a bookings
-list (with accept/reject), and the duty OTP flow (start/end) are built; earnings/settlements, chat,
+list (with accept/reject), the duty OTP flow (start/end), and earnings/settlements are built; chat
 and account/support surfaces are still unbuilt.
 
 ### Design direction established by the auth feature
@@ -39,6 +39,14 @@ to each component/page (e.g. `page.tsx` + `page.module.css`), imported as `style
 `prefers-color-scheme`) live as CSS custom properties in `src/app/globals.css` — reuse those tokens
 (`var(--space-4)`, `var(--color-fg-muted)`, etc.) rather than hardcoding values, and extend that
 token set as new needs come up instead of introducing a second styling system.
+
+**Before using a `--space-N` (or any) token that looks like it should exist, check it's actually
+defined in `globals.css`.** `--space-5` was used across four component files (bookings,
+availability) before anyone noticed it was never defined — a `padding`/`gap` shorthand referencing
+an undefined custom property with no fallback computes to nothing, so every affected element
+silently rendered with zero padding/gap. It looked fine at a glance (borders + line-height fake the
+impression of spacing) and only showed up on close inspection. Verify visually, not just by
+reading the JSX.
 
 ## Commands
 
@@ -76,8 +84,13 @@ exists:
   amounts are off by 100x.
 - **Two billing engines**: `Booking.billingEngine` is `'v1'` (legacy) or `'v6'`. This project's
   direction is v6-only — build new UI against `/provider/tax-profile`, `/provider/psara-coverage`,
-  `/provider/settlements`, `/documents/*`, not the v1-only `/invoices/*` or
-  `/provider/earnings/payout-history`, which exist only to serve historical bookings.
+  `/provider/settlements`, `/documents/*`, not the v1-only `/invoices/*`, `/provider/earnings`, or
+  `/provider/earnings/payout-history`, which exist only to serve historical bookings. The Earnings
+  page (`src/app/earnings`) is a `/provider/settlements` ledger by deliberate choice — no aggregate
+  "total earnings" figure, since that would require the v1-only `/provider/earnings` endpoint (or
+  summing an unbounded, paginated v6 list client-side, which would be wrong/misleading unless every
+  page were loaded). Until `PlatformSettings.billingV6.enabled` is flipped, expect this list to be
+  empty for real accounts — that's correct, not a bug.
 - `requireProviderVerified` gates the actions that commit a provider to work (accepting a booking,
   toggling availability, days-off/staff-availability) but deliberately not profile/documents/
   pricing/bank-details, since those are the path *to* verification.
