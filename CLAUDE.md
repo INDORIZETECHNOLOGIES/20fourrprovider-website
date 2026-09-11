@@ -16,10 +16,12 @@ building or reviewing any UI, use the design skills available in this environmen
 charts/analytics views) rather than defaulting to generic component-library output. Avoid
 templated "AI slop" layouts — get a deliberate aesthetic direction, then execute it consistently.
 
-The project was scaffolded with `create-next-app` (Next.js App Router, TypeScript, ESLint). Auth
-(login/register), provider profile setup, KYC document upload, availability management, a bookings
-list (with accept/reject), the duty OTP flow (start/end), earnings/settlements, per-booking chat,
-and support tickets are built; notifications and account/DPDP surfaces are still unbuilt.
+The project was scaffolded with `create-next-app` (Next.js App Router, TypeScript, ESLint). Every
+provider-facing surface in the reference doc is now built: auth, profile setup, KYC documents,
+availability, bookings (accept/reject), duty (OTP + gate-guard start/end), earnings/settlements,
+per-booking chat, support tickets, notifications, and account/DPDP (data export, consent
+withdrawal, erasure request). Nothing here has a payments/checkout flow, admin surfaces, or a
+client-facing app — those are explicitly out of scope (see the API reference doc's own framing).
 
 ### Design direction established by the auth feature
 
@@ -133,6 +135,27 @@ not (yet) reflect this:
   `attachments` field, but the controller seeds `messages[0]` from `description` only and never
   reads `req.body.attachments`. Attachments only work on a *reply* (`addMessage` does apply them).
   `NewTicketForm` has no attachment field for this reason; `TicketDetail`'s composer does.
+- **`GET /notifications` only filters by `isRead`** — same shape of bug as tickets: the reference
+  doc documents a `type` query param, but `getMyNotifications` never reads it.
+  `PUT /notifications/read-all` has the same gap for its documented `notificationType` body field —
+  it always marks every unread notification read, there is no way to scope it. Neither is built as
+  a control in `NotificationsPanel`.
+- **The `Notification.type` enum doesn't match the reference doc at all** — the doc lists
+  `payout_released`, `duty_started`, `otp_generated`, `ticket_update`, `admin_message`, etc.; the
+  real schema enum (`src/models/Notification.ts`) has none of those — it's `payment_success`,
+  `booking_completed`, `support_ticket`, `psara_expiry_warning`, and others instead (confirmed by
+  hitting a Mongoose validation error while seeding test data with a documented-but-nonexistent
+  type). Consequently `NotificationRow` never tries to map `type` to a label or icon — it just
+  renders the backend's own `title`/`body` text, which sidesteps the mismatch entirely. Don't
+  introduce a `type` → label lookup without re-deriving the real enum from the model first.
+- **`GET /provider/account/data-export`'s "one export per 24 hours" claim is only a code comment**
+  — there's no rate-limiting middleware on the route and no check inside the handler; confirmed by
+  calling it twice in a row live and getting 200 both times. Don't build UI (a cooldown timer, a
+  disabled-until state) around a limit that isn't actually enforced.
+- **`POST /provider/account/erasure-request` really does what it says** — no divergence here, but
+  worth flagging: it sets `user.isSuspended = true` synchronously, in the same request, before the
+  30-day deletion window even starts (confirmed live: the test account couldn't log in immediately
+  after). Never call it against an account you want to keep using — test with a disposable one.
 
 ### Frontend structure
 
