@@ -1,0 +1,122 @@
+.page {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: var(--space-8) var(--space-6);
+}
+
+.column {
+  width: 100%;
+  max-width: 640px;
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0 0 var(--space-2);
+}
+
+.subtext {
+  color: var(--color-ink-muted);
+  margin: 0 0 var(--space-8);
+  line-height: 1.5;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.sectionLabel {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.row {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.row > * {
+  flex: 1;
+  min-width: 0;
+}
+
+.segmented {
+  display: inline-flex;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  width: fit-content;
+}
+
+.segmentButton {
+  border: none;
+  background: var(--color-paper-raised);
+  color: var(--color-ink);
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.segmentButton + .segmentButton {
+  border-left: 1px solid var(--color-line);
+}
+
+.segmentButtonActive {
+  background: var(--color-navy);
+  color: var(--color-navy-ink);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.chip {
+  border: 1px solid var(--color-line);
+  background: var(--color-paper-raised);
+  color: var(--color-ink);
+  border-radius: 999px;
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.9375rem;
+  cursor: pointer;
+}
+
+.chipActive {
+  border-color: var(--color-brass);
+  background: color-mix(in srgb, var(--color-brass) 14%, var(--color-paper-raised));
+}
+
+.pricingRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-3);
+  align-items: start;
+}
+
+.pricingCategory {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  padding-top: var(--space-3);
+}
+
+@media (max-width: 560px) {
+  .pricingRow {
+    grid-template-columns: 1fr;
+  }
+
+  .pricingCategory {
+    padding-top: 0;
+  }
+}
