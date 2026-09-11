@@ -8,7 +8,7 @@ import { acceptBooking, rejectBooking, type Booking } from "@/lib/api/bookings";
 import { validateRejectionReason } from "@/lib/validation/bookings";
 import { formatPaise, formatDate } from "@/lib/format";
 import { SERVICE_CATEGORY_LABELS } from "@/lib/api/provider";
-import { BOOKING_STATUS_LABELS, BOOKING_STATUS_TONE } from "@/lib/constants/bookingStatus";
+import { BOOKING_STATUS_LABELS, BOOKING_STATUS_TONE, CHAT_ALLOWED_STATUSES } from "@/lib/constants/bookingStatus";
 import { DutyControls } from "./DutyControls";
 import styles from "./BookingRow.module.css";
 
@@ -79,6 +79,12 @@ export function BookingRow({ booking, isVerified, accessToken, onUpdated }: Book
         {booking.address ? <span>{booking.address}</span> : null}
         <span className={styles.amount}>{formatPaise(booking.totalAmount)}</span>
       </div>
+
+      {CHAT_ALLOWED_STATUSES.includes(booking.status) ? (
+        <Link href={`/bookings/${booking._id}/chat`} className={styles.viewLink}>
+          Chat with {booking.clientId.name}
+        </Link>
+      ) : null}
 
       {error ? <p className={styles.error}>{error}</p> : null}
 
