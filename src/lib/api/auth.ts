@@ -1,4 +1,4 @@
-import { apiRequest } from "./client";
+import { apiRequest, apiUpload } from "./client";
 
 export type AuthTokens = {
   accessToken: string;
@@ -66,4 +66,51 @@ export function loginProvider(input: LoginInput): Promise<LoginResult> {
     method: "POST",
     body: { email: input.email, password: input.password, role: "provider" },
   });
+}
+
+export type AuthUser = {
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+  role: "client" | "provider";
+  profilePhoto: string | null; // presigned URL, ready to render
+  emailVerified: boolean;
+  phoneVerified: boolean;
+  kycStatus?: string;
+};
+
+export function getCurrentUser(accessToken: string): Promise<{ user: AuthUser }> {
+  return apiRequest("/auth/me", { accessToken });
+}
+
+// Message-only responses (no `data`) — see CLAUDE.md. The frontend shows its own
+// static copy rather than the backend's message text.
+export function forgotPassword(email: string): Promise<void> {
+  return apiRequest("/auth/forgot-password", { method: "POST", body: { email } });
+}
+
+export function resetPassword(
+  token: string,
+  password: string,
+  confirmPassword: string,
+): Promise<void> {
+  return apiRequest("/auth/reset-password", {
+    method: "POST",
+    body: { token, password, confirmPassword },
+  });
+}
+
+export function sendEmailVerification(accessToken: string): Promise<void> {
+  return apiRequest("/auth/send-email-verification", { method: "POST", accessToken });
+}
+
+export function verifyEmail(otp: string, accessToken: string): Promise<void> {
+  return apiRequest("/auth/verify-email", { method: "POST", body: { otp }, accessToken });
+}
+
+export function updateProfilePhoto(file: File, accessToken: string): Promise<{ profilePhoto: string | null }> {
+  const formData = new FormData();
+  formData.append("file", file);
+  return apiUpload("/auth/profile-photo", formData, accessToken, "PATCH");
 }

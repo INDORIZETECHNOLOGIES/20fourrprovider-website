@@ -65,6 +65,9 @@ export function LoginForm() {
           onChange={(e) => setPassword(e.target.value)}
           error={fieldErrors.password}
         />
+        <Link href="/forgot-password" className={styles.inlineLink}>
+          Forgot your password?
+        </Link>
         <Button type="submit" disabled={submitting}>
           {submitting ? "Signing in…" : "Sign in"}
         </Button>

@@ -34,3 +34,8 @@ export function validatePasswordMatch(password: string, confirmPassword: string)
   if (password !== confirmPassword) return "Passwords don't match.";
   return null;
 }
+
+export function validateOtp(otp: string): string | null {
+  if (!/^\d{6}$/.test(otp.trim())) return "Enter the 6-digit code.";
+  return null;
+}

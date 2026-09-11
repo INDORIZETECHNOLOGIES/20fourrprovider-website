@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   validateEmail,
   validateName,
+  validateOtp,
   validatePassword,
   validatePasswordMatch,
   validatePhone,
@@ -68,5 +69,19 @@ describe("validatePasswordMatch", () => {
 
   it("accepts matching passwords", () => {
     expect(validatePasswordMatch("same", "same")).toBeNull();
+  });
+});
+
+describe("validateOtp", () => {
+  it("rejects a code that isn't 6 digits", () => {
+    expect(validateOtp("12345")).not.toBeNull();
+  });
+
+  it("rejects non-numeric input", () => {
+    expect(validateOtp("abcdef")).not.toBeNull();
+  });
+
+  it("accepts a 6-digit code", () => {
+    expect(validateOtp("123456")).toBeNull();
   });
 });

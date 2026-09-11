@@ -24,15 +24,14 @@ per-booking chat, support tickets, notifications, account/DPDP (data export, con
 erasure request), duty safety (SOS + live check-in), incident reporting, absence-alert, ratings
 (submit + own-ratings view), payout bank details (submit + one-tap confirm), payment status, tax
 profile (PAN + GST tier + turnover declaration), PSARA state coverage, tax documents (list +
-detail + PDF download).
+detail + PDF download), forgot/reset password, email verification, profile photo.
 
 **Not built yet** — a previous status note here claimed the provider surface was fully complete;
 it wasn't, and a full pass against the reference doc turned up real gaps, roughly in order of how
 much they matter for a working provider app:
 - Gallery (`/provider/gallery*`), firm staff-availability (`/provider/staff-availability*`),
   replacement requests, penalties/appeals, premium analytics, wallet (v1 legacy), referral
-  program, MFA, forgot/reset password, email verification, profile photo — lower priority, none
-  built.
+  program, MFA — lower priority, none built.
 - Within ratings: no detailed sub-ratings (professionalism/punctuality/etc.), no photo
   attachments, no report-a-rating flow. `submitRating` only sends `rating`, `review`, `tags`.
 - Within PSARA coverage: no way to attach a specific uploaded document to a state licence
@@ -218,6 +217,28 @@ not (yet) reflect this:
   `findByIdAndUpdate` without `runValidators`, so they save without error despite falling outside
   the declared enum. Not built in this frontend yet (see "Not built yet" above); if it is, use the
   validator's list, not the model's.
+- **`POST /auth/send-email-verification` fails the whole request on an email-delivery failure**,
+  even though the OTP and rate-limit cooldown are already durably persisted before the send is
+  attempted — unlike `forgotPassword`, which wraps its `sendEmailViaMsg91` call in try/catch and
+  never lets delivery failure surface as a request failure. Confirmed live: with this environment's
+  configured `MSG91_AUTH_KEY` invalid (`sendEmail: MSG91 request failed ... 401 Unauthorized` in
+  the backend logs on every attempt), every "Send verification code" click 500s with `SC_502`
+  ("OTP service is temporarily unavailable"), yet the cooldown is still set — so a retry within 60s
+  correctly reports the cooldown instead, and the user is stuck until it expires with a code they
+  were never actually sent. `POST /auth/verify-email` itself works correctly once a valid OTP
+  exists (confirmed by seeding `CoordinationKey` directly and calling it) — the bug is specifically
+  in the unguarded send path. Local dev testing of this flow therefore requires seeding
+  `CoordinationKey` (`_id: "email-otp:<userId>"`, `value: sha256(otp)`, a future `expiresAt`) rather
+  than actually receiving a code — see git history around this note for the exact seed script shape
+  if you need to redo it. **Not something to work around in the frontend** — the fix belongs in
+  `authService.sendEmailVerification` (wrap the send in try/catch, matching `forgotPassword`), which
+  wasn't done here per the "only fix backend bugs with explicit go-ahead" rule.
+- **OTP/reset-token/rate-limit state for `/auth/*` lives in MongoDB (`CoordinationKey` collection,
+  `src/config/coordination.ts`'s `setValue`/`getValue`/`claimOnce`/`incrementCounter`), not Redis**
+  — despite `config/redis.ts`'s own docstring describing Redis as the home for "rate-limit counters,
+  caches." Don't go looking in Redis for an email OTP hash, a password-reset token, or an OTP-resend
+  cooldown while debugging locally; query `CoordinationKey` by `_id` instead (the key names match
+  what the service code uses, e.g. `email-otp:<userId>`, `password-reset:<token>`).
 
 ### Frontend structure
 
@@ -351,3 +372,23 @@ features should follow:
   fetching every document's detail up front. Credit notes aren't nested under the document they
   reverse (`reversesDocumentId`) — the list renders flat, sorted by `issuedAt desc` same as the
   backend's default.
+- **Forgot/reset password are unauthenticated pages** (`/forgot-password`, `/reset-password/
+  [token]`) using `AuthShell` like login/register. The reset link the backend emails is path-based
+  (`${APP_URL}/reset-password/:token}`, from `auth.service.ts`'s `forgotPassword`) — the dynamic
+  route here mirrors that shape exactly (`ResetPasswordRoute` awaits `props.params` server-side,
+  same split pattern as the chat/ticket detail pages, then passes `token` to a client
+  `ResetPasswordForm`). Both `forgotPassword`/`resetPassword`/`sendEmailVerification`/`verifyEmail`
+  are message-only responses (no `data` key at all — see `apiRequest`'s envelope) — these API
+  functions return `Promise<void>`, and the UI shows its own static copy rather than parsing a
+  backend message string. `ForgotPasswordForm` deliberately shows the same "check your email"
+  screen on any successful call regardless of whether the address exists (matching the backend's
+  own enumeration-safety), but does surface a thrown error (rate limit, network) since those aren't
+  an enumeration leak.
+- **Email verification and profile photo live on the Account page** (`EmailVerificationSection.tsx`,
+  `ProfilePhotoSection.tsx`), above the DPDP sections — `AccountPanel.tsx` fetches `GET /auth/me`
+  once (not carried in the localStorage session, which only has tokens + name) and passes the
+  result down; both children call back up to patch that local state rather than re-fetching.
+  `PATCH /auth/profile-photo` needed `apiUpload()` extended with an optional `method` param (it was
+  hardcoded to `POST`; every other existing upload endpoint happens to be `POST`, this one isn't).
+  Both `GET /auth/me` and the photo-upload response return `profilePhoto` **already presigned** —
+  render it directly as an `<img src>`, no separate presign step needed (unlike provider documents).
