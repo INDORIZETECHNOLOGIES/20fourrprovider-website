@@ -62,7 +62,7 @@ export function RegisterForm() {
         marketingConsent,
       });
       saveSession({ tokens: result.tokens, name });
-      router.push("/dashboard");
+      router.push("/profile/setup");
     } catch (error) {
       setFormError(describeRegisterError(error));
     } finally {

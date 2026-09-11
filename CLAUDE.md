@@ -16,8 +16,8 @@ building or reviewing any UI, use the design skills available in this environmen
 charts/analytics views) rather than defaulting to generic component-library output. Avoid
 templated "AI slop" layouts — get a deliberate aesthetic direction, then execute it consistently.
 
-The project was scaffolded with `create-next-app` (Next.js App Router, TypeScript, ESLint). The
-auth feature (login/register) is built; everything else (profile, documents, pricing, availability,
+The project was scaffolded with `create-next-app` (Next.js App Router, TypeScript, ESLint). Auth
+(login/register) and provider profile setup are built; everything else (documents, availability,
 bookings, duty, earnings) is still unbuilt.
 
 ### Design direction established by the auth feature
@@ -85,6 +85,26 @@ exists:
   OTP-based duty-start/duty-end flow are the backbone of most provider screens — see Appendix C and
   the Duty section of the reference doc before building booking or duty UI.
 
+### Where the running backend diverges from the reference doc
+
+Verified directly against the backend source (a sibling repo on this machine,
+`~/freelance-project/SecureConnect/backend`) while building profile setup — the reference doc does
+not (yet) reflect this:
+
+- **Registration auto-creates a blank `ProviderProfile`** for every provider account
+  (`auth.service.ts`), so a profile always exists from the moment of registration.
+- **`POST /provider/profile` therefore always 409s with `SC_1307`** ("already exists") for a real
+  account — it's unreachable in practice. **Use `PUT /provider/profile` to fill in profile fields
+  instead** (`src/lib/api/provider.ts`'s `updateProviderProfile`), even for a "brand new" provider.
+- `updateProfile`'s controller was silently dropping `serviceCategories` even though its own
+  validator accepted it — fixed backend-side (branch
+  `fix/provider-profile-update-service-categories`, PR pending). If that fix isn't merged yet,
+  `serviceCategories` won't save via PUT either.
+- Since profile existence is no longer a useful signal, **treat a profile as "not set up yet" by
+  content, not existence**: `isProfileComplete()` in `provider.ts` checks
+  `serviceCategories.length > 0`. `pricing` still goes through the separate `PUT /provider/pricing`
+  endpoint, exactly as documented.
+
 ### Frontend structure
 
 App Router under `src/app/`, path alias `@/*` → `src/*`. The auth feature set the convention other
@@ -101,6 +121,12 @@ features should follow:
   SSR/hydration-safe). This is a placeholder until the app has a real session strategy — likely
   httpOnly cookies via a backend-for-frontend — don't build further on `localStorage` tokens without
   revisiting this.
-- `src/components/ui/` — generic form primitives (`Field`, `Button`) shared across features.
+- `src/components/ui/` — generic form primitives (`Field`, `Select`, `Textarea`, `Button`, `Banner`)
+  shared across features.
+- `src/components/layout/AppTopBar` — the shell for authenticated pages (wordmark + sign out).
+  `AuthShell` (split panel) is auth-only; authenticated feature pages use `AppTopBar` instead.
 - `src/components/<feature>/` — feature-specific components (e.g. `auth/AuthShell`, `LoginForm`,
-  `RegisterForm`), each with a colocated `*.module.css`.
+  `RegisterForm`, `profile/ProfileSetupForm`), each with a colocated `*.module.css`.
+- Pages that require a session (`dashboard`, `profile/setup`) follow the same gate: read
+  `useSession()`, redirect to `/login` if absent, and return `null` while an async check (session or
+  profile-completeness) is in flight — see `src/app/dashboard/page.tsx`.
