@@ -213,7 +213,7 @@ export default function TermsPage() {
             </Clause>
 
             <Clause id="clause-15" num="15" title="Agreement Confirmation">
-              By accepting these Terms, users acknowledge the platform's role as
+              By accepting these Terms, users acknowledge the platform&apos;s role as
               a facilitator and agree to use the services at their own risk.
             </Clause>
 
@@ -261,7 +261,7 @@ export default function TermsPage() {
 
             <Clause id="clause-23" num="23" title="Data and Privacy">
               User data may be collected and processed in accordance with the
-              platform's Privacy Policy and applicable data protection laws.
+              platform&apos;s Privacy Policy and applicable data protection laws.
             </Clause>
 
             <Clause id="clause-24" num="24" title="Modification of Terms">
@@ -321,7 +321,7 @@ export default function TermsPage() {
 
             <Clause id="clause-32" num="32" title="Safety Incident Reporting">
               Users agree to promptly report any safety-related incidents,
-              misconduct, or suspicious behavior through the platform's reporting
+              misconduct, or suspicious behavior through the platform&apos;s reporting
               system. The platform may review and take appropriate action
               including suspension of accounts but shall not be responsible for
               incidents occurring outside its operational control.
@@ -367,7 +367,7 @@ export default function TermsPage() {
               Users agree not to circumvent, avoid, bypass, or undermine the
               platform by directly engaging, hiring, or contracting with any
               security service provider discovered through the platform outside
-              of the platform's booking and payment system. Any attempt to
+              of the platform&apos;s booking and payment system. Any attempt to
               conduct transactions or continue service engagements outside the
               platform that originated through the platform may result in account
               suspension, termination, or additional service fees as determined
@@ -424,7 +424,7 @@ export default function TermsPage() {
               The Grievance Officer shall acknowledge receipt of any complaint
               within 24 hours and resolve or dispose of the complaint within 15
               calendar days of receipt. Users may file a formal grievance by
-              selecting the "Formal Grievance" category when creating a support
+              selecting the &quot;Formal Grievance&quot; category when creating a support
               ticket in the app, or by emailing grievance@20fourr.com directly.
               If the grievance is not resolved within the specified period, users
               may escalate to the adjudicating officer appointed under the IT Act
@@ -545,7 +545,7 @@ export default function TermsPage() {
                   Other users of the Platform as necessary to facilitate
                   Services
                 </li>
-                <li>The Platform's corporate affiliates and subsidiaries</li>
+                <li>The Platform&apos;s corporate affiliates and subsidiaries</li>
               </ul>
             </Clause>
 

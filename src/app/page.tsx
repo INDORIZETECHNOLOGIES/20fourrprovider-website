@@ -134,7 +134,7 @@ export default function LandingPage() {
               <h3 className={styles.stepTitle}>Set your availability</h3>
               <p className={styles.stepBody}>
                 Choose your service categories, set your own daily rate, and
-                mark when you're available. Pause anytime with a single tap.
+                mark when you&apos;re available. Pause anytime with a single tap.
               </p>
             </div>
             <div className={styles.step}>
