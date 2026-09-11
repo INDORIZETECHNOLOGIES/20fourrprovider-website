@@ -84,3 +84,18 @@ export function getBookingDetail(
 ): Promise<{ booking: BookingDetail; isContactVisible: boolean; clientThreatProfile: ThreatAssessment | null }> {
   return apiRequest(`/bookings/${bookingId}`, { accessToken });
 }
+
+// Reporting an absence — from EITHER party — always penalizes and immediately
+// suspends the *provider* (and PSARA-blocks them on the critical window). See
+// CLAUDE.md before wiring this up anywhere without a very explicit warning.
+export function raiseAbsenceAlert(
+  bookingId: string,
+  reason: string,
+  accessToken: string,
+): Promise<{ ticket: { ticketId: string } }> {
+  return apiRequest(`/bookings/${bookingId}/absence-alert`, {
+    method: "POST",
+    body: { reason },
+    accessToken,
+  });
+}

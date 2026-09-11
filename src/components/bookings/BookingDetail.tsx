@@ -12,6 +12,9 @@ import { BOOKING_STATUS_LABELS, BOOKING_STATUS_TONE, CHAT_ALLOWED_STATUSES } fro
 import { PendingBookingActions } from "./PendingBookingActions";
 import { DutyControls } from "./DutyControls";
 import { CompleteBookingControl } from "./CompleteBookingControl";
+import { SosControl } from "./SosControl";
+import { IncidentsSection } from "./IncidentsSection";
+import { AbsenceAlertControl } from "./AbsenceAlertControl";
 import styles from "./BookingDetail.module.css";
 
 type BookingDetailProps = {
@@ -176,6 +179,18 @@ export function BookingDetail({ bookingId, isVerified, accessToken }: BookingDet
 
         {booking.status === "duty_ended" ? (
           <CompleteBookingControl bookingId={booking._id} accessToken={accessToken} onUpdated={handleUpdated} />
+        ) : null}
+
+        {booking.status === "duty_started" ? (
+          <SosControl bookingId={booking._id} accessToken={accessToken} />
+        ) : null}
+
+        {booking.status === "duty_started" || booking.status === "duty_ended" || booking.status === "completed" ? (
+          <IncidentsSection bookingId={booking._id} accessToken={accessToken} />
+        ) : null}
+
+        {booking.status === "payment_done" || booking.status === "duty_started" ? (
+          <AbsenceAlertControl bookingId={booking._id} accessToken={accessToken} />
         ) : null}
       </div>
     </main>
