@@ -69,6 +69,9 @@ export default function DashboardPage() {
               <Link href="/documents" className={styles.manageLink}>
                 Manage documents
               </Link>
+              <Link href="/availability" className={styles.manageLink}>
+                Manage availability
+              </Link>
             </>
           ) : (
             <p className={styles.subtext}>The rest of the provider dashboard is being built next.</p>

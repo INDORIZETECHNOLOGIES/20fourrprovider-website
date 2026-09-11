@@ -17,8 +17,8 @@ charts/analytics views) rather than defaulting to generic component-library outp
 templated "AI slop" layouts — get a deliberate aesthetic direction, then execute it consistently.
 
 The project was scaffolded with `create-next-app` (Next.js App Router, TypeScript, ESLint). Auth
-(login/register), provider profile setup, and KYC document upload are built; everything else
-(availability, bookings, duty, earnings) is still unbuilt.
+(login/register), provider profile setup, KYC document upload, and availability management are
+built; everything else (bookings, duty, earnings) is still unbuilt.
 
 ### Design direction established by the auth feature
 
@@ -127,8 +127,13 @@ features should follow:
   SSR/hydration-safe). This is a placeholder until the app has a real session strategy — likely
   httpOnly cookies via a backend-for-frontend — don't build further on `localStorage` tokens without
   revisiting this.
-- `src/components/ui/` — generic form primitives (`Field`, `Select`, `Textarea`, `Button`, `Banner`)
-  shared across features.
+- `src/components/ui/` — generic form primitives (`Field`, `Select`, `Textarea`, `Button`, `Banner`,
+  `Switch`) shared across features.
+- **`requireProviderVerified`-gated actions** (availability, days-off, accepting bookings, ...):
+  check `profile.isVerified` up front and show the exact backend message
+  ("Your account is pending verification…") proactively via `Banner`, rather than only reacting
+  to an `SC_602` after a failed request — see `AvailabilityPanel`. For optimistic UI (e.g. a
+  toggle), update state immediately on interaction, then roll it back if the request fails.
 - `src/components/layout/AppTopBar` — the shell for authenticated pages (wordmark + sign out).
   `AuthShell` (split panel) is auth-only; authenticated feature pages use `AppTopBar` instead.
 - `src/components/<feature>/` — feature-specific components (e.g. `auth/AuthShell`, `LoginForm`,
