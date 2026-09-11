@@ -19,7 +19,7 @@ templated "AI slop" layouts — get a deliberate aesthetic direction, then execu
 The project was scaffolded with `create-next-app` (Next.js App Router, TypeScript, ESLint). Auth
 (login/register), provider profile setup, KYC document upload, availability management, a bookings
 list (with accept/reject), the duty OTP flow (start/end), earnings/settlements, per-booking chat,
-and support tickets are built; notifications and account/DPDP surfaces are still unbuilt.
+support tickets, and notifications are built; account/DPDP surfaces are still unbuilt.
 
 ### Design direction established by the auth feature
 
@@ -133,6 +133,19 @@ not (yet) reflect this:
   `attachments` field, but the controller seeds `messages[0]` from `description` only and never
   reads `req.body.attachments`. Attachments only work on a *reply* (`addMessage` does apply them).
   `NewTicketForm` has no attachment field for this reason; `TicketDetail`'s composer does.
+- **`GET /notifications` only filters by `isRead`** — same shape of bug as tickets: the reference
+  doc documents a `type` query param, but `getMyNotifications` never reads it.
+  `PUT /notifications/read-all` has the same gap for its documented `notificationType` body field —
+  it always marks every unread notification read, there is no way to scope it. Neither is built as
+  a control in `NotificationsPanel`.
+- **The `Notification.type` enum doesn't match the reference doc at all** — the doc lists
+  `payout_released`, `duty_started`, `otp_generated`, `ticket_update`, `admin_message`, etc.; the
+  real schema enum (`src/models/Notification.ts`) has none of those — it's `payment_success`,
+  `booking_completed`, `support_ticket`, `psara_expiry_warning`, and others instead (confirmed by
+  hitting a Mongoose validation error while seeding test data with a documented-but-nonexistent
+  type). Consequently `NotificationRow` never tries to map `type` to a label or icon — it just
+  renders the backend's own `title`/`body` text, which sidesteps the mismatch entirely. Don't
+  introduce a `type` → label lookup without re-deriving the real enum from the model first.
 
 ### Frontend structure
 
