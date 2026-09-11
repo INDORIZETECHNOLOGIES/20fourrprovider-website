@@ -18,8 +18,8 @@ templated "AI slop" layouts — get a deliberate aesthetic direction, then execu
 
 The project was scaffolded with `create-next-app` (Next.js App Router, TypeScript, ESLint). Auth
 (login/register), provider profile setup, KYC document upload, availability management, a bookings
-list (with accept/reject), the duty OTP flow (start/end), earnings/settlements, and per-booking
-chat are built; account/support surfaces (tickets, notifications, DPDP) are still unbuilt.
+list (with accept/reject), the duty OTP flow (start/end), earnings/settlements, per-booking chat,
+and support tickets are built; notifications and account/DPDP surfaces are still unbuilt.
 
 ### Design direction established by the auth feature
 
@@ -123,6 +123,16 @@ not (yet) reflect this:
   uploaded. It only tells you presence, not per-document `verificationStatus` (that detail lives in
   the `Document` collection, which providers can't list); don't build UI that assumes richer
   per-document status is available without adding a backend endpoint for it first.
+- **`GET /tickets` only filters by `status`** — its validator (`getMyTicketsValidator`) accepts
+  `type`, `priority`, and `sortBy` too, and the reference doc documents all four, but
+  `getMyTickets`'s handler never reads them off `req.query` beyond `status`. Not fixed backend-side
+  (unlike the profile bug, nothing is blocked — it's a missing filter, not a broken flow), so
+  `TicketsPanel` only exposes a status filter; don't add type/priority/sort controls that would
+  silently do nothing.
+- **A ticket's initial message can't carry an attachment** — `createTicket`'s validator accepts an
+  `attachments` field, but the controller seeds `messages[0]` from `description` only and never
+  reads `req.body.attachments`. Attachments only work on a *reply* (`addMessage` does apply them).
+  `NewTicketForm` has no attachment field for this reason; `TicketDetail`'s composer does.
 
 ### Frontend structure
 
@@ -186,4 +196,10 @@ features should follow:
   helper). A page needing client-side interactivity (hooks, state) can't `await` params itself
   since client components can't be async — split it: an `async` server-component `page.tsx` that
   awaits `props.params` and passes the resolved value as a prop to a `"use client"` child (see
-  `src/app/bookings/[bookingId]/chat/page.tsx` + `ChatPage`).
+  `src/app/bookings/[bookingId]/chat/page.tsx` + `ChatPage`, or `tickets/[ticketId]` + `TicketDetailPage`).
+- **Ticket attachments are a two-step upload**: `POST /tickets/:id/upload` returns a raw (not
+  presigned) S3 key — `TicketDetail` holds it as `pendingAttachment` until the provider sends a
+  message, then includes it in that `POST /tickets/:id/message` call. `getTicket` presigns
+  attachment keys on read. This mirrors the chat attachment flow but is two separate requests
+  instead of one, because unlike chat, a ticket message's attachments are a field on the message
+  body, not a dedicated "send with attachment" endpoint.
