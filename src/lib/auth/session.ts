@@ -1,4 +1,4 @@
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import type { AuthTokens } from "@/lib/api/auth";
 
@@ -49,12 +49,14 @@ function getServerSnapshot() {
 // so hydration never mismatches against localStorage (unavailable on the server).
 export function useSession(): StoredSession | null {
   const raw = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw) as StoredSession;
-  } catch {
-    return null;
-  }
+  return useMemo(() => {
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw) as StoredSession;
+    } catch {
+      return null;
+    }
+  }, [raw]);
 }
 
 // Redirects to /login when there's truly no session. Deliberately does NOT
