@@ -107,9 +107,15 @@
   color: var(--color-danger);
 }
 
-.viewLink {
-  display: inline-block;
+.linkRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
   margin-top: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.viewLink {
   font-size: 0.875rem;
   font-weight: 600;
   text-decoration: underline;
