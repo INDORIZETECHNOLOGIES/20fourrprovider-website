@@ -77,6 +77,9 @@ export default function DashboardPage() {
               <Link href="/earnings" className={styles.manageLink}>
                 View earnings
               </Link>
+              <Link href="/tickets" className={styles.manageLink}>
+                Support
+              </Link>
             </>
           ) : (
             <p className={styles.subtext}>The rest of the provider dashboard is being built next.</p>
