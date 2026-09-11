@@ -19,9 +19,9 @@ import {
   type Booking,
 } from "@/lib/api/bookings";
 import { listSettlements } from "@/lib/api/settlements";
-import { getUnreadNotificationCount } from "@/lib/api/notifications";
 import { setAvailability } from "@/lib/api/availability";
 import { AppSidebar } from "@/components/layout/AppSidebar";
+import { Icon } from "@/components/ui/Icon";
 import styles from "./page.module.css";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -64,7 +64,6 @@ export default function DashboardPage() {
   const [activeCount, setActiveCount] = useState<number | null>(null);
   const [settledPaise, setSettledPaise] = useState<number | null>(null);
   const [recentBookings, setRecentBookings] = useState<Booking[] | null>(null);
-  const [unreadCount, setUnreadCount] = useState(0);
   const [availToggling, setAvailToggling] = useState(false);
 
   useRedirectIfLoggedOut();
@@ -107,11 +106,6 @@ export default function DashboardPage() {
       if (!cancelled) setRecentBookings(bookings);
     }).catch(() => {});
 
-    // Unread notifications
-    getUnreadNotificationCount(token).then(({ unreadCount: c }) => {
-      if (!cancelled) setUnreadCount(c);
-    }).catch(() => {});
-
     return () => { cancelled = true; };
   }, [session, router]);
 
@@ -134,7 +128,6 @@ export default function DashboardPage() {
 
   if (!session || profile === "loading") return null;
 
-  const isVerified = profile ? profile.isVerified : false;
   const isAvailable = profile ? profile.availability.isAvailable : false;
 
   const serviceLabel =
@@ -155,7 +148,7 @@ export default function DashboardPage() {
   return (
     <div className={styles.shell}>
       {/* Sidebar */}
-      <AppSidebar isVerified={isVerified} unreadCount={unreadCount} />
+      <AppSidebar />
 
       {/* Top header (mobile: wordmark; desktop: page title) */}
       <header className={styles.header}>
@@ -326,32 +319,42 @@ export default function DashboardPage() {
 
         <div className={styles.actionsGrid}>
           <Link href="/documents" className={styles.actionCard}>
-            <span className={styles.actionIcon}>📄</span>
+            <Icon name="file" size={22} className={styles.actionIcon} />
             <span className={styles.actionLabel}>Documents</span>
             <p className={styles.actionSub}>Upload KYC &amp; certificates</p>
           </Link>
           <Link href="/availability" className={styles.actionCard}>
-            <span className={styles.actionIcon}>🗓</span>
+            <Icon name="calendar" size={22} className={styles.actionIcon} />
             <span className={styles.actionLabel}>Availability</span>
             <p className={styles.actionSub}>Set working hours &amp; days off</p>
           </Link>
           <Link href="/bookings" className={styles.actionCard}>
-            <span className={styles.actionIcon}>📋</span>
+            <Icon name="clipboard" size={22} className={styles.actionIcon} />
             <span className={styles.actionLabel}>All bookings</span>
             <p className={styles.actionSub}>Review, accept &amp; manage</p>
           </Link>
           <Link href="/earnings" className={styles.actionCard}>
-            <span className={styles.actionIcon}>₹</span>
+            <Icon name="receipt" size={22} className={styles.actionIcon} />
             <span className={styles.actionLabel}>Earnings</span>
             <p className={styles.actionSub}>Settlements &amp; payouts</p>
           </Link>
+          <Link href="/ratings" className={styles.actionCard}>
+            <Icon name="star" size={22} className={styles.actionIcon} />
+            <span className={styles.actionLabel}>Ratings</span>
+            <p className={styles.actionSub}>What clients say about you</p>
+          </Link>
+          <Link href="/tax-profile" className={styles.actionCard}>
+            <Icon name="percent" size={22} className={styles.actionIcon} />
+            <span className={styles.actionLabel}>Tax profile</span>
+            <p className={styles.actionSub}>PAN, GST &amp; PSARA coverage</p>
+          </Link>
           <Link href="/tickets" className={styles.actionCard}>
-            <span className={styles.actionIcon}>💬</span>
+            <Icon name="chat" size={22} className={styles.actionIcon} />
             <span className={styles.actionLabel}>Support</span>
             <p className={styles.actionSub}>Raise or track tickets</p>
           </Link>
           <Link href="/account" className={styles.actionCard}>
-            <span className={styles.actionIcon}>⚙</span>
+            <Icon name="gear" size={22} className={styles.actionIcon} />
             <span className={styles.actionLabel}>Account</span>
             <p className={styles.actionSub}>Privacy, data &amp; settings</p>
           </Link>

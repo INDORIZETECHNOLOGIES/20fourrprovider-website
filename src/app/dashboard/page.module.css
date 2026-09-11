@@ -440,8 +440,7 @@
 }
 
 .actionIcon {
-  font-size: 1.375rem;
-  line-height: 1;
+  color: var(--color-brass-strong);
 }
 
 .actionLabel {

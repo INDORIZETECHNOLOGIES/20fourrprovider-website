@@ -1,26 +1,50 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { clearSession, useSession } from "@/lib/auth/session";
+import { getProviderProfile } from "@/lib/api/provider";
+import { getUnreadNotificationCount } from "@/lib/api/notifications";
+import { Icon, type IconName } from "@/components/ui/Icon";
 import styles from "./AppSidebar.module.css";
 
 type NavItem = {
   href: string;
   label: string;
-  icon: string;
+  icon: IconName;
   badge?: number;
 };
 
-type AppSidebarProps = {
-  isVerified?: boolean;
-  unreadCount?: number;
-};
-
-export function AppSidebar({ isVerified, unreadCount = 0 }: AppSidebarProps) {
+export function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const session = useSession();
+
+  const [isVerified, setIsVerified] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (!session) return;
+    const token = session.tokens.accessToken;
+    let cancelled = false;
+
+    getProviderProfile(token)
+      .then(({ profile }) => {
+        if (!cancelled) setIsVerified(profile.isVerified);
+      })
+      .catch(() => {});
+
+    getUnreadNotificationCount(token)
+      .then(({ unreadCount: count }) => {
+        if (!cancelled) setUnreadCount(count);
+      })
+      .catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
+  }, [session]);
 
   const initials = session?.name
     ? session.name
@@ -37,35 +61,41 @@ export function AppSidebar({ isVerified, unreadCount = 0 }: AppSidebarProps) {
   }
 
   const mainNav: NavItem[] = [
-    { href: "/dashboard", label: "Dashboard", icon: "⊞" },
-    { href: "/bookings", label: "Bookings", icon: "📋" },
-    { href: "/earnings", label: "Earnings", icon: "₹" },
-    { href: "/availability", label: "Availability", icon: "🗓" },
-    { href: "/documents", label: "Documents", icon: "📄" },
+    { href: "/dashboard", label: "Dashboard", icon: "grid" },
+    { href: "/bookings", label: "Bookings", icon: "clipboard" },
+    { href: "/earnings", label: "Earnings", icon: "receipt" },
+    { href: "/availability", label: "Availability", icon: "calendar" },
+    { href: "/documents", label: "Documents", icon: "file" },
     {
       href: "/notifications",
       label: "Notifications",
-      icon: "🔔",
+      icon: "bell",
       badge: unreadCount,
     },
+  ];
+
+  const complianceNav: NavItem[] = [
+    { href: "/ratings", label: "Ratings", icon: "star" },
+    { href: "/tax-profile", label: "Tax profile", icon: "percent" },
+    { href: "/tax-documents", label: "Tax documents", icon: "receipt" },
   ];
 
   const accountNav: NavItem[] = [
-    { href: "/tickets", label: "Support", icon: "💬" },
-    { href: "/account", label: "Account", icon: "⚙" },
+    { href: "/tickets", label: "Support", icon: "chat" },
+    { href: "/account", label: "Account", icon: "gear" },
   ];
 
   const mobileNav: NavItem[] = [
-    { href: "/dashboard", label: "Home", icon: "⊞" },
-    { href: "/bookings", label: "Bookings", icon: "📋" },
-    { href: "/earnings", label: "Earnings", icon: "₹" },
+    { href: "/dashboard", label: "Home", icon: "grid" },
+    { href: "/bookings", label: "Bookings", icon: "clipboard" },
+    { href: "/earnings", label: "Earnings", icon: "receipt" },
     {
       href: "/notifications",
       label: "Alerts",
-      icon: "🔔",
+      icon: "bell",
       badge: unreadCount,
     },
-    { href: "/account", label: "Account", icon: "⚙" },
+    { href: "/account", label: "Account", icon: "gear" },
   ];
 
   function isActive(href: string) {
@@ -107,11 +137,23 @@ export function AppSidebar({ isVerified, unreadCount = 0 }: AppSidebarProps) {
               href={item.href}
               className={`${styles.navLink} ${isActive(item.href) ? styles.navLinkActive : ""}`}
             >
-              <i className={styles.navIcon}>{item.icon}</i>
+              <Icon name={item.icon} size={18} className={styles.navIcon} />
               {item.label}
               {item.badge ? (
                 <span className={styles.navBadge}>{item.badge}</span>
               ) : null}
+            </Link>
+          ))}
+
+          <span className={styles.navSection}>Compliance</span>
+          {complianceNav.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`${styles.navLink} ${isActive(item.href) ? styles.navLinkActive : ""}`}
+            >
+              <Icon name={item.icon} size={18} className={styles.navIcon} />
+              {item.label}
             </Link>
           ))}
 
@@ -122,7 +164,7 @@ export function AppSidebar({ isVerified, unreadCount = 0 }: AppSidebarProps) {
               href={item.href}
               className={`${styles.navLink} ${isActive(item.href) ? styles.navLinkActive : ""}`}
             >
-              <i className={styles.navIcon}>{item.icon}</i>
+              <Icon name={item.icon} size={18} className={styles.navIcon} />
               {item.label}
             </Link>
           ))}
@@ -134,12 +176,8 @@ export function AppSidebar({ isVerified, unreadCount = 0 }: AppSidebarProps) {
             <div className={styles.avatar}>{initials}</div>
             <span className={styles.userName}>{session?.name ?? "Provider"}</span>
           </div>
-          <button
-            type="button"
-            className={styles.signOutBtn}
-            onClick={handleSignOut}
-          >
-            <i className={styles.navIcon}>↩</i>
+          <button type="button" className={styles.signOutBtn} onClick={handleSignOut}>
+            <Icon name="logout" size={18} className={styles.navIcon} />
             Sign out
           </button>
         </div>
@@ -153,10 +191,8 @@ export function AppSidebar({ isVerified, unreadCount = 0 }: AppSidebarProps) {
             href={item.href}
             className={`${styles.mobileNavLink} ${isActive(item.href) ? styles.mobileNavLinkActive : ""}`}
           >
-            {item.badge ? (
-              <span className={styles.mobileNavBadge}>{item.badge}</span>
-            ) : null}
-            <span className={styles.mobileNavIcon}>{item.icon}</span>
+            {item.badge ? <span className={styles.mobileNavBadge}>{item.badge}</span> : null}
+            <Icon name={item.icon} size={20} className={styles.mobileNavIcon} />
             {item.label}
           </Link>
         ))}

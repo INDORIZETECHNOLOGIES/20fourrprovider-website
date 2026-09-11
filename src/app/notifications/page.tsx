@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession, useRedirectIfLoggedOut } from "@/lib/auth/session";
-import { AppTopBar } from "@/components/layout/AppTopBar";
+import { AppShell } from "@/components/layout/AppShell";
 import { NotificationsPanel } from "@/components/notifications/NotificationsPanel";
 
 export default function NotificationsPage() {
@@ -12,9 +12,8 @@ export default function NotificationsPage() {
   if (!session) return null;
 
   return (
-    <>
-      <AppTopBar />
+    <AppShell title="Notifications">
       <NotificationsPanel accessToken={session.tokens.accessToken} />
-    </>
+    </AppShell>
   );
 }

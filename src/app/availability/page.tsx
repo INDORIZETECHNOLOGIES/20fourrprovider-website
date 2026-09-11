@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSession, useRedirectIfLoggedOut } from "@/lib/auth/session";
 import { getProviderProfile, type ProviderProfile } from "@/lib/api/provider";
-import { AppTopBar } from "@/components/layout/AppTopBar";
+import { AppShell } from "@/components/layout/AppShell";
 import { AvailabilityPanel } from "@/components/availability/AvailabilityPanel";
 
 export default function AvailabilityPage() {
@@ -32,8 +32,7 @@ export default function AvailabilityPage() {
   if (!session || !profile) return null;
 
   return (
-    <>
-      <AppTopBar />
+    <AppShell title="Availability">
       <AvailabilityPanel
         isVerified={profile.isVerified}
         initialIsAvailable={profile.availability.isAvailable}
@@ -41,6 +40,6 @@ export default function AvailabilityPage() {
         initialDaysOff={profile.availability.daysOff}
         accessToken={session.tokens.accessToken}
       />
-    </>
+    </AppShell>
   );
 }

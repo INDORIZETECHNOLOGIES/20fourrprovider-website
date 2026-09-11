@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession, useRedirectIfLoggedOut } from "@/lib/auth/session";
-import { AppTopBar } from "@/components/layout/AppTopBar";
+import { AppShell } from "@/components/layout/AppShell";
 import { TaxDocumentsPanel } from "@/components/taxDocuments/TaxDocumentsPanel";
 
 export default function TaxDocumentsPage() {
@@ -12,9 +12,8 @@ export default function TaxDocumentsPage() {
   if (!session) return null;
 
   return (
-    <>
-      <AppTopBar />
+    <AppShell title="Tax documents">
       <TaxDocumentsPanel accessToken={session.tokens.accessToken} />
-    </>
+    </AppShell>
   );
 }

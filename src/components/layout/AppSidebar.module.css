@@ -152,10 +152,6 @@
 }
 
 .navIcon {
-  width: 18px;
-  text-align: center;
-  font-style: normal;
-  font-size: 1rem;
   flex-shrink: 0;
   opacity: 0.8;
 }
@@ -285,8 +281,7 @@
 }
 
 .mobileNavIcon {
-  font-size: 1.25rem;
-  line-height: 1;
+  flex-shrink: 0;
 }
 
 .mobileNavBadge {

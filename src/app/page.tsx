@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Icon } from "@/components/ui/Icon";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
@@ -39,11 +40,7 @@ export default function LandingPage() {
             PSOs
           </p>
 
-          <h1 className={styles.heroHeadline}>
-            Get booked.{" "}
-            <span className={styles.heroHeadlineAccent}>Work.</span>{" "}
-            Get paid.
-          </h1>
+          <h1 className={styles.heroHeadline}>Get booked. Work. Get paid.</h1>
 
           <p className={styles.heroSub}>
             20fourr connects verified security professionals with clients
@@ -53,7 +50,8 @@ export default function LandingPage() {
 
           <div className={styles.heroCtas}>
             <Link href="/register" className={styles.heroPrimary}>
-              Create your account →
+              Create your account
+              <Icon name="arrow-right" size={16} />
             </Link>
             <Link href="/login" className={styles.heroSecondary}>
               Already registered? Sign in
@@ -160,7 +158,7 @@ export default function LandingPage() {
 
           <div className={styles.featureGrid}>
             <div className={styles.featureCard}>
-              <span className={styles.featureIcon}>🛡</span>
+              <span className={styles.featureIcon}><Icon name="shield-check" size={22} /></span>
               <h3 className={styles.featureTitle}>One-time PSARA verification</h3>
               <p className={styles.featureBody}>
                 Submit your licence once. Work with any client on the platform
@@ -168,7 +166,7 @@ export default function LandingPage() {
               </p>
             </div>
             <div className={styles.featureCard}>
-              <span className={styles.featureIcon}>⚡</span>
+              <span className={styles.featureIcon}><Icon name="bolt" size={22} /></span>
               <h3 className={styles.featureTitle}>Bank-direct payouts</h3>
               <p className={styles.featureBody}>
                 Earnings settle to your bank automatically after each completed
@@ -176,7 +174,7 @@ export default function LandingPage() {
               </p>
             </div>
             <div className={styles.featureCard}>
-              <span className={styles.featureIcon}>📋</span>
+              <span className={styles.featureIcon}><Icon name="clipboard-check" size={22} /></span>
               <h3 className={styles.featureTitle}>Structured duty lifecycle</h3>
               <p className={styles.featureBody}>
                 OTP-based shift start and end. Your hours are logged and
@@ -184,7 +182,7 @@ export default function LandingPage() {
               </p>
             </div>
             <div className={styles.featureCard}>
-              <span className={styles.featureIcon}>🗓</span>
+              <span className={styles.featureIcon}><Icon name="calendar" size={22} /></span>
               <h3 className={styles.featureTitle}>Availability on your terms</h3>
               <p className={styles.featureBody}>
                 Set your own working hours and days off. You decide when
@@ -192,7 +190,7 @@ export default function LandingPage() {
               </p>
             </div>
             <div className={styles.featureCard}>
-              <span className={styles.featureIcon}>💬</span>
+              <span className={styles.featureIcon}><Icon name="chat" size={22} /></span>
               <h3 className={styles.featureTitle}>Built-in client chat</h3>
               <p className={styles.featureBody}>
                 Communicate with the client through the app once a booking is
@@ -200,7 +198,7 @@ export default function LandingPage() {
               </p>
             </div>
             <div className={styles.featureCard}>
-              <span className={styles.featureIcon}>🛟</span>
+              <span className={styles.featureIcon}><Icon name="life-ring" size={22} /></span>
               <h3 className={styles.featureTitle}>SOS &amp; safety check-in</h3>
               <p className={styles.featureBody}>
                 Every active duty has a built-in SOS button and live location
@@ -223,7 +221,7 @@ export default function LandingPage() {
 
           <div className={styles.categoryGrid}>
             <div className={styles.categoryCard}>
-              <span className={styles.categoryEmoji}>🏢</span>
+              <span className={styles.categoryEmoji}><Icon name="building" size={26} /></span>
               <h3 className={styles.categoryName}>Security Guard</h3>
               <p className={styles.categoryDesc}>
                 Gate guard, property protection, and perimeter duty for
@@ -232,7 +230,7 @@ export default function LandingPage() {
               <span className={styles.categoryTag}>Guard</span>
             </div>
             <div className={styles.categoryCard}>
-              <span className={styles.categoryEmoji}>🎪</span>
+              <span className={styles.categoryEmoji}><Icon name="stanchion" size={26} /></span>
               <h3 className={styles.categoryName}>Bouncer</h3>
               <p className={styles.categoryDesc}>
                 Event security, crowd control, and venue access management
@@ -241,7 +239,7 @@ export default function LandingPage() {
               <span className={styles.categoryTag}>Bouncer</span>
             </div>
             <div className={styles.categoryCard}>
-              <span className={styles.categoryEmoji}>🔫</span>
+              <span className={styles.categoryEmoji}><Icon name="target" size={26} /></span>
               <h3 className={styles.categoryName}>Armed Guard</h3>
               <p className={styles.categoryDesc}>
                 Licensed armed escort and asset protection. Weapon licence
@@ -250,7 +248,7 @@ export default function LandingPage() {
               <span className={styles.categoryTag}>Gunman</span>
             </div>
             <div className={styles.categoryCard}>
-              <span className={styles.categoryEmoji}>🕵️</span>
+              <span className={styles.categoryEmoji}><Icon name="person-shield" size={26} /></span>
               <h3 className={styles.categoryName}>PSO</h3>
               <p className={styles.categoryDesc}>
                 Close-protection for individuals, executives, and VIPs.
@@ -266,7 +264,7 @@ export default function LandingPage() {
       <div className={styles.trustStrip}>
         <div className={styles.trustGrid}>
           <div className={styles.trustItem}>
-            <div className={styles.trustCheck}>✓</div>
+            <div className={styles.trustCheck}><Icon name="check" size={13} /></div>
             <div>
               <p className={styles.trustItemTitle}>PSARA-compliant</p>
               <p className={styles.trustItemBody}>
@@ -276,7 +274,7 @@ export default function LandingPage() {
             </div>
           </div>
           <div className={styles.trustItem}>
-            <div className={styles.trustCheck}>✓</div>
+            <div className={styles.trustCheck}><Icon name="check" size={13} /></div>
             <div>
               <p className={styles.trustItemTitle}>DPDP Act 2023</p>
               <p className={styles.trustItemBody}>
@@ -286,7 +284,7 @@ export default function LandingPage() {
             </div>
           </div>
           <div className={styles.trustItem}>
-            <div className={styles.trustCheck}>✓</div>
+            <div className={styles.trustCheck}><Icon name="check" size={13} /></div>
             <div>
               <p className={styles.trustItemTitle}>Razorpay-powered</p>
               <p className={styles.trustItemBody}>
@@ -296,7 +294,7 @@ export default function LandingPage() {
             </div>
           </div>
           <div className={styles.trustItem}>
-            <div className={styles.trustCheck}>✓</div>
+            <div className={styles.trustCheck}><Icon name="check" size={13} /></div>
             <div>
               <p className={styles.trustItemTitle}>Governed by Indian law</p>
               <p className={styles.trustItemBody}>
@@ -354,7 +352,7 @@ export default function LandingPage() {
           <p className={styles.tableNote}>
             Rates are set entirely by you on your profile. A platform fee is
             deducted from client payments before settlement.{" "}
-            <Link href="/register">Set your rate →</Link>
+            <Link href="/register">Set your rate</Link>
           </p>
         </div>
       </section>
@@ -368,13 +366,10 @@ export default function LandingPage() {
             completes within 24 hours. Your first booking could be this week.
           </p>
           <Link href="/register" className={styles.ctaButton}>
-            Create your account →
+            Create your account
           </Link>
           <span className={styles.ctaSmall}>
-            Already have an account?{" "}
-            <Link href="/login" style={{ color: "inherit", textDecoration: "underline" }}>
-              Sign in
-            </Link>
+            Already have an account? <Link href="/login" className={styles.ctaSmallLink}>Sign in</Link>
           </span>
         </div>
       </section>

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSession, useRedirectIfLoggedOut } from "@/lib/auth/session";
 import { getProviderProfile, type ProviderProfile } from "@/lib/api/provider";
-import { AppTopBar } from "@/components/layout/AppTopBar";
+import { AppShell } from "@/components/layout/AppShell";
 import { BookingsPanel } from "@/components/bookings/BookingsPanel";
 
 export default function BookingsPage() {
@@ -32,9 +32,8 @@ export default function BookingsPage() {
   if (!session || !profile) return null;
 
   return (
-    <>
-      <AppTopBar />
+    <AppShell title="Bookings">
       <BookingsPanel isVerified={profile.isVerified} accessToken={session.tokens.accessToken} />
-    </>
+    </AppShell>
   );
 }

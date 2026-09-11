@@ -176,10 +176,6 @@
   margin: 0 0 var(--space-5);
 }
 
-.heroHeadlineAccent {
-  color: var(--color-brass);
-}
-
 .heroSub {
   font-size: 1.0625rem;
   line-height: 1.65;
@@ -567,8 +563,7 @@
   background: linear-gradient(135deg, rgba(169, 120, 46, 0.1), rgba(169, 120, 46, 0.02));
   border-radius: 12px;
   border: 1px solid rgba(169, 120, 46, 0.1);
-  font-size: 1.5rem;
-  line-height: 1;
+  color: var(--color-brass);
   margin-bottom: var(--space-5);
 }
 
@@ -640,7 +635,7 @@
   background: rgba(255, 255, 255, 0.05);
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  font-size: 1.75rem;
+  color: var(--color-brass);
   margin-bottom: var(--space-4);
 }
 
@@ -905,6 +900,11 @@
   margin-top: var(--space-4);
   font-size: 0.875rem;
   color: color-mix(in srgb, var(--color-navy-ink) 48%, transparent);
+}
+
+.ctaSmallLink {
+  color: inherit;
+  text-decoration: underline;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════

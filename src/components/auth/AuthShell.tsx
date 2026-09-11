@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Icon } from "@/components/ui/Icon";
 import styles from "./AuthShell.module.css";
 
 type AuthShellProps = {
@@ -18,21 +19,27 @@ export function AuthShell({ tagline, children, wide }: AuthShellProps) {
 
           <div className={styles.trustStrip}>
             <div className={styles.trustItem}>
-              <span className={styles.trustIcon}>✓</span>
+              <span className={styles.trustIcon}>
+                <Icon name="check" size={14} />
+              </span>
               <span className={styles.trustText}>
                 <strong>One-time verification</strong>
                 Get verified once, work everywhere on the platform.
               </span>
             </div>
             <div className={styles.trustItem}>
-              <span className={styles.trustIcon}>⚡</span>
+              <span className={styles.trustIcon}>
+                <Icon name="bolt" size={14} />
+              </span>
               <span className={styles.trustText}>
                 <strong>Instant payouts</strong>
                 Earnings settle directly to your bank, no delays.
               </span>
             </div>
             <div className={styles.trustItem}>
-              <span className={styles.trustIcon}>🛡</span>
+              <span className={styles.trustIcon}>
+                <Icon name="shield-check" size={14} />
+              </span>
               <span className={styles.trustText}>
                 <strong>Safety built in</strong>
                 SOS, duty check-ins, and incident reporting on every shift.
