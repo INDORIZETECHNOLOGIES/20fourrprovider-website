@@ -1,0 +1,73 @@
+/* ─── Page shell ─────────────────────────────────────────────────────── */
+
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  /* Reserve space for mobile bottom nav */
+  padding-bottom: 72px;
+}
+
+@media (min-width: 1024px) {
+  .shell {
+    padding-left: 240px;
+    padding-bottom: 0;
+  }
+}
+
+/* ─── Top header bar (inside content area) ───────────────────────────── */
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--color-paper);
+  border-bottom: 1px solid var(--color-line);
+  padding: var(--space-4) var(--space-6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+/* Mobile: show wordmark in top bar since the sidebar is hidden */
+.headerWordmark {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+@media (min-width: 1024px) {
+  .headerWordmark {
+    display: none;
+  }
+}
+
+.headerPageTitle {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .headerPageTitle {
+    display: block;
+  }
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* ─── Main content ───────────────────────────────────────────────────── */
+
+.main {
+  flex: 1;
+}

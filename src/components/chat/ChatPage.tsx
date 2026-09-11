@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession, useRedirectIfLoggedOut } from "@/lib/auth/session";
-import { AppTopBar } from "@/components/layout/AppTopBar";
+import { AppShell } from "@/components/layout/AppShell";
 import { ChatPanel } from "./ChatPanel";
 
 export function ChatPage({ bookingId }: { bookingId: string }) {
@@ -12,9 +12,8 @@ export function ChatPage({ bookingId }: { bookingId: string }) {
   if (!session) return null;
 
   return (
-    <>
-      <AppTopBar />
+    <AppShell title="Chat">
       <ChatPanel bookingId={bookingId} accessToken={session.tokens.accessToken} />
-    </>
+    </AppShell>
   );
 }

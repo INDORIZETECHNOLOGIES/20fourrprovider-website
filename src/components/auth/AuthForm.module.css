@@ -1,15 +1,23 @@
+/* ─── Heading / subtext ──────────────────────────────────────────────── */
+
 .heading {
   font-family: var(--font-display);
-  font-size: 1.75rem;
-  font-weight: 600;
+  font-size: 1.625rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   margin: 0 0 var(--space-2);
+  line-height: 1.2;
+  color: var(--color-ink);
 }
 
 .subtext {
   color: var(--color-ink-muted);
+  font-size: 0.9375rem;
   margin: 0 0 var(--space-6);
-  line-height: 1.5;
+  line-height: 1.55;
 }
+
+/* ─── Form ───────────────────────────────────────────────────────────── */
 
 .form {
   display: flex;
@@ -27,43 +35,96 @@
   min-width: 0;
 }
 
+/* ─── Error banner — left-border accent style ────────────────────────── */
+
 .banner {
-  border: 1px solid var(--color-danger);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  border-left: 3px solid var(--color-danger);
   background: var(--color-danger-bg);
   color: var(--color-danger);
-  border-radius: var(--radius-sm);
-  padding: var(--space-3);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: var(--space-3) var(--space-4);
   font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0;
 }
 
 .successBanner {
-  border: 1px solid var(--color-brass);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  border-left: 3px solid var(--color-brass);
   background: color-mix(in srgb, var(--color-brass) 14%, var(--color-paper-raised));
   color: var(--color-ink);
-  border-radius: var(--radius-sm);
-  padding: var(--space-3);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: var(--space-3) var(--space-4);
   font-size: 0.875rem;
   line-height: 1.5;
+  margin: 0;
 }
+
+/* ─── Checkboxes ─────────────────────────────────────────────────────── */
 
 .checkboxRow {
   display: flex;
   align-items: flex-start;
-  gap: var(--space-2);
+  gap: var(--space-3);
+  cursor: pointer;
 }
 
-.checkboxRow input {
-  margin-top: 3px;
+.checkboxRow input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  border: 1.5px solid var(--color-line);
+  border-radius: 4px;
+  background: var(--color-paper-raised);
+  cursor: pointer;
+  position: relative;
+  transition: border-color var(--transition-base), background var(--transition-base);
+}
+
+.checkboxRow input[type="checkbox"]:checked {
+  background: var(--color-navy);
+  border-color: var(--color-navy);
+}
+
+.checkboxRow input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 5px;
+  height: 9px;
+  border: 2px solid var(--color-navy-ink);
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg);
+}
+
+.checkboxRow input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--color-brass);
+  outline-offset: 2px;
 }
 
 .checkboxLabel {
   font-size: 0.875rem;
-  line-height: 1.5;
+  line-height: 1.55;
+  color: var(--color-ink-muted);
 }
 
 .checkboxLabel a {
+  color: var(--color-ink);
   text-decoration: underline;
+  text-underline-offset: 2px;
 }
+
+/* ─── Inline validation error ────────────────────────────────────────── */
 
 .error {
   font-size: 0.8125rem;
@@ -71,23 +132,40 @@
   margin: var(--space-1) 0 0;
 }
 
+/* ─── Forgot password / inline link ─────────────────────────────────── */
+
 .inlineLink {
   display: block;
   text-align: right;
   margin-top: var(--space-2);
   font-size: 0.875rem;
   text-decoration: underline;
+  text-underline-offset: 2px;
   color: var(--color-ink-muted);
+  transition: color var(--transition-base);
 }
+
+.inlineLink:hover {
+  color: var(--color-ink);
+}
+
+/* ─── Footer ─────────────────────────────────────────────────────────── */
 
 .footer {
   margin-top: var(--space-6);
   font-size: 0.9375rem;
   color: var(--color-ink-muted);
+  text-align: center;
 }
 
 .footer a {
   color: var(--color-ink);
   font-weight: 600;
   text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color var(--transition-base);
+}
+
+.footer a:hover {
+  color: var(--color-brass-strong);
 }

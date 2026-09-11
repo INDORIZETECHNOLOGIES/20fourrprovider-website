@@ -53,6 +53,44 @@ Slab); body copy and form UI use the civic sans (`--font-body`, Public Sans). Se
 rather than introducing a second visual language — extend the token set in `globals.css` if a new
 need comes up, don't hardcode one-off colors.
 
+### The authenticated app shell: `AppShell`/`AppSidebar`, not `AppTopBar`
+
+Every signed-in page now wraps its content in `<AppShell title="...">` (`src/components/layout/
+AppShell.tsx`) instead of the old `<AppTopBar />`. `AppShell` renders a fixed 240px desktop sidebar
+(`AppSidebar` — nav, verification-status badge, user row, sign-out) plus a bottom tab bar on mobile
+(< 1024px), and a sticky header showing the wordmark on mobile / a small page title on desktop. This
+came out of a design pass that also merged in every feature branch landed since the sidebar was
+first built (`ratings`, `tax-profile`, `tax-documents`, auth-completeness, etc.) — those pages had
+never been migrated off `AppTopBar`, so half the app had no left nav at all. If you add a new
+top-level page, wrap it in `AppShell` from the start rather than reaching for `AppTopBar` (which
+still exists only because `profile/setup` deliberately keeps the plain bar — see below).
+`AppSidebar` self-fetches `isVerified`/unread-notification-count on mount (matching what
+`AppTopBar` already did for the unread count); it takes no props, so don't re-plumb those through
+a page just to satisfy it.
+
+**`profile/setup` is the one page that intentionally still uses `AppTopBar`.** It's only reachable
+before the provider profile is complete (every other page redirects here until it is), so a sidebar
+full of links to Bookings/Earnings/Ratings/etc. would be premature — those features assume a
+complete profile. Don't "fix" this by migrating it to `AppShell`.
+
+**Emoji are not icons — use `src/components/ui/Icon.tsx`.** An earlier pass at this design used raw
+emoji (📋 🗓 📄 🔔 💬 ⚙, plus 🛡️ ⚡ 🎪 🔫 🕵️ on the landing page) for every nav item, quick-action
+card, and feature/category card. Emoji render full-color regardless of the surrounding text color,
+which reads as an obvious templated/AI-slop tell against this app's disciplined navy/brass palette
+— it was the single biggest thing wrong with the design pass this file used to point to. `Icon` is
+a small hand-drawn monoline SVG set (stroke `currentColor`, so it inherits the surrounding text
+color and tints correctly on hover/active states) — add new glyphs there rather than reaching for
+an emoji or pulling in an icon package. The four security-category icons on the landing page
+(guard/bouncer/gunman/PSO) are deliberately all variations on a shield/protection motif rather than
+literal objects (a circus tent for "Bouncer" was one of the emoji it replaced) — keep that
+consistency if you add a fifth category.
+
+Two other slop patterns fixed in the same pass, worth not reintroducing: a single word recolored
+inside an otherwise plain-colored headline (`Get booked. **Work.** Get paid.` — the accent span is
+gone, the whole headline is one color now), and a `→` appended to CTA button text as the default
+affordance for every call-to-action (now used at most once per page, as an actual `Icon
+name="arrow-right"`, not the `→` character).
+
 ### Styling: raw CSS, not Tailwind
 
 Tailwind was removed from the scaffold. Style with plain CSS: a `*.module.css` file colocated next
@@ -69,6 +107,16 @@ an undefined custom property with no fallback computes to nothing, so every affe
 silently rendered with zero padding/gap. It looked fine at a glance (borders + line-height fake the
 impression of spacing) and only showed up on close inspection. Verify visually, not just by
 reading the JSX.
+
+**`validateDayOffDate` (`src/lib/validation/availability.ts`) has a UTC-vs-local day bug, and its
+own test is time-of-day-flaky as a result.** It parses the input date string with `new Date(date)`
+(interprets a bare `YYYY-MM-DD` as UTC midnight) but computes "today" with a local
+`new Date(); .setHours(0,0,0,0)`. In a timezone ahead of UTC (IST, `+05:30`), between local midnight
+and ~5:30am the UTC calendar day is still "yesterday" — so the test's `new Date().toISOString()
+.slice(0,10)` (a UTC-dated string) reads as being in the past compared to local "today", and
+`validateDayOffDate` wrongly rejects it. Confirmed live at 01:47 IST. Not fixed here — it's a
+pre-existing logic bug unrelated to whatever you're working on if you hit this test failing; don't
+assume your own change caused it before checking the wall-clock time.
 
 ## Commands
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession, useRedirectIfLoggedOut } from "@/lib/auth/session";
-import { AppTopBar } from "@/components/layout/AppTopBar";
+import { AppShell } from "@/components/layout/AppShell";
 import { TicketDetail } from "./TicketDetail";
 
 export function TicketDetailPage({ ticketId }: { ticketId: string }) {
@@ -12,9 +12,8 @@ export function TicketDetailPage({ ticketId }: { ticketId: string }) {
   if (!session) return null;
 
   return (
-    <>
-      <AppTopBar />
+    <AppShell title="Ticket detail">
       <TicketDetail ticketId={ticketId} accessToken={session.tokens.accessToken} />
-    </>
+    </AppShell>
   );
 }

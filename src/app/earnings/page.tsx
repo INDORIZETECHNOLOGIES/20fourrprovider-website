@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession, useRedirectIfLoggedOut } from "@/lib/auth/session";
-import { AppTopBar } from "@/components/layout/AppTopBar";
+import { AppShell } from "@/components/layout/AppShell";
 import { EarningsPanel } from "@/components/earnings/EarningsPanel";
 
 export default function EarningsPage() {
@@ -12,9 +12,8 @@ export default function EarningsPage() {
   if (!session) return null;
 
   return (
-    <>
-      <AppTopBar />
+    <AppShell title="Earnings">
       <EarningsPanel accessToken={session.tokens.accessToken} />
-    </>
+    </AppShell>
   );
 }

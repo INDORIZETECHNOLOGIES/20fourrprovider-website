@@ -14,6 +14,7 @@ type StoredSession = {
 export function saveSession(session: StoredSession) {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+  window.dispatchEvent(new Event("storage"));
 }
 
 export function readSession(): StoredSession | null {
@@ -30,6 +31,7 @@ export function readSession(): StoredSession | null {
 export function clearSession() {
   if (typeof window === "undefined") return;
   window.localStorage.removeItem(STORAGE_KEY);
+  window.dispatchEvent(new Event("storage"));
 }
 
 function subscribe(onChange: () => void) {

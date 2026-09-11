@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession, useRedirectIfLoggedOut } from "@/lib/auth/session";
-import { AppTopBar } from "@/components/layout/AppTopBar";
+import { AppShell } from "@/components/layout/AppShell";
 import { NewTicketForm } from "@/components/tickets/NewTicketForm";
 
 export default function NewTicketPage() {
@@ -12,9 +12,8 @@ export default function NewTicketPage() {
   if (!session) return null;
 
   return (
-    <>
-      <AppTopBar />
+    <AppShell title="New ticket">
       <NewTicketForm accessToken={session.tokens.accessToken} />
-    </>
+    </AppShell>
   );
 }

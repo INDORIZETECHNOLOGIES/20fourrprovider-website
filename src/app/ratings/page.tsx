@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession, useRedirectIfLoggedOut } from "@/lib/auth/session";
-import { AppTopBar } from "@/components/layout/AppTopBar";
+import { AppShell } from "@/components/layout/AppShell";
 import { RatingsPanel } from "@/components/ratings/RatingsPanel";
 
 export default function RatingsPage() {
@@ -12,9 +12,8 @@ export default function RatingsPage() {
   if (!session) return null;
 
   return (
-    <>
-      <AppTopBar />
+    <AppShell title="Your ratings">
       <RatingsPanel accessToken={session.tokens.accessToken} />
-    </>
+    </AppShell>
   );
 }
