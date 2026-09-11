@@ -59,12 +59,13 @@ export async function apiUpload<T>(
   path: string,
   formData: FormData,
   accessToken?: string,
+  method: "POST" | "PATCH" | "PUT" = "POST",
 ): Promise<T> {
   const headers: Record<string, string> = {};
   if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
 
   const response = await fetch(`${API_BASE_URL}${path}`, {
-    method: "POST",
+    method,
     headers,
     body: formData,
   });

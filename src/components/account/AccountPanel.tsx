@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Textarea } from "@/components/ui/Textarea";
 import { Button } from "@/components/ui/Button";
 import { Banner } from "@/components/ui/Banner";
 import { ApiError } from "@/lib/api/client";
+import { getCurrentUser, type AuthUser } from "@/lib/api/auth";
 import {
   exportAccountData,
   requestErasure,
@@ -13,6 +14,8 @@ import {
 } from "@/lib/api/account";
 import { validateConsentReason, validateErasureReason } from "@/lib/validation/account";
 import { formatDate } from "@/lib/format";
+import { ProfilePhotoSection } from "./ProfilePhotoSection";
+import { EmailVerificationSection } from "./EmailVerificationSection";
 import styles from "./AccountPanel.module.css";
 
 const CONSENT_PURPOSES: { value: ConsentPurpose; label: string }[] = [
@@ -22,6 +25,23 @@ const CONSENT_PURPOSES: { value: ConsentPurpose; label: string }[] = [
 ];
 
 export function AccountPanel({ accessToken }: { accessToken: string }) {
+  const [user, setUser] = useState<AuthUser | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    getCurrentUser(accessToken)
+      .then(({ user }) => {
+        if (!cancelled) setUser(user);
+      })
+      .catch(() => {
+        // A failed fetch here just means the photo/verification sections don't
+        // render — the rest of the account page still works.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [accessToken]);
+
   // Data export
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
@@ -125,6 +145,22 @@ export function AccountPanel({ accessToken }: { accessToken: string }) {
       <div className={styles.column}>
         <h1 className={styles.heading}>Account</h1>
         <p className={styles.subtext}>Your data, your consent, and your right to erasure under the DPDP Act.</p>
+
+        {user ? (
+          <>
+            <ProfilePhotoSection
+              user={user}
+              accessToken={accessToken}
+              onUpdated={(profilePhoto) => setUser((current) => (current ? { ...current, profilePhoto } : current))}
+            />
+            <EmailVerificationSection
+              email={user.email}
+              emailVerified={user.emailVerified}
+              accessToken={accessToken}
+              onVerified={() => setUser((current) => (current ? { ...current, emailVerified: true } : current))}
+            />
+          </>
+        ) : null}
 
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>Download your data</h2>
