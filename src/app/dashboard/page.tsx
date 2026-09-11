@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "@/lib/auth/session";
+import { useSession, useRedirectIfLoggedOut } from "@/lib/auth/session";
 import {
   getProviderProfile,
   isProfileComplete,
@@ -18,11 +18,10 @@ export default function DashboardPage() {
   const session = useSession();
   const [profile, setProfile] = useState<ProviderProfile | null | "loading">("loading");
 
+  useRedirectIfLoggedOut();
+
   useEffect(() => {
-    if (!session) {
-      router.replace("/login");
-      return;
-    }
+    if (!session) return;
 
     let cancelled = false;
     getProviderProfile(session.tokens.accessToken)
@@ -71,6 +70,9 @@ export default function DashboardPage() {
               </Link>
               <Link href="/availability" className={styles.manageLink}>
                 Manage availability
+              </Link>
+              <Link href="/bookings" className={styles.manageLink}>
+                View bookings
               </Link>
             </>
           ) : (

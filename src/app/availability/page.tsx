@@ -1,22 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useSession } from "@/lib/auth/session";
+import { useSession, useRedirectIfLoggedOut } from "@/lib/auth/session";
 import { getProviderProfile, type ProviderProfile } from "@/lib/api/provider";
 import { AppTopBar } from "@/components/layout/AppTopBar";
 import { AvailabilityPanel } from "@/components/availability/AvailabilityPanel";
 
 export default function AvailabilityPage() {
-  const router = useRouter();
   const session = useSession();
   const [profile, setProfile] = useState<ProviderProfile | null>(null);
 
+  useRedirectIfLoggedOut();
+
   useEffect(() => {
-    if (!session) {
-      router.replace("/login");
-      return;
-    }
+    if (!session) return;
 
     let cancelled = false;
     getProviderProfile(session.tokens.accessToken)
@@ -30,7 +27,7 @@ export default function AvailabilityPage() {
     return () => {
       cancelled = true;
     };
-  }, [session, router]);
+  }, [session]);
 
   if (!session || !profile) return null;
 

@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { useSession, useRedirectIfLoggedOut } from "@/lib/auth/session";
 import { getProviderProfile, type ProviderProfile } from "@/lib/api/provider";
 import { AppTopBar } from "@/components/layout/AppTopBar";
-import { DocumentChecklist } from "@/components/documents/DocumentChecklist";
+import { BookingsPanel } from "@/components/bookings/BookingsPanel";
 
-export default function DocumentsPage() {
+export default function BookingsPage() {
   const session = useSession();
   const [profile, setProfile] = useState<ProviderProfile | null>(null);
 
@@ -34,11 +34,7 @@ export default function DocumentsPage() {
   return (
     <>
       <AppTopBar />
-      <DocumentChecklist
-        providerType={profile.providerType}
-        initialDocuments={profile.documents ?? {}}
-        accessToken={session.tokens.accessToken}
-      />
+      <BookingsPanel isVerified={profile.isVerified} accessToken={session.tokens.accessToken} />
     </>
   );
 }

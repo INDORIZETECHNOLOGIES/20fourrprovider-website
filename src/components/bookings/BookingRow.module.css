@@ -1,0 +1,108 @@
+.row {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-paper-raised);
+  padding: var(--space-4) var(--space-5);
+  margin-bottom: var(--space-4);
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.category {
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 600;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: 0.9375rem;
+  color: var(--color-ink-muted);
+  margin-bottom: var(--space-4);
+}
+
+.details strong {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+.amount {
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.acceptButton {
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--color-navy);
+  color: var(--color-navy-ink);
+}
+
+.acceptButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.declineButton {
+  background: none;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--color-ink);
+}
+
+.declineButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.gateNote {
+  font-size: 0.8125rem;
+  color: var(--color-ink-muted);
+}
+
+.gateNote a {
+  text-decoration: underline;
+}
+
+.rejectForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.rejectInput {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  background: var(--color-paper);
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.9375rem;
+}
+
+.error {
+  font-size: 0.8125rem;
+  color: var(--color-danger);
+}

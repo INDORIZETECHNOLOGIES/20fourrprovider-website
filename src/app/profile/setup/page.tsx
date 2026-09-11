@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "@/lib/auth/session";
+import { useSession, useRedirectIfLoggedOut } from "@/lib/auth/session";
 import { getProviderProfile, isProfileComplete } from "@/lib/api/provider";
 import { AppTopBar } from "@/components/layout/AppTopBar";
 import { ProfileSetupForm } from "@/components/profile/ProfileSetupForm";
@@ -12,11 +12,10 @@ export default function ProfileSetupPage() {
   const session = useSession();
   const [ready, setReady] = useState(false);
 
+  useRedirectIfLoggedOut();
+
   useEffect(() => {
-    if (!session) {
-      router.replace("/login");
-      return;
-    }
+    if (!session) return;
 
     let cancelled = false;
     getProviderProfile(session.tokens.accessToken)
