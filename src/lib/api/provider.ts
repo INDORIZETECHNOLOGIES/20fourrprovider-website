@@ -1,4 +1,5 @@
 import { apiRequest } from "./client";
+import type { DayOff, WorkingHours } from "./availability";
 
 export const SERVICE_CATEGORIES = ["guard", "bouncer", "gunman", "pso"] as const;
 export type ServiceCategory = (typeof SERVICE_CATEGORIES)[number];
@@ -42,6 +43,11 @@ export type ProviderProfile = {
   // Keyed by `${documentType}Url` (e.g. `aadhaarUrl`) — a presigned GET URL once
   // uploaded, absent otherwise. See src/lib/constants/providerDocuments.ts.
   documents?: Record<string, string | undefined>;
+  availability: {
+    isAvailable: boolean;
+    workingHours: WorkingHours;
+    daysOff: DayOff[];
+  };
 };
 
 // Registration auto-creates a blank ProviderProfile server-side, so
