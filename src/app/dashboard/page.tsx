@@ -80,6 +80,12 @@ export default function DashboardPage() {
               <Link href="/ratings" className={styles.manageLink}>
                 Your ratings
               </Link>
+              <Link href="/tax-profile" className={styles.manageLink}>
+                Tax profile
+              </Link>
+              <Link href="/tax-documents" className={styles.manageLink}>
+                Tax documents
+              </Link>
               <Link href="/tickets" className={styles.manageLink}>
                 Support
               </Link>
