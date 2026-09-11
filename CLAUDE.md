@@ -17,8 +17,8 @@ charts/analytics views) rather than defaulting to generic component-library outp
 templated "AI slop" layouts — get a deliberate aesthetic direction, then execute it consistently.
 
 The project was scaffolded with `create-next-app` (Next.js App Router, TypeScript, ESLint). Auth
-(login/register) and provider profile setup are built; everything else (documents, availability,
-bookings, duty, earnings) is still unbuilt.
+(login/register), provider profile setup, and KYC document upload are built; everything else
+(availability, bookings, duty, earnings) is still unbuilt.
 
 ### Design direction established by the auth feature
 
@@ -104,16 +104,22 @@ not (yet) reflect this:
   content, not existence**: `isProfileComplete()` in `provider.ts` checks
   `serviceCategories.length > 0`. `pricing` still goes through the separate `PUT /provider/pricing`
   endpoint, exactly as documented.
+- There is no list endpoint for a provider's own uploaded documents — `GET /provider/profile`'s
+  `documents` object (keyed `${documentType}Url`, presigned) is the only way to know what's already
+  uploaded. It only tells you presence, not per-document `verificationStatus` (that detail lives in
+  the `Document` collection, which providers can't list); don't build UI that assumes richer
+  per-document status is available without adding a backend endpoint for it first.
 
 ### Frontend structure
 
 App Router under `src/app/`, path alias `@/*` → `src/*`. The auth feature set the convention other
 features should follow:
 
-- `src/lib/api/client.ts` — shared `apiRequest` fetch wrapper: builds the `Authorization` header,
-  parses the `{success, data}` / `{success, error}` envelope, and throws `ApiError` (with `.status`
-  and `.code`) on failure. Add new endpoint calls as functions in `src/lib/api/<domain>.ts` (see
-  `auth.ts`) that call `apiRequest`, not raw `fetch`.
+- `src/lib/api/client.ts` — shared `apiRequest` (JSON) and `apiUpload` (multipart `FormData`, for
+  file uploads) fetch wrappers, both parsing the same `{success, data}` / `{success, error}`
+  envelope and throwing `ApiError` (with `.status` and `.code`) on failure. Add new endpoint calls
+  as functions in `src/lib/api/<domain>.ts` (see `auth.ts`, `documents.ts`) that call one of these,
+  not raw `fetch`.
 - `src/lib/validation/<domain>.ts` — plain functions returning `string | null` (an error message or
   no error), used for client-side field validation before hitting the API.
 - `src/lib/auth/session.ts` — interim client-side session storage (tokens + user name in

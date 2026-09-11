@@ -16,6 +16,21 @@ type Envelope<T> =
   | { success: true; data: T; requestId?: string }
   | { success: false; error: { code?: string; message: string } };
 
+async function parseEnvelope<T>(response: Response): Promise<T> {
+  let envelope: Envelope<T>;
+  try {
+    envelope = await response.json();
+  } catch {
+    throw new ApiError(response.status, "The server returned an unexpected response.");
+  }
+
+  if (!envelope.success) {
+    throw new ApiError(response.status, envelope.error.message, envelope.error.code);
+  }
+
+  return envelope.data;
+}
+
 type RequestOptions = {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: unknown;
@@ -35,16 +50,24 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
 
-  let envelope: Envelope<T>;
-  try {
-    envelope = await response.json();
-  } catch {
-    throw new ApiError(response.status, "The server returned an unexpected response.");
-  }
+  return parseEnvelope<T>(response);
+}
 
-  if (!envelope.success) {
-    throw new ApiError(response.status, envelope.error.message, envelope.error.code);
-  }
+// Multipart upload — no Content-Type header, so the browser sets the correct
+// multipart boundary itself.
+export async function apiUpload<T>(
+  path: string,
+  formData: FormData,
+  accessToken?: string,
+): Promise<T> {
+  const headers: Record<string, string> = {};
+  if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
 
-  return envelope.data;
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    method: "POST",
+    headers,
+    body: formData,
+  });
+
+  return parseEnvelope<T>(response);
 }
