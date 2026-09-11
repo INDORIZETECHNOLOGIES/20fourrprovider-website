@@ -17,8 +17,9 @@ charts/analytics views) rather than defaulting to generic component-library outp
 templated "AI slop" layouts — get a deliberate aesthetic direction, then execute it consistently.
 
 The project was scaffolded with `create-next-app` (Next.js App Router, TypeScript, ESLint). Auth
-(login/register), provider profile setup, KYC document upload, availability management, and a
-bookings list (with accept/reject) are built; duty and earnings are still unbuilt.
+(login/register), provider profile setup, KYC document upload, availability management, a bookings
+list (with accept/reject), and the duty OTP flow (start/end) are built; earnings/settlements, chat,
+and account/support surfaces are still unbuilt.
 
 ### Design direction established by the auth feature
 
@@ -145,6 +146,14 @@ features should follow:
   toggle), update state immediately on interaction, then roll it back if the request fails.
 - `src/components/layout/AppTopBar` — the shell for authenticated pages (wordmark + sign out).
   `AuthShell` (split panel) is auth-only; authenticated feature pages use `AppTopBar` instead.
+- **Duty (`/duty/:bookingId/*`) is not gated by `requireProviderVerified`** — by the time a booking
+  reaches `payment_done`, accepting it already required verification, so duty start/end don't
+  re-gate. `DutyControls` (rendered inline in `BookingRow` for `payment_done`/`duty_started`
+  bookings) branches on `serviceCategory === 'guard'`: guard bookings use the no-OTP
+  `confirm-guard-start/end` endpoints, every other category requires the 6-digit OTP the *client*
+  generates and shares in person (`verify-start-otp`/`verify-end-otp`) — there is no
+  provider-facing way to see that OTP, it must come from the client. Errors from these endpoints
+  are plain `AppError`s with no `SC_` code (per Appendix A) — just show `error.message` as-is.
 - `src/components/<feature>/` — feature-specific components (e.g. `auth/AuthShell`, `LoginForm`,
   `RegisterForm`, `profile/ProfileSetupForm`), each with a colocated `*.module.css`.
 - Pages that require a session (`dashboard`, `profile/setup`, `documents`, `availability`,

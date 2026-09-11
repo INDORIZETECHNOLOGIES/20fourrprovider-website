@@ -9,6 +9,7 @@ import { validateRejectionReason } from "@/lib/validation/bookings";
 import { formatPaise, formatDate } from "@/lib/format";
 import { SERVICE_CATEGORY_LABELS } from "@/lib/api/provider";
 import { BOOKING_STATUS_LABELS, BOOKING_STATUS_TONE } from "@/lib/constants/bookingStatus";
+import { DutyControls } from "./DutyControls";
 import styles from "./BookingRow.module.css";
 
 type BookingRowProps = {
@@ -128,6 +129,10 @@ export function BookingRow({ booking, isVerified, accessToken, onUpdated }: Book
             </button>
           </div>
         </div>
+      ) : null}
+
+      {booking.status === "payment_done" || booking.status === "duty_started" ? (
+        <DutyControls booking={booking} accessToken={accessToken} onUpdated={onUpdated} />
       ) : null}
     </div>
   );
