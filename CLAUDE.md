@@ -163,6 +163,22 @@ gone, the whole headline is one color now), and a `→` appended to CTA button t
 affordance for every call-to-action (now used at most once per page, as an actual `Icon
 name="arrow-right"`, not the `→` character).
 
+**On the landing page, every section has a deliberately different form, and only one of them uses
+cards.** An earlier version ran three step cards → six feature cards → four category cards → four
+trust items: seventeen blocks sharing one bordered-and-shadowed treatment and one `translateY` hover
+lift, which flattened the hierarchy and implied every block was clickable when none of them are.
+Now the steps are a numbered vertical sequence joined by a rule (numbering is legitimate there —
+it genuinely is a sequence), the features are a two-column ruled list, and the four categories are
+the only cards. Hover lifts are gone from everything that isn't a link. Three other things worth
+keeping: the earnings table sits directly under the hero, because "what will I earn?" is a
+provider's first question and it used to be second-to-last; `.tableWrap` gives the rate table
+`overflow-x: auto` so it scrolls inside its own box at phone width rather than stretching the page
+(tables are the one exception to no-horizontal-scroll); and the hero's credential card is captioned
+as an example, since it shows a name, a rating and a shift count belonging to nobody. The page
+metadata also claimed "instant payouts" long after that copy was corrected elsewhere — payouts
+settle after a completed shift and admin verification, and `metadata.description` is what search
+results and link previews quote, so check it when payout wording changes.
+
 ### Styling: raw CSS, not Tailwind
 
 Tailwind was removed from the scaffold. Style with plain CSS: a `*.module.css` file colocated next
