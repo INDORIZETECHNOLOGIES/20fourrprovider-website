@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Banner } from "@/components/ui/Banner";
 import { Badge } from "@/components/ui/Badge";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { getTaxProfile, type TaxProfile } from "@/lib/api/taxProfile";
 import { PAN_STATUS_LABELS, PAN_STATUS_TONE, GSTIN_STATUS_LABELS, GSTIN_STATUS_TONE, BLOCKING_REASON_LABELS } from "@/lib/constants/taxProfile";
 import { TaxProfileForm } from "./TaxProfileForm";
@@ -33,50 +34,67 @@ export function TaxProfilePanel({ accessToken }: { accessToken: string }) {
 
   if (error) {
     return (
-      <main className={styles.page}>
+      <div className={styles.page}>
         <div className={styles.column}>
           <Banner>{error}</Banner>
         </div>
-      </main>
+      </div>
     );
   }
 
   if (!taxProfile) return null;
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <div className={styles.column}>
-        <h1 className={styles.heading}>Tax profile</h1>
-        <p className={styles.subtext}>
-          Your PAN, GST registration, and PSARA licences — used for tax invoicing and payouts once
-          it&apos;s complete.
-        </p>
+        <PageHeader
+          title="Tax profile"
+          intro="Your PAN, GST registration and PSARA licences. Invoicing and payouts wait on this being complete."
+        />
 
-        <div className={styles.section}>
-          <div className={styles.summaryRow}>
-            {taxProfile.taxProfileComplete ? (
-              <Badge tone="active">Complete</Badge>
-            ) : (
-              <Badge tone="muted">Incomplete</Badge>
-            )}
-            <span className={styles.rowLabel}>PAN</span>
-            <Badge tone={PAN_STATUS_TONE[taxProfile.panVerificationStatus]}>
-              {PAN_STATUS_LABELS[taxProfile.panVerificationStatus]}
-            </Badge>
+        {/* The state is said once, in the heading — the badges that follow carry
+            the per-field status, rather than four badges in a row saying
+            overlapping things. */}
+        <section className={styles.status}>
+          <h2 className={styles.statusTitle}>
+            {taxProfile.taxProfileComplete
+              ? "Your tax profile is complete"
+              : "Your tax profile is incomplete"}
+          </h2>
+
+          <dl className={styles.statusRows}>
+            <div className={styles.statusRow}>
+              <dt className={styles.statusLabel}>PAN</dt>
+              <dd className={styles.statusValue}>
+                <Badge tone={PAN_STATUS_TONE[taxProfile.panVerificationStatus]}>
+                  {PAN_STATUS_LABELS[taxProfile.panVerificationStatus]}
+                </Badge>
+              </dd>
+            </div>
+
             {taxProfile.taxTier === "registered" ? (
-              <Badge tone={GSTIN_STATUS_TONE[taxProfile.gstinStatus]}>
-                GSTIN: {GSTIN_STATUS_LABELS[taxProfile.gstinStatus]}
-              </Badge>
+              <div className={styles.statusRow}>
+                <dt className={styles.statusLabel}>GSTIN</dt>
+                <dd className={styles.statusValue}>
+                  <Badge tone={GSTIN_STATUS_TONE[taxProfile.gstinStatus]}>
+                    {GSTIN_STATUS_LABELS[taxProfile.gstinStatus]}
+                  </Badge>
+                </dd>
+              </div>
             ) : null}
-          </div>
+          </dl>
+
           {taxProfile.blockingReasons.length > 0 ? (
-            <ul className={styles.blockingList}>
-              {taxProfile.blockingReasons.map((reason) => (
-                <li key={reason}>{blockingReasonLabel(reason)}</li>
-              ))}
-            </ul>
+            <>
+              <p className={styles.blockingTitle}>Still outstanding</p>
+              <ul className={styles.blockingList}>
+                {taxProfile.blockingReasons.map((reason) => (
+                  <li key={reason}>{blockingReasonLabel(reason)}</li>
+                ))}
+              </ul>
+            </>
           ) : null}
-        </div>
+        </section>
 
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>PAN &amp; GST</h2>
@@ -88,6 +106,6 @@ export function TaxProfilePanel({ accessToken }: { accessToken: string }) {
 
         <PsaraCoverageSection taxProfile={taxProfile} accessToken={accessToken} onUpdated={setTaxProfile} />
       </div>
-    </main>
+    </div>
   );
 }

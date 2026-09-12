@@ -1,9 +1,14 @@
 /* ─────────────────────────────────────────────────────────────────────────
    20fourr Provider Landing Page
    All tokens from globals.css. No Tailwind. No external assets.
+
+   Each section deliberately has its own form: the steps are a numbered
+   sequence, the features a ruled list, the categories the only cards on the
+   page. An earlier version made all three the same bordered-and-shadowed card
+   with the same hover lift — seventeen of them down the page, which flattened
+   the hierarchy and implied every block was clickable.
    ───────────────────────────────────────────────────────────────────────── */
 
-/* ─── Reset for this page ────────────────────────────────────────────── */
 .page {
   background: var(--color-paper);
   overflow-x: hidden;
@@ -80,12 +85,11 @@
   text-decoration: none;
   padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-sm);
-  transition: background var(--transition-base), transform var(--transition-base);
+  transition: background var(--transition-base);
 }
 
 .navCta:hover {
   background: var(--color-brass-strong);
-  transform: translateY(-1px);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -107,11 +111,11 @@
   .hero {
     grid-template-columns: 1fr 1fr;
     padding: var(--space-16) var(--space-12) var(--space-16);
-    min-height: 580px;
+    min-height: 520px;
   }
 }
 
-/* Layered CSS texture — same pattern as auth shell */
+/* Layered CSS texture — same pattern as the auth shell */
 .hero::before {
   content: "";
   position: absolute;
@@ -128,7 +132,6 @@
   pointer-events: none;
 }
 
-/* Radial glow top-left */
 .hero::after {
   content: "";
   position: absolute;
@@ -144,26 +147,6 @@
   position: relative;
   z-index: 1;
   max-width: 560px;
-}
-
-.heroEyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-brass);
-  margin-bottom: var(--space-5);
-}
-
-.heroEyebrowDot {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--color-brass);
-  opacity: 0.5;
 }
 
 .heroHeadline {
@@ -202,13 +185,12 @@
   font-weight: 700;
   border-radius: var(--radius-sm);
   text-decoration: none;
-  transition: background var(--transition-base), transform var(--transition-base), box-shadow var(--transition-base);
+  transition: background var(--transition-base), box-shadow var(--transition-base);
   box-shadow: 0 4px 16px rgba(169,120,46,0.3);
 }
 
 .heroPrimary:hover {
   background: var(--color-brass-strong);
-  transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(169,120,46,0.4);
 }
 
@@ -224,49 +206,15 @@
   color: var(--color-navy-ink);
 }
 
-/* Social proof strip */
-.heroProof {
-  display: flex;
-  align-items: center;
-  gap: var(--space-6);
-  margin-top: var(--space-8);
-  flex-wrap: wrap;
-}
-
-.heroProofItem {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.heroProofValue {
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-brass);
-  letter-spacing: -0.02em;
-  line-height: 1;
-}
-
-.heroProofLabel {
-  font-size: 0.8125rem;
-  color: color-mix(in srgb, var(--color-navy-ink) 70%, transparent);
-  font-weight: 500;
-}
-
-.heroProofDivider {
-  width: 1px;
-  height: 32px;
-  background: rgba(255,255,255,0.15);
-}
-
-/* CSS credential card illustration */
+/* Credential card illustration */
 .heroVisual {
   position: relative;
   z-index: 1;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: var(--space-3);
 }
 
 .credCard {
@@ -293,6 +241,17 @@
   background: linear-gradient(90deg, var(--color-brass), color-mix(in srgb, var(--color-brass) 40%, transparent));
 }
 
+/* The card shows a name, a rating and a shift count that belong to nobody —
+   it's a mock-up of the product, and it says so underneath. */
+.credCardCaption {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--color-navy-ink) 45%, transparent);
+  text-align: center;
+  margin: 0;
+  max-width: 280px;
+}
+
 .credCardTop {
   display: flex;
   align-items: center;
@@ -313,10 +272,8 @@
   border-radius: 999px;
   background: rgba(74,222,128,0.12);
   border: 1px solid rgba(74,222,128,0.25);
-  font-size: 0.625rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: 0.6875rem;
+  font-weight: 600;
   color: #4ade80;
 }
 
@@ -375,7 +332,6 @@
   font-weight: 500;
 }
 
-/* Floating chip behind the card */
 .credCardChip {
   position: absolute;
   top: -20px;
@@ -388,15 +344,23 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   HOW IT WORKS
+   SECTION SHELL
    ══════════════════════════════════════════════════════════════════════ */
 
 .section {
   padding: var(--space-16) var(--space-6);
 }
 
+.sectionAlt {
+  background: var(--color-paper-raised);
+  padding: var(--space-16) var(--space-6);
+  border-top: 1px solid var(--color-line);
+  border-bottom: 1px solid var(--color-line);
+}
+
 @media (min-width: 640px) {
-  .section {
+  .section,
+  .sectionAlt {
     padding: var(--space-16) var(--space-12);
   }
 }
@@ -404,15 +368,6 @@
 .sectionInner {
   max-width: 960px;
   margin: 0 auto;
-}
-
-.sectionLabel {
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-brass);
-  margin: 0 0 var(--space-3);
 }
 
 .sectionTitle {
@@ -433,69 +388,63 @@
   margin: 0 0 var(--space-10);
 }
 
-/* Steps */
-.steps {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-6);
-  position: relative;
-}
+/* ═══════════════════════════════════════════════════════════════════════
+   HOW IT WORKS — a numbered sequence, not three cards in a row
+   ══════════════════════════════════════════════════════════════════════ */
 
-@media (min-width: 768px) {
-  .steps {
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-8);
-  }
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: 640px;
 }
 
 .step {
   position: relative;
-  padding: var(--space-8);
-  background: var(--color-paper-raised);
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--transition-base), box-shadow var(--transition-base);
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: var(--space-5);
+  padding-bottom: var(--space-8);
 }
 
-.step:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-card);
+.step:last-child {
+  padding-bottom: 0;
 }
 
-/* Connector line on desktop */
-@media (min-width: 768px) {
-  .step:not(:last-child)::after {
-    content: "";
-    position: absolute;
-    top: 50px;
-    right: calc(-1 * var(--space-4) - 24px);
-    width: 48px;
-    height: 2px;
-    background: repeating-linear-gradient(
-      90deg,
-      var(--color-brass) 0px,
-      var(--color-brass) 6px,
-      transparent 6px,
-      transparent 12px
-    );
-    opacity: 0.5;
-    z-index: 1;
-  }
+/* The rule that makes it read as one sequence rather than three items. */
+.step:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: 15px;
+  top: 36px;
+  bottom: 6px;
+  width: 1px;
+  background: var(--color-line);
 }
 
 .stepNum {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--color-brass);
+  background: var(--color-paper-raised);
+  color: var(--color-brass-strong);
   font-family: var(--font-display);
-  font-size: 2.5rem;
+  font-size: 0.9375rem;
   font-weight: 700;
-  letter-spacing: -0.04em;
-  color: color-mix(in srgb, var(--color-brass) 25%, var(--color-line));
-  line-height: 1;
-  margin-bottom: var(--space-4);
+  position: relative;
+  z-index: 1;
+}
+
+.stepText {
+  padding-top: 4px;
 }
 
 .stepTitle {
-  font-size: 1rem;
+  font-size: 1.0625rem;
   font-weight: 700;
   color: var(--color-ink);
   margin: 0 0 var(--space-2);
@@ -507,71 +456,50 @@
   color: var(--color-ink-muted);
   line-height: 1.65;
   margin: 0;
+  max-width: 60ch;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   FEATURE GRID
+   FEATURES — a ruled list, not a card grid
    ══════════════════════════════════════════════════════════════════════ */
 
-.sectionAlt {
-  background: var(--color-paper-raised);
-  padding: var(--space-16) var(--space-6);
-  border-top: 1px solid var(--color-line);
-  border-bottom: 1px solid var(--color-line);
-}
-
-@media (min-width: 640px) {
-  .sectionAlt {
-    padding: var(--space-16) var(--space-12);
-  }
-}
-
-.featureGrid {
+.features {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-4);
+  grid-template-columns: 1fr;
+  gap: 0 var(--space-10);
 }
 
 @media (min-width: 768px) {
-  .featureGrid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-5);
+  .features {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-.featureCard {
-  padding: var(--space-6) var(--space-5);
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-lg);
-  background: var(--color-paper-raised);
-  box-shadow: var(--shadow-sm);
-  transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
-}
-
-.featureCard:hover {
-  border-color: var(--color-brass);
-  box-shadow: var(--shadow-card);
-  transform: translateY(-4px);
+.feature {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding: var(--space-5) 0;
+  border-top: 1px solid var(--color-line);
 }
 
 .featureIcon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, rgba(169, 120, 46, 0.1), rgba(169, 120, 46, 0.02));
-  border-radius: 12px;
-  border: 1px solid rgba(169, 120, 46, 0.1);
-  color: var(--color-brass);
-  margin-bottom: var(--space-5);
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--color-brass) 12%, transparent);
+  color: var(--color-brass-strong);
 }
 
 .featureTitle {
   font-size: 0.9375rem;
   font-weight: 700;
   color: var(--color-ink);
-  margin: 0 0 var(--space-2);
+  margin: 0 0 var(--space-1);
   line-height: 1.3;
 }
 
@@ -580,10 +508,11 @@
   color: var(--color-ink-muted);
   line-height: 1.6;
   margin: 0;
+  max-width: 46ch;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   CATEGORY CARDS
+   CATEGORIES — the only cards on the page
    ══════════════════════════════════════════════════════════════════════ */
 
 .categoryGrid {
@@ -601,39 +530,28 @@
 .categoryCard {
   background: var(--color-navy);
   border: 1px solid rgba(169,120,46,0.25);
-  border-radius: var(--radius-lg);
-  padding: var(--space-6) var(--space-5);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
   position: relative;
   overflow: hidden;
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
-  transition: border-color var(--transition-base), transform var(--transition-base), box-shadow var(--transition-base);
-}
-
-.categoryCard:hover {
-  border-color: var(--color-brass);
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
 
 .categoryCard::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 100%;
+  inset: 0;
   background: radial-gradient(circle at top right, rgba(169,120,46,0.1), transparent 60%);
   pointer-events: none;
 }
 
-.categoryEmoji {
+.categoryIcon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  height: 48px;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
+  border-radius: var(--radius-sm);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: var(--color-brass);
   margin-bottom: var(--space-4);
@@ -645,27 +563,14 @@
   font-weight: 700;
   color: var(--color-navy-ink);
   margin: 0 0 var(--space-2);
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .categoryDesc {
   font-size: 0.8125rem;
   color: color-mix(in srgb, var(--color-navy-ink) 58%, transparent);
   line-height: 1.55;
-  margin: 0 0 var(--space-3);
-}
-
-.categoryTag {
-  display: inline-block;
-  padding: 3px 10px;
-  border-radius: 999px;
-  background: rgba(169,120,46,0.15);
-  border: 1px solid rgba(169,120,46,0.25);
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--color-brass);
+  margin: 0;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -708,7 +613,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
   color: var(--color-brass);
   flex-shrink: 0;
   margin-top: 1px;
@@ -733,12 +637,17 @@
    EARNINGS TABLE
    ══════════════════════════════════════════════════════════════════════ */
 
+/* Tables are the one thing allowed to scroll sideways on a narrow screen. */
+.tableWrap {
+  overflow-x: auto;
+}
+
 .rateTable {
   width: 100%;
+  min-width: 480px;
   border-collapse: collapse;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
   border: 1px solid var(--color-line);
 }
 
@@ -750,9 +659,7 @@
 .rateTableHead th {
   padding: var(--space-4) var(--space-5);
   font-size: 0.8125rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-weight: 600;
   text-align: left;
   border: none;
 }
@@ -764,15 +671,10 @@
 .rateTableBody tr {
   background: var(--color-paper-raised);
   border-bottom: 1px solid var(--color-line);
-  transition: background var(--transition-base);
 }
 
 .rateTableBody tr:last-child {
   border-bottom: none;
-}
-
-.rateTableBody tr:hover {
-  background: color-mix(in srgb, var(--color-paper-raised) 70%, var(--color-paper));
 }
 
 .rateTableBody td {
@@ -792,6 +694,7 @@
 }
 
 .rateRange {
+  font-family: var(--font-display);
   font-weight: 700;
   color: var(--color-ink) !important;
 }
@@ -801,6 +704,7 @@
   font-size: 0.8125rem;
   color: var(--color-ink-muted);
   line-height: 1.5;
+  max-width: 68ch;
 }
 
 .tableNote a {
@@ -837,7 +741,6 @@
   pointer-events: none;
 }
 
-/* Brass horizontal rule accent above CTA */
 .ctaBanner::after {
   content: "";
   position: absolute;
@@ -886,12 +789,11 @@
   border-radius: var(--radius-sm);
   text-decoration: none;
   box-shadow: 0 4px 20px rgba(169,120,46,0.35);
-  transition: background var(--transition-base), transform var(--transition-base), box-shadow var(--transition-base);
+  transition: background var(--transition-base), box-shadow var(--transition-base);
 }
 
 .ctaButton:hover {
   background: var(--color-brass-strong);
-  transform: translateY(-2px);
   box-shadow: 0 8px 28px rgba(169,120,46,0.45);
 }
 

@@ -24,21 +24,34 @@ export function BookingRow({ booking, isVerified, accessToken, onUpdated }: Book
       ? `${formatDate(booking.startDate)} – ${formatDate(booking.endDate)}`
       : formatDate(booking.startDate);
 
+  const hasControls =
+    booking.status === "pending" ||
+    booking.status === "payment_done" ||
+    booking.status === "duty_started" ||
+    booking.status === "duty_ended";
+
   return (
     <div className={styles.row}>
-      <div className={styles.top}>
-        <span className={styles.category}>{SERVICE_CATEGORY_LABELS[booking.serviceCategory]}</span>
-        <Badge tone={BOOKING_STATUS_TONE[booking.status]}>{BOOKING_STATUS_LABELS[booking.status]}</Badge>
-      </div>
-      <div className={styles.details}>
-        <span>
-          <strong>{booking.clientId.name}</strong> · {booking.clientId.phone}
-        </span>
-        <span>
-          {dateLabel}, {booking.startTime}–{booking.endTime}
-        </span>
-        {booking.address ? <span>{booking.address}</span> : null}
-        <span className={styles.amount}>{formatPaise(booking.totalAmount)}</span>
+      {/* The client and when they need you identify a booking — the service
+          category is the same on most of a provider's bookings, so it sits with
+          the other detail rather than heading the row. */}
+      <div className={styles.head}>
+        <div className={styles.headText}>
+          <p className={styles.client}>{booking.clientId.name}</p>
+          <p className={styles.when}>
+            {dateLabel}, {booking.startTime}–{booking.endTime}
+          </p>
+          <p className={styles.where}>
+            {SERVICE_CATEGORY_LABELS[booking.serviceCategory]}
+            {booking.numberOfDays > 1 ? ` · ${booking.numberOfDays} days` : ""}
+            {booking.address ? ` · ${booking.address}` : ""}
+          </p>
+        </div>
+
+        <div className={styles.amountCol}>
+          <p className={styles.amount}>{formatPaise(booking.totalAmount)}</p>
+          <Badge tone={BOOKING_STATUS_TONE[booking.status]}>{BOOKING_STATUS_LABELS[booking.status]}</Badge>
+        </div>
       </div>
 
       <div className={styles.linkRow}>
@@ -47,26 +60,30 @@ export function BookingRow({ booking, isVerified, accessToken, onUpdated }: Book
         </Link>
         {CHAT_ALLOWED_STATUSES.includes(booking.status) ? (
           <Link href={`/bookings/${booking._id}/chat`} className={styles.viewLink}>
-            Chat with {booking.clientId.name}
+            Chat
           </Link>
         ) : null}
       </div>
 
-      {booking.status === "pending" ? (
-        <PendingBookingActions
-          bookingId={booking._id}
-          isVerified={isVerified}
-          accessToken={accessToken}
-          onUpdated={onUpdated}
-        />
-      ) : null}
+      {hasControls ? (
+        <div className={styles.controls}>
+          {booking.status === "pending" ? (
+            <PendingBookingActions
+              bookingId={booking._id}
+              isVerified={isVerified}
+              accessToken={accessToken}
+              onUpdated={onUpdated}
+            />
+          ) : null}
 
-      {booking.status === "payment_done" || booking.status === "duty_started" ? (
-        <DutyControls booking={booking} accessToken={accessToken} onUpdated={onUpdated} />
-      ) : null}
+          {booking.status === "payment_done" || booking.status === "duty_started" ? (
+            <DutyControls booking={booking} accessToken={accessToken} onUpdated={onUpdated} />
+          ) : null}
 
-      {booking.status === "duty_ended" ? (
-        <CompleteBookingControl bookingId={booking._id} accessToken={accessToken} onUpdated={onUpdated} />
+          {booking.status === "duty_ended" ? (
+            <CompleteBookingControl bookingId={booking._id} accessToken={accessToken} onUpdated={onUpdated} />
+          ) : null}
+        </div>
       ) : null}
     </div>
   );

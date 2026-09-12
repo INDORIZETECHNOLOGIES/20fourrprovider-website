@@ -54,11 +54,11 @@ export function BookingDetail({ bookingId, isVerified, accessToken }: BookingDet
 
   if (loadError) {
     return (
-      <main className={styles.page}>
+      <div className={styles.page}>
         <div className={styles.column}>
           <Banner>{loadError}</Banner>
         </div>
-      </main>
+      </div>
     );
   }
 
@@ -72,7 +72,7 @@ export function BookingDetail({ bookingId, isVerified, accessToken }: BookingDet
   const showSafetyBanner = threatProfile && (threatProfile.hasKnownThreat || threatProfile.wasAttackedBefore);
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <div className={styles.column}>
         <div className={styles.header}>
           <div>
@@ -207,6 +207,6 @@ export function BookingDetail({ bookingId, isVerified, accessToken }: BookingDet
           />
         ) : null}
       </div>
-    </main>
+    </div>
   );
 }

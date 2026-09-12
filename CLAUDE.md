@@ -55,18 +55,90 @@ need comes up, don't hardcode one-off colors.
 
 ### The authenticated app shell: `AppShell`/`AppSidebar`, not `AppTopBar`
 
-Every signed-in page now wraps its content in `<AppShell title="...">` (`src/components/layout/
-AppShell.tsx`) instead of the old `<AppTopBar />`. `AppShell` renders a fixed 240px desktop sidebar
-(`AppSidebar` — nav, verification-status badge, user row, sign-out) plus a bottom tab bar on mobile
-(< 1024px), and a sticky header showing the wordmark on mobile / a small page title on desktop. This
-came out of a design pass that also merged in every feature branch landed since the sidebar was
-first built (`ratings`, `tax-profile`, `tax-documents`, auth-completeness, etc.) — those pages had
-never been migrated off `AppTopBar`, so half the app had no left nav at all. If you add a new
-top-level page, wrap it in `AppShell` from the start rather than reaching for `AppTopBar` (which
-still exists only because `profile/setup` deliberately keeps the plain bar — see below).
-`AppSidebar` self-fetches `isVerified`/unread-notification-count on mount (matching what
-`AppTopBar` already did for the unread count); it takes no props, so don't re-plumb those through
-a page just to satisfy it.
+Every signed-in page wraps its content in `<AppShell title="...">` (`src/components/layout/
+AppShell.tsx`), not `<AppTopBar />`. `AppShell` renders a fixed 240px desktop sidebar (`AppSidebar`
+— nav, verification-status badge, user row, sign-out), a bottom tab bar on mobile (< 1024px), and a
+thin wordmark bar on mobile only. There is deliberately no desktop top bar: the sidebar carries the
+brand and each page's own `<h1>` carries the title — an earlier version repeated the page name in a
+sticky desktop header directly above an identical `<h1>`. `title` only sets the browser tab (a
+`<title>` element, which React 19 hoists into `<head>`). If you add a new top-level page, wrap it in
+`AppShell` from the start (`AppTopBar` survives only for `profile/setup` — see below).
+`AppSidebar` self-fetches `isVerified`/unread-notification-count on mount; it takes no props, so
+don't re-plumb those through a page just to satisfy it.
+
+**`AppShell` owns the page's single `<main>` landmark and all page padding.** Panels render a plain
+`<div className={styles.page}>` — they used to render their own `<main>`, which nested inside
+`AppShell`'s and was invalid HTML (and confusing to screen readers). Content is left-aligned to the
+sidebar edge, not centred in the viewport; each page sets only its measure through its `.column`
+max-width: ~560–640px for forms, 800px for lists, 1000px for the dashboard. Don't reintroduce
+`justify-content: center` or padding in a panel's `.page` rule.
+
+**Empty lists use `src/components/ui/EmptyState.tsx`**, not a bare "No X here yet." line: an icon, a
+title, a sentence saying what fills the list, and — only when there's a real next step — an action
+link. With a filter active, the copy just says nothing matches. The dashboard's version is
+context-aware (unverified → check documents; paused → turn availability back on). Short inline
+notes inside a section ("No days off blocked.") stay as plain text.
+
+**The dashboard leads with one thing, and it is never a grid of links to other pages.** It used to
+end in a "Quick actions" grid of eight cards that duplicated the sidebar nav item for item — that's
+gone; the sidebar is the navigation. The lead slot holds either the next shift (the booking the
+provider is on, else the soonest `payment_done` one that hasn't ended — a navy panel, the only
+raised element on the page) or, while setup is incomplete, a checklist of what's actually blocking
+bookings (documents uploaded vs. required per `PROVIDER_DOCUMENT_CATALOG`, bank account added/
+verified/confirmed, verification). Both come from data the page already fetches: the checklist adds
+no request, and the shift is picked out of the same `payment_done`/`duty_started` calls that feed
+the counters (`pagination.total` remains the source of the counts — the fetched page is only used
+to choose the shift). The checklist disappears once every item is done rather than sitting there as
+a row of ticks. The counters below it are one bordered strip divided by hairlines, not three
+separately-shadowed cards each with a gradient accent bar — that was the page's main slop tell.
+
+**Four shared primitives carry every signed-in page — use them instead of re-declaring the same
+CSS per module.** `PageHeader` (`src/components/ui/`) is the page's title block: title, optional
+intro, optional single page-level action (Support's "New ticket", Notifications' "Mark all read").
+Ten modules had their own identical `.heading`/`.subtext` rules before it existed. `RowList` is the
+list container — one border, one background, hairline dividers supplied by the container
+(`.list > * + *`), so a row component carries no border, radius, shadow or bottom margin of its own;
+every list (bookings, settlements, ratings, tickets, notifications, tax documents, documents,
+days off) renders through it. `LoadMore` is the paginated "Load more" button that five lists had
+five copies of. `Stars` draws the rating stars as SVG with the same geometry as `Icon`'s star —
+ratings used to concatenate "★"/"☆" text characters, which take the body font's metrics and can't
+be sized or half-filled. Rows follow one shape: identity and timing on the left, the number (amount,
+net payout) right-aligned in the display face, then a `Badge` for status — and per-row actions sit
+below a hairline inside the row, only on the statuses that can act.
+
+**Which services a provider offers, and their rates, are edited on the Availability page**
+(`ServicesSection`) — before it existed, `serviceCategories` and `pricing` were settable only during
+profile setup, so a provider could never change what they offer or what they charge. Four things
+about this are easy to get wrong:
+- **`PUT /provider/pricing` must be sent *before* `PUT /provider/profile`, carrying the union of the
+  currently-saved categories and the newly-offered ones.** That endpoint validates that the payload
+  covers every category presently on the profile, so removing a category fails outright if pricing
+  is sent after (or without the category being removed). Sending profile first instead leaves a
+  window where a category exists with no pricing.
+- **`PUT /provider/profile` takes the whole details object**, so `ServicesSection` passes
+  `providerType`/`serviceCity`/`serviceState`/`yearsExperience` back unchanged. Omitting them wipes
+  them.
+- Rates are **paise on the wire, rupees in the form** (`dailyRate: 150000` is ₹1,500), bounded to
+  ₹100–₹1,00,000 and 4–24 hours by `validateDailyRate`/`validateTotalHoursPerDay`.
+- The backend also accepts `hourlyRate`/`hourlyEnabled`/`weekendMultiplier`/`vehicleRate`/
+  `vehicleWithDriverRate` on pricing; the form deliberately exposes only daily rate + hours.
+
+**There is no per-category or per-day availability for an individual provider, and don't build UI
+implying there is.** `PUT /provider/availability` accepts exactly `{isAvailable}` (plus a `reason`
+the controller never stores) — the only day-level control is days-off, which is all-or-nothing for
+every service. Working hours are *readable* (`GET /provider/availability/days-off` returns
+`workingHours`) but no endpoint writes them, so the panel states them as fact rather than offering
+an editor. Per-date, per-category numbers exist only as `/provider/staff-availability` — firm
+headcount per category per date, capped by `numberOfPersonnel`, with a bulk date-range variant.
+That's a firm/agency surface and is still unbuilt here; it's the only place a "how many bouncers can
+I field on the 14th" answer could come from.
+
+**Link to a booking with `booking._id`, never `booking.bookingId`.** The detail route and
+`GET /bookings/:bookingId` take the Mongo id; `bookingId` is the human-readable reference. The first
+dashboard design linked recent bookings by the reference, so every one of those links 404'd.
+`/bookings?status=<status>` preselects the list filter (the dashboard's stat cards use it) —
+`BookingsPanel` reads it with `useSearchParams`, which is why `bookings/page.tsx` wraps the panel in
+`<Suspense>`: a static route needs that boundary or the build fails.
 
 **`profile/setup` is the one page that intentionally still uses `AppTopBar`.** It's only reachable
 before the provider profile is complete (every other page redirects here until it is), so a sidebar
@@ -90,6 +162,22 @@ inside an otherwise plain-colored headline (`Get booked. **Work.** Get paid.` �
 gone, the whole headline is one color now), and a `→` appended to CTA button text as the default
 affordance for every call-to-action (now used at most once per page, as an actual `Icon
 name="arrow-right"`, not the `→` character).
+
+**On the landing page, every section has a deliberately different form, and only one of them uses
+cards.** An earlier version ran three step cards → six feature cards → four category cards → four
+trust items: seventeen blocks sharing one bordered-and-shadowed treatment and one `translateY` hover
+lift, which flattened the hierarchy and implied every block was clickable when none of them are.
+Now the steps are a numbered vertical sequence joined by a rule (numbering is legitimate there —
+it genuinely is a sequence), the features are a two-column ruled list, and the four categories are
+the only cards. Hover lifts are gone from everything that isn't a link. Three other things worth
+keeping: the earnings table sits directly under the hero, because "what will I earn?" is a
+provider's first question and it used to be second-to-last; `.tableWrap` gives the rate table
+`overflow-x: auto` so it scrolls inside its own box at phone width rather than stretching the page
+(tables are the one exception to no-horizontal-scroll); and the hero's credential card is captioned
+as an example, since it shows a name, a rating and a shift count belonging to nobody. The page
+metadata also claimed "instant payouts" long after that copy was corrected elsewhere — payouts
+settle after a completed shift and admin verification, and `metadata.description` is what search
+results and link previews quote, so check it when payout wording changes.
 
 ### Styling: raw CSS, not Tailwind
 

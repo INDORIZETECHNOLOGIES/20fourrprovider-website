@@ -60,18 +60,22 @@ export function TaxDocumentRow({ document: doc, accessToken }: { document: TaxDo
 
   return (
     <div className={styles.row}>
-      <div className={styles.top}>
-        <span className={styles.number}>{doc.documentNumber}</span>
-        <Badge tone={TAX_DOCUMENT_STATUS_TONE[doc.status]}>{TAX_DOCUMENT_STATUS_LABELS[doc.status]}</Badge>
-      </div>
-      <div className={styles.details}>
-        <span>{TAX_DOCUMENT_TYPE_LABELS[doc.docType]}</span>
-        <span>{formatDate(doc.issuedAt)}</span>
-        <span className={styles.amount}>{formatPaise(doc.totalPaise)}</span>
+      <div className={styles.head}>
+        <div className={styles.headText}>
+          <p className={styles.number}>{doc.documentNumber}</p>
+          <p className={styles.details}>
+            {TAX_DOCUMENT_TYPE_LABELS[doc.docType]} · Issued {formatDate(doc.issuedAt)}
+          </p>
+        </div>
+
+        <div className={styles.amountCol}>
+          <p className={styles.amount}>{formatPaise(doc.totalPaise)}</p>
+          <Badge tone={TAX_DOCUMENT_STATUS_TONE[doc.status]}>{TAX_DOCUMENT_STATUS_LABELS[doc.status]}</Badge>
+        </div>
       </div>
 
       <div className={styles.actions}>
-        <button type="button" className={styles.link} onClick={handleToggle}>
+        <button type="button" className={styles.link} onClick={handleToggle} aria-expanded={expanded}>
           {expanded ? "Hide details" : "View details"}
         </button>
         <button type="button" className={styles.downloadLink} disabled={downloading} onClick={handleDownload}>

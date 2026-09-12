@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ChangeEvent } from "react";
+import { Icon } from "@/components/ui/Icon";
 import { uploadProviderDocument } from "@/lib/api/documents";
 import { validateDocumentFile } from "@/lib/validation/documents";
 import type { ProviderDocumentCatalogEntry } from "@/lib/constants/providerDocuments";
@@ -42,9 +43,19 @@ export function DocumentRow({ entry, required, currentUrl, accessToken, onUpload
   }
 
   const inputId = `doc-${entry.id}`;
+  const uploaded = Boolean(currentUrl);
 
   return (
     <div className={styles.row}>
+      {/* Uploaded or not is the first thing to read down a list of 27 rows. */}
+      <span
+        className={`${styles.mark} ${uploaded ? styles.markDone : ""}`}
+        aria-label={uploaded ? "Uploaded" : "Not uploaded"}
+        role="img"
+      >
+        {uploaded ? <Icon name="check" size={13} /> : null}
+      </span>
+
       <div className={styles.info}>
         <div className={styles.labelRow}>
           <span className={styles.label}>{entry.label}</span>
@@ -53,6 +64,7 @@ export function DocumentRow({ entry, required, currentUrl, accessToken, onUpload
         {entry.hint ? <span className={styles.hint}>{entry.hint}</span> : null}
         {error ? <span className={styles.error}>{error}</span> : null}
       </div>
+
       <div className={styles.actions}>
         {currentUrl ? (
           <a className={styles.viewLink} href={currentUrl} target="_blank" rel="noopener noreferrer">
@@ -63,7 +75,7 @@ export function DocumentRow({ entry, required, currentUrl, accessToken, onUpload
           htmlFor={inputId}
           className={`${styles.uploadButton} ${uploading ? styles.uploadButtonDisabled : ""}`}
         >
-          {uploading ? "Uploading…" : currentUrl ? "Replace" : "Upload"}
+          {uploading ? "Uploading…" : uploaded ? "Replace" : "Upload"}
         </label>
         <input
           id={inputId}

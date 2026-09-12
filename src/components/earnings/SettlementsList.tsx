@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { Banner } from "@/components/ui/Banner";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { RowList } from "@/components/ui/RowList";
+import { LoadMore } from "@/components/ui/LoadMore";
 import { listSettlements, type Settlement } from "@/lib/api/settlements";
 import type { Pagination } from "@/lib/api/bookings";
 import type { SettlementState } from "@/lib/constants/settlementState";
 import { SettlementRow } from "./SettlementRow";
-import styles from "./EarningsPanel.module.css";
 
 type SettlementsListProps = {
   stateFilter: SettlementState | "";
@@ -65,18 +67,26 @@ export function SettlementsList({ stateFilter, accessToken }: SettlementsListPro
       {error ? <Banner>{error}</Banner> : null}
 
       {!loading && settlements.length === 0 ? (
-        <p className={styles.empty}>No settlements here yet.</p>
+        stateFilter ? (
+          <EmptyState icon="receipt" title="No settlements with this status" body="Try another status, or choose All." />
+        ) : (
+          <EmptyState
+            icon="receipt"
+            title="No settlements yet"
+            body="Each completed booking settles here, with the tax withheld and the date the payout reaches your bank."
+          />
+        )
       ) : null}
 
-      {settlements.map((settlement) => (
-        <SettlementRow key={settlement.bookingId} settlement={settlement} />
-      ))}
-
-      {hasMore ? (
-        <button type="button" className={styles.loadMore} disabled={loadingMore} onClick={handleLoadMore}>
-          {loadingMore ? "Loading…" : "Load more"}
-        </button>
+      {settlements.length > 0 ? (
+        <RowList>
+          {settlements.map((settlement) => (
+            <SettlementRow key={settlement.bookingId} settlement={settlement} />
+          ))}
+        </RowList>
       ) : null}
+
+      {hasMore ? <LoadMore loading={loadingMore} onClick={handleLoadMore} what="settlements" /> : null}
     </>
   );
 }

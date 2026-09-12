@@ -124,11 +124,11 @@ export function TicketDetail({ ticketId, accessToken }: { ticketId: string; acce
 
   if (loadError) {
     return (
-      <main className={styles.page}>
+      <div className={styles.page}>
         <div className={styles.column}>
           <Banner>{loadError}</Banner>
         </div>
-      </main>
+      </div>
     );
   }
 
@@ -137,7 +137,7 @@ export function TicketDetail({ ticketId, accessToken }: { ticketId: string; acce
   const isClosed = ticket.status === "closed";
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <div className={styles.column}>
         <div className={styles.header}>
           <div>
@@ -216,6 +216,6 @@ export function TicketDetail({ ticketId, accessToken }: { ticketId: string; acce
           </form>
         )}
       </div>
-    </main>
+    </div>
   );
 }

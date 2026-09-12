@@ -1,74 +1,35 @@
 .page {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  padding: var(--space-8) var(--space-6);
+  width: 100%;
 }
 
 .column {
   width: 100%;
-  max-width: 640px;
-}
-
-.heading {
-  font-family: var(--font-display);
-  font-size: 1.75rem;
-  font-weight: 600;
-  margin: 0 0 var(--space-2);
-}
-
-.subtext {
-  color: var(--color-ink-muted);
-  margin: 0 0 var(--space-6);
-  line-height: 1.5;
+  max-width: 800px;
 }
 
 .summary {
   display: flex;
-  align-items: baseline;
-  gap: var(--space-3);
+  align-items: center;
+  gap: var(--space-4);
   border: 1px solid var(--color-line);
   border-radius: var(--radius-md);
   background: var(--color-paper-raised);
   padding: var(--space-5);
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-5);
 }
 
 .summaryAverage {
   font-family: var(--font-display);
-  font-size: 2.25rem;
-  font-weight: 600;
-  color: var(--color-brass-strong);
-}
-
-.summaryStars {
-  font-size: 1.125rem;
-  color: var(--color-brass);
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--color-ink);
+  margin: 0;
 }
 
 .summaryCount {
   font-size: 0.875rem;
   color: var(--color-ink-muted);
-}
-
-.empty {
-  color: var(--color-ink-muted);
-  font-size: 0.9375rem;
-}
-
-.loadMore {
-  display: block;
-  margin: var(--space-4) auto 0;
-  background: none;
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-sm);
-  padding: var(--space-2) var(--space-5);
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.loadMore:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  margin: var(--space-1) 0 0;
 }

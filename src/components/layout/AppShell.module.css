@@ -15,7 +15,10 @@
   }
 }
 
-/* ─── Top header bar (inside content area) ───────────────────────────── */
+/* ─── Mobile top bar ─────────────────────────────────────────────────── */
+/* Mobile only: the sidebar (and its wordmark) is hidden below 1024px. On
+   desktop the sidebar carries the brand and each page's own <h1> carries the
+   title, so a second bar repeating the page name would be pure chrome. */
 
 .header {
   position: sticky;
@@ -23,14 +26,15 @@
   z-index: 10;
   background: var(--color-paper);
   border-bottom: 1px solid var(--color-line);
-  padding: var(--space-4) var(--space-6);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
 }
 
-/* Mobile: show wordmark in top bar since the sidebar is hidden */
+@media (min-width: 1024px) {
+  .header {
+    display: none;
+  }
+}
+
 .headerWordmark {
   font-family: var(--font-display);
   font-size: 1.125rem;
@@ -40,34 +44,23 @@
   text-decoration: none;
 }
 
-@media (min-width: 1024px) {
-  .headerWordmark {
-    display: none;
-  }
-}
-
-.headerPageTitle {
-  font-family: var(--font-display);
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 0;
-  display: none;
-}
-
-@media (min-width: 1024px) {
-  .headerPageTitle {
-    display: block;
-  }
-}
-
-.headerRight {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-}
-
 /* ─── Main content ───────────────────────────────────────────────────── */
+/* Content is left-aligned to the sidebar edge, not centred in the viewport —
+   each page sets its own measure (forms narrow, lists wider). */
 
 .main {
   flex: 1;
+  padding: var(--space-6) var(--space-5);
+}
+
+@media (min-width: 640px) {
+  .main {
+    padding: var(--space-8);
+  }
+}
+
+@media (min-width: 1024px) {
+  .main {
+    padding: var(--space-10) var(--space-12);
+  }
 }

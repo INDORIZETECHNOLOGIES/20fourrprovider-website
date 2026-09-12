@@ -34,11 +34,9 @@ export default function AvailabilityPage() {
   return (
     <AppShell title="Availability">
       <AvailabilityPanel
-        isVerified={profile.isVerified}
-        initialIsAvailable={profile.availability.isAvailable}
-        workingHours={profile.availability.workingHours}
-        initialDaysOff={profile.availability.daysOff}
+        profile={profile}
         accessToken={session.tokens.accessToken}
+        onProfileUpdated={setProfile}
       />
     </AppShell>
   );

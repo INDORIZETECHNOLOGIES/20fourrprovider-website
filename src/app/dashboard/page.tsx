@@ -3,55 +3,169 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import {
-  useSession,
-  useRedirectIfLoggedOut,
-} from "@/lib/auth/session";
+import { useSession, useRedirectIfLoggedOut } from "@/lib/auth/session";
 import {
   getProviderProfile,
   isProfileComplete,
   SERVICE_CATEGORY_LABELS,
   type ProviderProfile,
 } from "@/lib/api/provider";
+import { PROVIDER_DOCUMENT_CATALOG } from "@/lib/constants/providerDocuments";
 import { BOOKING_STATUS_LABELS, BOOKING_STATUS_TONE, type BookingStatus } from "@/lib/constants/bookingStatus";
-import {
-  listBookings,
-  type Booking,
-} from "@/lib/api/bookings";
+import { listBookings, type Booking } from "@/lib/api/bookings";
 import { listSettlements } from "@/lib/api/settlements";
 import { setAvailability } from "@/lib/api/availability";
-import { AppSidebar } from "@/components/layout/AppSidebar";
+import { AppShell } from "@/components/layout/AppShell";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Switch } from "@/components/ui/Switch";
 import { Icon } from "@/components/ui/Icon";
 import styles from "./page.module.css";
 
+// Only the latest page of released settlements is summed — an all-time total
+// would need every page loaded (see the Earnings note in CLAUDE.md), so the
+// card says which sample it covers instead of implying a lifetime figure.
+const PAYOUT_SAMPLE = 50;
+
+// Enough of each confirmed status to find the next shift; the count shown on the
+// ledger strip comes from `pagination.total`, not from this page of results.
+const UPCOMING_SAMPLE = 20;
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-function formatPaise(paise: number): string {
+function formatCompactPaise(paise: number): string {
   const rupees = paise / 100;
-  if (rupees >= 100_000)
-    return `₹${(rupees / 100_000).toFixed(1)}L`;
-  if (rupees >= 1_000)
-    return `₹${(rupees / 1_000).toFixed(1)}K`;
+  if (rupees >= 100_000) return `₹${(rupees / 100_000).toFixed(1)}L`;
+  if (rupees >= 1_000) return `₹${(rupees / 1_000).toFixed(1)}K`;
   return `₹${rupees.toFixed(0)}`;
 }
 
 function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "short",
-  });
+  return new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short" });
 }
 
 function statusPillClass(status: BookingStatus): string {
-  const tone = BOOKING_STATUS_TONE[status];
-  switch (tone) {
-    case "action":  return styles.statusPillPending;
-    case "active":  return styles.statusPillAccepted;
-    case "muted":   return styles.statusPillCompleted;
-    case "danger":  return styles.statusPillRejected;
-    default:        return styles.statusPillCompleted;
+  switch (BOOKING_STATUS_TONE[status]) {
+    case "action":
+      return styles.statusPillPending;
+    case "active":
+      return styles.statusPillAccepted;
+    case "danger":
+      return styles.statusPillRejected;
+    default:
+      return styles.statusPillCompleted;
   }
 }
+
+// One readable sentence, e.g. "Security guard and bouncer in Pune, Maharashtra,
+// with 5 years of experience." — rather than a dot-separated meta string.
+function profileSummary(profile: ProviderProfile): string | null {
+  const labels = profile.serviceCategories.map((category, i) => {
+    const label = SERVICE_CATEGORY_LABELS[category];
+    return i === 0 ? label : label.charAt(0).toLowerCase() + label.slice(1);
+  });
+  if (labels.length === 0) return null;
+
+  const services =
+    labels.length === 1 ? labels[0] : `${labels.slice(0, -1).join(", ")} and ${labels[labels.length - 1]}`;
+  const place = [profile.serviceCity, profile.serviceState].filter(Boolean).join(", ");
+  const years = profile.yearsExperience;
+
+  return `${services}${place ? ` in ${place}` : ""}${
+    years ? `, with ${years} ${years === 1 ? "year" : "years"} of experience` : ""
+  }.`;
+}
+
+// The shift a provider needs to think about right now: one they're already on,
+// otherwise the soonest paid booking that hasn't finished.
+function pickNextShift(bookings: Booking[]): Booking | null {
+  const onDuty = bookings.find((b) => b.status === "duty_started");
+  if (onDuty) return onDuty;
+
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+
+  return (
+    bookings
+      .filter((b) => new Date(b.endDate).getTime() >= startOfToday.getTime())
+      .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())[0] ?? null
+  );
+}
+
+type SetupTask = {
+  id: string;
+  label: string;
+  detail: string;
+  done: boolean;
+  action?: { href: string; label: string };
+};
+
+// What actually stands between a provider and their first booking. Every item is
+// derived from the profile already fetched — no extra requests.
+function setupTasks(profile: ProviderProfile): SetupTask[] {
+  const required = PROVIDER_DOCUMENT_CATALOG.filter((d) => d.requiredFor[profile.providerType]);
+  const uploaded = required.filter((d) => profile.documents?.[`${d.id}Url`]);
+  const bank = profile.bankDetails;
+
+  const bankTask: SetupTask = !bank?.accountNumber
+    ? {
+        id: "bank",
+        label: "Payout bank account",
+        detail: "Where your settlements are paid. Nothing can be released without it.",
+        done: false,
+        action: { href: "/earnings", label: "Add bank details" },
+      }
+    : !bank.verified
+      ? {
+          id: "bank",
+          label: "Payout bank account",
+          detail: `Account ending ${bank.accountNumber.slice(-4)} — our team is verifying it.`,
+          done: false,
+        }
+      : !bank.confirmedByProvider
+        ? {
+            id: "bank",
+            label: "Payout bank account",
+            detail: "Verified. Confirm it's yours before the first payout can be released.",
+            done: false,
+            action: { href: "/earnings", label: "Confirm your account" },
+          }
+        : { id: "bank", label: "Payout bank account", detail: "Verified and confirmed.", done: true };
+
+  return [
+    {
+      id: "profile",
+      label: "Profile details",
+      detail: "Services, city and experience — this is what clients search on.",
+      done: true,
+    },
+    {
+      id: "documents",
+      label: "Identity documents",
+      detail:
+        uploaded.length === required.length
+          ? `All ${required.length} required documents uploaded.`
+          : `${uploaded.length} of ${required.length} required documents uploaded.`,
+      done: uploaded.length === required.length,
+      action:
+        uploaded.length === required.length
+          ? undefined
+          : { href: "/documents", label: "Upload documents" },
+    },
+    bankTask,
+    {
+      id: "verification",
+      label: "Account verification",
+      detail: profile.isVerified
+        ? "Verified — clients can find and book you."
+        : "Our team reviews your documents once they're all in. You can't accept bookings until then.",
+      done: profile.isVerified,
+    },
+  ];
+}
+
+type PayoutSummary = { paise: number; counted: number; total: number };
+
+type EmptyCopy = { title: string; body: string; action?: { href: string; label: string } };
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -61,8 +175,9 @@ export default function DashboardPage() {
 
   const [profile, setProfile] = useState<ProviderProfile | null | "loading">("loading");
   const [pendingCount, setPendingCount] = useState<number | null>(null);
-  const [activeCount, setActiveCount] = useState<number | null>(null);
-  const [settledPaise, setSettledPaise] = useState<number | null>(null);
+  const [confirmedCount, setConfirmedCount] = useState<number | null>(null);
+  const [confirmedBookings, setConfirmedBookings] = useState<Booking[]>([]);
+  const [payouts, setPayouts] = useState<PayoutSummary | null>(null);
   const [recentBookings, setRecentBookings] = useState<Booking[] | null>(null);
   const [availToggling, setAvailToggling] = useState(false);
 
@@ -73,40 +188,58 @@ export default function DashboardPage() {
     const token = session.tokens.accessToken;
     let cancelled = false;
 
-    // Profile
-    getProviderProfile(token).then(({ profile: p }) => {
-      if (cancelled) return;
-      if (!isProfileComplete(p)) {
-        router.replace("/profile/setup");
-        return;
-      }
-      setProfile(p);
-    }).catch(() => { if (!cancelled) setProfile(null); });
+    getProviderProfile(token)
+      .then(({ profile: p }) => {
+        if (cancelled) return;
+        if (!isProfileComplete(p)) {
+          router.replace("/profile/setup");
+          return;
+        }
+        setProfile(p);
+      })
+      .catch(() => {
+        if (!cancelled) setProfile(null);
+      });
 
-    // Pending bookings count
-    listBookings(token, { status: "pending", limit: 1 }).then(({ pagination }) => {
-      if (!cancelled) setPendingCount(pagination.total);
-    }).catch(() => {});
+    listBookings(token, { status: "pending", limit: 1 })
+      .then(({ pagination }) => {
+        if (!cancelled) setPendingCount(pagination.total);
+      })
+      .catch(() => {});
 
-    // Active bookings count (all statuses that mean "in-flight")
-    listBookings(token, { status: "provider_accepted", limit: 1 }).then(({ pagination }) => {
-      if (!cancelled) setActiveCount(pagination.total);
-    }).catch(() => {});
+    // "Confirmed" = paid and not yet finished — the bookings a provider has to
+    // turn up for. The list endpoint filters by a single status, hence two calls.
+    Promise.all([
+      listBookings(token, { status: "payment_done", limit: UPCOMING_SAMPLE }),
+      listBookings(token, { status: "duty_started", limit: UPCOMING_SAMPLE }),
+    ])
+      .then(([paid, onDuty]) => {
+        if (cancelled) return;
+        setConfirmedCount(paid.pagination.total + onDuty.pagination.total);
+        setConfirmedBookings([...onDuty.bookings, ...paid.bookings]);
+      })
+      .catch(() => {});
 
-    // Settled earnings (first page, sum netPaise)
-    listSettlements(token, { state: "released", limit: 50 }).then(({ settlements }) => {
-      if (!cancelled) {
-        const total = settlements.reduce((sum, s) => sum + (s.netPaise ?? 0), 0);
-        setSettledPaise(total);
-      }
-    }).catch(() => {});
+    listSettlements(token, { state: "released", limit: PAYOUT_SAMPLE })
+      .then(({ settlements, pagination }) => {
+        if (cancelled) return;
+        setPayouts({
+          paise: settlements.reduce((sum, s) => sum + (s.netPaise ?? 0), 0),
+          counted: settlements.length,
+          total: pagination.total,
+        });
+      })
+      .catch(() => {});
 
-    // Recent bookings (last 5 across all statuses)
-    listBookings(token, { limit: 5 }).then(({ bookings }) => {
-      if (!cancelled) setRecentBookings(bookings);
-    }).catch(() => {});
+    listBookings(token, { limit: 5 })
+      .then(({ bookings }) => {
+        if (!cancelled) setRecentBookings(bookings);
+      })
+      .catch(() => {});
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [session, router]);
 
   async function handleAvailabilityToggle(next: boolean) {
@@ -117,10 +250,10 @@ export default function DashboardPage() {
       setProfile((prev) =>
         prev && prev !== "loading"
           ? { ...prev, availability: { ...prev.availability, isAvailable: next } }
-          : prev
+          : prev,
       );
     } catch {
-      // Silently ignore — user can go to /availability for full control
+      // Silently ignore — the provider can use /availability for full control.
     } finally {
       setAvailToggling(false);
     }
@@ -129,237 +262,230 @@ export default function DashboardPage() {
   if (!session || profile === "loading") return null;
 
   const isAvailable = profile ? profile.availability.isAvailable : false;
+  const summary = profile ? profileSummary(profile) : null;
+  const nextShift = pickNextShift(confirmedBookings);
+  const tasks = profile ? setupTasks(profile) : [];
+  const tasksDone = tasks.filter((t) => t.done).length;
+  // The checklist earns its place only while something is still outstanding.
+  const showSetup = tasks.length > 0 && tasksDone < tasks.length;
 
-  const serviceLabel =
-    profile && profile.serviceCategories.length > 0
-      ? profile.serviceCategories
-          .map((c) => SERVICE_CATEGORY_LABELS[c])
-          .join(", ")
-      : null;
-
-  const locationLabel =
-    profile ? `${profile.serviceCity}, ${profile.serviceState}` : null;
-
-  const expLabel =
-    profile && profile.yearsExperience
-      ? `${profile.yearsExperience} yr exp`
-      : null;
+  // Tell the provider what's actually standing between them and their first
+  // request, instead of a generic "nothing here". The setup checklist already
+  // carries the verification call to action, so don't repeat it underneath.
+  const emptyBookings: EmptyCopy = !profile
+    ? { title: "No bookings yet", body: "Requests from clients will appear here." }
+    : !profile.isVerified
+      ? {
+          title: "No bookings yet",
+          body: "Clients can book you once your account is verified.",
+          ...(showSetup ? {} : { action: { href: "/documents", label: "Check your documents" } }),
+        }
+      : !isAvailable
+        ? {
+            title: "No bookings yet",
+            body: "You're paused, so clients can't find you. Switch your availability back on above to start receiving requests.",
+          }
+        : { title: "No bookings yet", body: "You're visible to clients — new requests will show up here." };
 
   return (
-    <div className={styles.shell}>
-      {/* Sidebar */}
-      <AppSidebar />
-
-      {/* Top header (mobile: wordmark; desktop: page title) */}
-      <header className={styles.header}>
-        <Link href="/dashboard" className={styles.headerWordmark}>
-          20fourr
-        </Link>
-        <h1 className={styles.headerPageTitle}>Dashboard</h1>
-        <div className={styles.headerRight} />
-      </header>
-
-      <main className={styles.main}>
-        {/* Welcome greeting */}
+    <AppShell title="Dashboard">
+      <div className={styles.content}>
         <div className={styles.greeting}>
-          <p className={styles.greetingText}>
-            Welcome back, {session.name.split(" ")[0]}.
-          </p>
-          <p className={styles.greetingMeta}>
-            {serviceLabel && <span>{serviceLabel}</span>}
-            {serviceLabel && locationLabel && (
-              <span className={styles.greetingPipe}>·</span>
-            )}
-            {locationLabel && <span>{locationLabel}</span>}
-            {expLabel && (
-              <>
-                <span className={styles.greetingPipe}>·</span>
-                <span>{expLabel}</span>
-              </>
-            )}
-          </p>
+          <h1 className={styles.greetingText}>Welcome back, {session.name.split(" ")[0]}.</h1>
+          {summary ? <p className={styles.greetingMeta}>{summary}</p> : null}
         </div>
 
-        {/* ── Stat cards ── */}
-        <div className={styles.statRow}>
-          <Link href="/bookings?status=pending" className={`${styles.statCard} ${styles.statCardAccentPending}`}>
-            <p className={styles.statLabel}>Pending requests</p>
+        {/* ── The one thing that matters most: a shift to turn up for, or the
+            work left before bookings can come in. ── */}
+        {nextShift ? (
+          <Link href={`/bookings/${nextShift._id}`} className={styles.shift}>
+            <div className={styles.shiftDate}>
+              <span className={styles.shiftDay}>
+                {new Date(nextShift.startDate).toLocaleDateString("en-IN", { day: "numeric" })}
+              </span>
+              <span className={styles.shiftMonth}>
+                {new Date(nextShift.startDate).toLocaleDateString("en-IN", { month: "short" })}
+              </span>
+            </div>
+
+            <div className={styles.shiftBody}>
+              <p className={styles.shiftKicker}>
+                {nextShift.status === "duty_started" ? "On duty now" : "Next shift"}
+              </p>
+              <p className={styles.shiftTitle}>
+                {SERVICE_CATEGORY_LABELS[nextShift.serviceCategory]} for {nextShift.clientId.name}
+              </p>
+              <p className={styles.shiftMeta}>
+                {nextShift.startTime}–{nextShift.endTime}
+                {nextShift.numberOfDays > 1 ? ` · ${nextShift.numberOfDays} days` : ""}
+                {nextShift.address ? ` · ${nextShift.address}` : ""}
+              </p>
+            </div>
+
+            <span className={styles.shiftAction}>
+              Open booking
+              <Icon name="arrow-right" size={16} />
+            </span>
+          </Link>
+        ) : showSetup ? (
+          <section className={styles.setup}>
+            <div className={styles.setupHead}>
+              <h2 className={styles.setupTitle}>Before clients can book you</h2>
+              <p className={styles.setupProgress}>
+                {tasksDone} of {tasks.length} done
+              </p>
+            </div>
+
+            <ol className={styles.setupList}>
+              {tasks.map((task) => (
+                <li key={task.id} className={styles.setupItem}>
+                  <span className={`${styles.setupMark} ${task.done ? styles.setupMarkDone : ""}`}>
+                    {task.done ? <Icon name="check" size={13} /> : null}
+                  </span>
+                  <div>
+                    <p className={`${styles.setupLabel} ${task.done ? styles.setupLabelDone : ""}`}>
+                      {task.label}
+                    </p>
+                    <p className={styles.setupDetail}>{task.detail}</p>
+                    {task.action ? (
+                      <Link href={task.action.href} className={styles.setupAction}>
+                        {task.action.label}
+                      </Link>
+                    ) : null}
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </section>
+        ) : null}
+
+        {/* ── Counters, as one ledger strip rather than three floating cards ── */}
+        <div className={styles.ledger}>
+          <Link href="/bookings?status=pending" className={styles.ledgerCell}>
+            <p className={styles.ledgerLabel}>Pending requests</p>
             {pendingCount === null ? (
-              <div className={styles.statSkeleton} />
+              <div className={styles.skeleton} />
             ) : (
-              <p className={styles.statValue}>{pendingCount}</p>
+              <p className={styles.ledgerValue}>{pendingCount}</p>
             )}
-            <p className={styles.statSub}>
+            <p className={styles.ledgerSub}>
               {pendingCount === null
                 ? "Loading…"
                 : pendingCount === 0
-                ? "No pending requests"
-                : "Tap to review"}
+                  ? "Nothing waiting on you"
+                  : "Waiting for your response"}
             </p>
           </Link>
 
-          <Link href="/bookings?status=accepted" className={`${styles.statCard} ${styles.statCardAccentActive}`}>
-            <p className={styles.statLabel}>Active bookings</p>
-            {activeCount === null ? (
-              <div className={styles.statSkeleton} />
+          <Link href="/bookings" className={styles.ledgerCell}>
+            <p className={styles.ledgerLabel}>Confirmed bookings</p>
+            {confirmedCount === null ? (
+              <div className={styles.skeleton} />
             ) : (
-              <p className={styles.statValue}>{activeCount}</p>
+              <p className={styles.ledgerValue}>{confirmedCount}</p>
             )}
-            <p className={styles.statSub}>
-              {activeCount === null
+            <p className={styles.ledgerSub}>
+              {confirmedCount === null
                 ? "Loading…"
-                : activeCount === 0
-                ? "None in progress"
-                : "Currently running"}
+                : confirmedCount === 0
+                  ? "Nothing scheduled yet"
+                  : "Paid and scheduled"}
             </p>
           </Link>
 
-          <Link href="/earnings" className={`${styles.statCard} ${styles.statCardAccentEarnings}`}>
-            <p className={styles.statLabel}>Settled earnings</p>
-            {settledPaise === null ? (
-              <div className={styles.statSkeleton} />
+          <Link href="/earnings" className={styles.ledgerCell}>
+            <p className={styles.ledgerLabel}>Paid out</p>
+            {payouts === null ? (
+              <div className={styles.skeleton} />
             ) : (
-              <p className={styles.statValue}>{settledPaise === 0 ? "—" : formatPaise(settledPaise)}</p>
+              <p className={styles.ledgerValue}>
+                {payouts.total === 0 ? "—" : formatCompactPaise(payouts.paise)}
+              </p>
             )}
-            <p className={styles.statSub}>
-              {settledPaise === null
+            <p className={styles.ledgerSub}>
+              {payouts === null
                 ? "Loading…"
-                : settledPaise === 0
-                ? "No settlements yet"
-                : "From released settlements"}
+                : payouts.total === 0
+                  ? "No payouts released yet"
+                  : payouts.total > payouts.counted
+                    ? `Your latest ${payouts.counted} of ${payouts.total} payouts`
+                    : `Across ${payouts.total} ${payouts.total === 1 ? "payout" : "payouts"}`}
             </p>
           </Link>
         </div>
 
-        {/* ── Availability toggle ── */}
+        {/* ── Availability ── */}
         <div className={styles.sectionHead}>
           <h2 className={styles.sectionTitle}>Availability</h2>
           <Link href="/availability" className={styles.sectionLink}>
-            Manage →
+            Working hours and days off
           </Link>
         </div>
 
-        <div className={styles.availCard}>
-          <div className={styles.availInfo}>
+        <div className={styles.availRow}>
+          <div>
             <p className={styles.availTitle}>
               {isAvailable ? "You are accepting bookings" : "You are not accepting bookings"}
             </p>
             <p className={styles.availSubtext}>
               {isAvailable
-                ? "Clients can discover and book you. Toggle off to pause."
-                : "You are invisible to new clients. Toggle on to resume."}
+                ? "Clients can discover and book you. Switch off to pause."
+                : "You're hidden from new clients. Switch on to resume."}
             </p>
           </div>
 
-          <button
-            type="button"
+          <Switch
+            id="dashboard-availability"
+            label={availToggling ? "Saving…" : isAvailable ? "Available" : "Paused"}
+            checked={isAvailable}
             disabled={availToggling}
-            onClick={() => handleAvailabilityToggle(!isAvailable)}
-            className={`${styles.availStatus} ${isAvailable ? styles.availStatusOn : styles.availStatusOff}`}
-            aria-label={isAvailable ? "Pause availability" : "Resume availability"}
-          >
-            <span className={styles.availStatusDot} />
-            {availToggling ? "Saving…" : isAvailable ? "Available" : "Paused"}
-          </button>
+            onChange={handleAvailabilityToggle}
+          />
         </div>
 
         {/* ── Recent bookings ── */}
         <div className={styles.sectionHead}>
           <h2 className={styles.sectionTitle}>Recent bookings</h2>
-          <Link href="/bookings" className={styles.sectionLink}>
-            View all →
-          </Link>
+          {recentBookings && recentBookings.length > 0 ? (
+            <Link href="/bookings" className={styles.sectionLink}>
+              View all bookings
+            </Link>
+          ) : null}
         </div>
 
-        <div className={styles.bookingsList}>
-          {recentBookings === null ? (
-            [1, 2, 3].map((i) => (
-              <div key={i} className={styles.bookingRow} style={{ opacity: 0.5 }}>
+        {recentBookings === null ? (
+          <div className={styles.bookingsList}>
+            {[1, 2, 3].map((i) => (
+              <div key={i} className={`${styles.bookingRow} ${styles.bookingRowSkeleton}`}>
                 <div className={styles.bookingRowLeft}>
-                  <div className={styles.statSkeleton} style={{ width: 120, marginBottom: 6 }} />
-                  <div className={styles.statSkeleton} style={{ width: 80, height: "0.75rem" }} />
+                  <div className={`${styles.skeleton} ${styles.skeletonLine}`} />
+                  <div className={`${styles.skeleton} ${styles.skeletonLineShort}`} />
                 </div>
               </div>
-            ))
-          ) : recentBookings.length === 0 ? (
-            <div className={styles.emptyState}>
-              No bookings yet. Once clients book you, they&apos;ll appear here.
-            </div>
-          ) : (
-            recentBookings.map((b) => (
-              <Link
-                key={b._id}
-                href={`/bookings/${b.bookingId}`}
-                className={styles.bookingRow}
-              >
+            ))}
+          </div>
+        ) : recentBookings.length === 0 ? (
+          <EmptyState icon="clipboard" {...emptyBookings} />
+        ) : (
+          <div className={styles.bookingsList}>
+            {recentBookings.map((b) => (
+              <Link key={b._id} href={`/bookings/${b._id}`} className={styles.bookingRow}>
                 <div className={styles.bookingRowLeft}>
                   <p className={styles.bookingClient}>{b.clientId.name}</p>
-                  <div className={styles.bookingMeta}>
-                    <span className={styles.categoryBadge}>
-                      {SERVICE_CATEGORY_LABELS[b.serviceCategory]}
-                    </span>
-                    <span>
-                      {formatDate(b.startDate)} – {formatDate(b.endDate)}
-                    </span>
-                  </div>
+                  <p className={styles.bookingMeta}>
+                    {SERVICE_CATEGORY_LABELS[b.serviceCategory]} · {formatDate(b.startDate)} –{" "}
+                    {formatDate(b.endDate)}
+                  </p>
                 </div>
                 <span className={`${styles.statusPill} ${statusPillClass(b.status)}`}>
                   {BOOKING_STATUS_LABELS[b.status] ?? b.status}
                 </span>
-                <span className={styles.bookingChevron}>›</span>
+                <Icon name="arrow-right" size={16} className={styles.bookingChevron} />
               </Link>
-            ))
-          )}
-        </div>
-
-        {/* ── Quick actions ── */}
-        <div className={styles.sectionHead}>
-          <h2 className={styles.sectionTitle}>Quick actions</h2>
-        </div>
-
-        <div className={styles.actionsGrid}>
-          <Link href="/documents" className={styles.actionCard}>
-            <Icon name="file" size={22} className={styles.actionIcon} />
-            <span className={styles.actionLabel}>Documents</span>
-            <p className={styles.actionSub}>Upload KYC &amp; certificates</p>
-          </Link>
-          <Link href="/availability" className={styles.actionCard}>
-            <Icon name="calendar" size={22} className={styles.actionIcon} />
-            <span className={styles.actionLabel}>Availability</span>
-            <p className={styles.actionSub}>Set working hours &amp; days off</p>
-          </Link>
-          <Link href="/bookings" className={styles.actionCard}>
-            <Icon name="clipboard" size={22} className={styles.actionIcon} />
-            <span className={styles.actionLabel}>All bookings</span>
-            <p className={styles.actionSub}>Review, accept &amp; manage</p>
-          </Link>
-          <Link href="/earnings" className={styles.actionCard}>
-            <Icon name="receipt" size={22} className={styles.actionIcon} />
-            <span className={styles.actionLabel}>Earnings</span>
-            <p className={styles.actionSub}>Settlements &amp; payouts</p>
-          </Link>
-          <Link href="/ratings" className={styles.actionCard}>
-            <Icon name="star" size={22} className={styles.actionIcon} />
-            <span className={styles.actionLabel}>Ratings</span>
-            <p className={styles.actionSub}>What clients say about you</p>
-          </Link>
-          <Link href="/tax-profile" className={styles.actionCard}>
-            <Icon name="percent" size={22} className={styles.actionIcon} />
-            <span className={styles.actionLabel}>Tax profile</span>
-            <p className={styles.actionSub}>PAN, GST &amp; PSARA coverage</p>
-          </Link>
-          <Link href="/tickets" className={styles.actionCard}>
-            <Icon name="chat" size={22} className={styles.actionIcon} />
-            <span className={styles.actionLabel}>Support</span>
-            <p className={styles.actionSub}>Raise or track tickets</p>
-          </Link>
-          <Link href="/account" className={styles.actionCard}>
-            <Icon name="gear" size={22} className={styles.actionIcon} />
-            <span className={styles.actionLabel}>Account</span>
-            <p className={styles.actionSub}>Privacy, data &amp; settings</p>
-          </Link>
-        </div>
-      </main>
-    </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </AppShell>
   );
 }

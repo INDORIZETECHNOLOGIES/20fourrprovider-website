@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Select } from "@/components/ui/Select";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { TAX_DOCUMENT_TYPES, TAX_DOCUMENT_TYPE_LABELS } from "@/lib/constants/taxDocument";
 import type { TaxDocumentType } from "@/lib/api/taxDocuments";
 import { TaxDocumentsList } from "./TaxDocumentsList";
@@ -11,13 +12,12 @@ export function TaxDocumentsPanel({ accessToken }: { accessToken: string }) {
   const [docTypeFilter, setDocTypeFilter] = useState<TaxDocumentType | "">("");
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <div className={styles.column}>
-        <h1 className={styles.heading}>Tax documents</h1>
-        <p className={styles.subtext}>
-          Invoices and settlement statements issued for your bookings — generated automatically, not
-          something you create.
-        </p>
+        <PageHeader
+          title="Tax documents"
+          intro="Invoices and settlement statements issued for your bookings — generated automatically, not something you create."
+        />
 
         <div className={styles.filterRow}>
           <Select
@@ -37,6 +37,6 @@ export function TaxDocumentsPanel({ accessToken }: { accessToken: string }) {
 
         <TaxDocumentsList key={docTypeFilter} docTypeFilter={docTypeFilter} accessToken={accessToken} />
       </div>
-    </main>
+    </div>
   );
 }

@@ -2,6 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { Banner } from "@/components/ui/Banner";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { RowList } from "@/components/ui/RowList";
+import { LoadMore } from "@/components/ui/LoadMore";
+import { Stars } from "@/components/ui/Stars";
 import { getProviderProfile } from "@/lib/api/provider";
 import { getRatingsForUser, type Rating, type Pagination } from "@/lib/api/ratings";
 import { RatingRow } from "./RatingRow";
@@ -56,45 +61,46 @@ export function RatingsPanel({ accessToken }: { accessToken: string }) {
   }
 
   const hasMore = pagination ? pagination.page < pagination.pages : false;
+  const rated = summary !== null && summary.count > 0;
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <div className={styles.column}>
-        <h1 className={styles.heading}>Your ratings</h1>
-        <p className={styles.subtext}>What clients have said after a completed booking.</p>
+        <PageHeader
+          title="Your ratings"
+          intro="What clients have said after a completed booking. Your average is shown to clients browsing for a provider."
+        />
 
         {error ? <Banner>{error}</Banner> : null}
 
-        {summary ? (
+        {/* With no ratings the empty state below already says so — a summary
+            block of dashes and hollow stars would just say it twice. */}
+        {summary && rated ? (
           <div className={styles.summary}>
-            <span className={styles.summaryAverage}>{summary.count > 0 ? summary.average.toFixed(1) : "—"}</span>
+            <p className={styles.summaryAverage}>{summary.average.toFixed(1)}</p>
             <div>
-              <div className={styles.summaryStars}>
-                {summary.count > 0
-                  ? "★".repeat(Math.round(summary.average)) + "☆".repeat(5 - Math.round(summary.average))
-                  : "☆☆☆☆☆"}
-              </div>
-              <span className={styles.summaryCount}>
-                {summary.count} {summary.count === 1 ? "rating" : "ratings"}
-              </span>
+              <Stars value={summary.average} size={18} />
+              <p className={styles.summaryCount}>
+                {summary.count} {summary.count === 1 ? "rating" : "ratings"} from clients
+              </p>
             </div>
           </div>
         ) : null}
 
         {!loading && ratings.length === 0 ? (
-          <p className={styles.empty}>No ratings yet — they&apos;ll show up here after clients rate a completed booking.</p>
+          <EmptyState icon="star" title="No ratings yet" body="Clients can rate you once a booking is completed." />
         ) : null}
 
-        {ratings.map((rating) => (
-          <RatingRow key={rating._id} rating={rating} />
-        ))}
-
-        {hasMore ? (
-          <button type="button" className={styles.loadMore} disabled={loadingMore} onClick={handleLoadMore}>
-            {loadingMore ? "Loading…" : "Load more"}
-          </button>
+        {ratings.length > 0 ? (
+          <RowList>
+            {ratings.map((rating) => (
+              <RatingRow key={rating._id} rating={rating} />
+            ))}
+          </RowList>
         ) : null}
+
+        {hasMore ? <LoadMore loading={loadingMore} onClick={handleLoadMore} what="ratings" /> : null}
       </div>
-    </main>
+    </div>
   );
 }
