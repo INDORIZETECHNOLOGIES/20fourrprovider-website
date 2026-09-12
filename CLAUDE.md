@@ -106,6 +106,33 @@ be sized or half-filled. Rows follow one shape: identity and timing on the left,
 net payout) right-aligned in the display face, then a `Badge` for status — and per-row actions sit
 below a hairline inside the row, only on the statuses that can act.
 
+**Which services a provider offers, and their rates, are edited on the Availability page**
+(`ServicesSection`) — before it existed, `serviceCategories` and `pricing` were settable only during
+profile setup, so a provider could never change what they offer or what they charge. Four things
+about this are easy to get wrong:
+- **`PUT /provider/pricing` must be sent *before* `PUT /provider/profile`, carrying the union of the
+  currently-saved categories and the newly-offered ones.** That endpoint validates that the payload
+  covers every category presently on the profile, so removing a category fails outright if pricing
+  is sent after (or without the category being removed). Sending profile first instead leaves a
+  window where a category exists with no pricing.
+- **`PUT /provider/profile` takes the whole details object**, so `ServicesSection` passes
+  `providerType`/`serviceCity`/`serviceState`/`yearsExperience` back unchanged. Omitting them wipes
+  them.
+- Rates are **paise on the wire, rupees in the form** (`dailyRate: 150000` is ₹1,500), bounded to
+  ₹100–₹1,00,000 and 4–24 hours by `validateDailyRate`/`validateTotalHoursPerDay`.
+- The backend also accepts `hourlyRate`/`hourlyEnabled`/`weekendMultiplier`/`vehicleRate`/
+  `vehicleWithDriverRate` on pricing; the form deliberately exposes only daily rate + hours.
+
+**There is no per-category or per-day availability for an individual provider, and don't build UI
+implying there is.** `PUT /provider/availability` accepts exactly `{isAvailable}` (plus a `reason`
+the controller never stores) — the only day-level control is days-off, which is all-or-nothing for
+every service. Working hours are *readable* (`GET /provider/availability/days-off` returns
+`workingHours`) but no endpoint writes them, so the panel states them as fact rather than offering
+an editor. Per-date, per-category numbers exist only as `/provider/staff-availability` — firm
+headcount per category per date, capped by `numberOfPersonnel`, with a bulk date-range variant.
+That's a firm/agency surface and is still unbuilt here; it's the only place a "how many bouncers can
+I field on the 14th" answer could come from.
+
 **Link to a booking with `booking._id`, never `booking.bookingId`.** The detail route and
 `GET /bookings/:bookingId` take the Mongo id; `bookingId` is the human-readable reference. The first
 dashboard design linked recent bookings by the reference, so every one of those links 404'd.

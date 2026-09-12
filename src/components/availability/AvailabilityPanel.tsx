@@ -9,17 +9,17 @@ import { Banner } from "@/components/ui/Banner";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { RowList } from "@/components/ui/RowList";
 import { ApiError } from "@/lib/api/client";
-import { addDayOff, removeDayOff, setAvailability, type DayOff, type WorkingHours } from "@/lib/api/availability";
+import { addDayOff, removeDayOff, setAvailability } from "@/lib/api/availability";
+import type { ProviderProfile } from "@/lib/api/provider";
 import { validateDayOffDate } from "@/lib/validation/availability";
 import { formatDate } from "@/lib/format";
+import { ServicesSection } from "./ServicesSection";
 import styles from "./AvailabilityPanel.module.css";
 
 type AvailabilityPanelProps = {
-  isVerified: boolean;
-  initialIsAvailable: boolean;
-  workingHours: WorkingHours;
-  initialDaysOff: DayOff[];
+  profile: ProviderProfile;
   accessToken: string;
+  onProfileUpdated: (profile: ProviderProfile) => void;
 };
 
 const VERIFICATION_REQUIRED_MESSAGE =
@@ -29,18 +29,12 @@ function toDateInputValue(iso: string): string {
   return iso.slice(0, 10);
 }
 
-export function AvailabilityPanel({
-  isVerified,
-  initialIsAvailable,
-  workingHours,
-  initialDaysOff,
-  accessToken,
-}: AvailabilityPanelProps) {
-  const [isAvailable, setIsAvailable] = useState(initialIsAvailable);
-  const [daysOff, setDaysOff] = useState(initialDaysOff);
+export function AvailabilityPanel({ profile, accessToken, onProfileUpdated }: AvailabilityPanelProps) {
+  const [isAvailable, setIsAvailable] = useState(profile.availability.isAvailable);
+  const [daysOff, setDaysOff] = useState(profile.availability.daysOff);
   const [toggling, setToggling] = useState(false);
   const [gateMessage, setGateMessage] = useState<string | null>(
-    isVerified ? null : VERIFICATION_REQUIRED_MESSAGE,
+    profile.isVerified ? null : VERIFICATION_REQUIRED_MESSAGE,
   );
 
   const [newDate, setNewDate] = useState("");
@@ -49,6 +43,7 @@ export function AvailabilityPanel({
   const [addingDayOff, setAddingDayOff] = useState(false);
   const [removingDate, setRemovingDate] = useState<string | null>(null);
 
+  const workingHours = profile.availability.workingHours;
   const today = new Date().toISOString().slice(0, 10);
 
   async function handleToggle(next: boolean) {
@@ -116,7 +111,7 @@ export function AvailabilityPanel({
       <div className={styles.column}>
         <PageHeader
           title="Availability"
-          intro="Turn availability off when you can't take new bookings, and block specific days in advance."
+          intro="What you offer, whether you're taking work right now, and the days you've blocked off."
         />
 
         {gateMessage ? (
@@ -147,9 +142,12 @@ export function AvailabilityPanel({
           />
         </div>
 
+        <ServicesSection profile={profile} accessToken={accessToken} onUpdated={onProfileUpdated} />
+
         <h2 className={styles.sectionTitle}>Days off</h2>
         <p className={styles.sectionSubtext}>
-          Blocked dates stay on your calendar — clients can&apos;t book you for them.
+          Blocked dates stay on your calendar — clients can&apos;t book you for them. To stop taking
+          work altogether, switch availability off above.
         </p>
 
         <form className={styles.addRow} onSubmit={handleAddDayOff} noValidate>
