@@ -10,32 +10,55 @@
   max-width: 640px;
 }
 
-.heading {
-  font-family: var(--font-display);
-  font-size: 1.75rem;
-  font-weight: 600;
-  margin: 0 0 var(--space-2);
-}
-
-.subtext {
-  color: var(--color-ink-muted);
-  margin: 0 0 var(--space-8);
-  line-height: 1.5;
-}
-
 .form {
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
 }
 
-.section {
+/* Each concern on this form gets its own bordered block — "What you do",
+   "Your profile", "Your rates" — matching the card treatment Tax Profile,
+   Account and Earnings already use. This used to be a single undifferentiated
+   stack of fields with only a bold label distinguishing one concern from the
+   next; nothing here signalled where one decision ended and another began. */
+.card {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-paper-raised);
+  padding: var(--space-5);
+}
+
+.card > * + * {
+  margin-top: var(--space-4);
+}
+
+.cardTitle {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.cardIntro {
+  font-size: 0.875rem;
+  color: var(--color-ink-muted);
+  line-height: 1.55;
+  margin: 0;
+  max-width: 56ch;
+}
+
+.cardTitle + .cardIntro {
+  margin-top: var(--space-2);
+}
+
+.field {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
 }
 
-.sectionLabel {
+.fieldLabel {
   font-size: 0.875rem;
   font-weight: 600;
 }
@@ -98,11 +121,22 @@
   background: color-mix(in srgb, var(--color-brass) 14%, var(--color-paper-raised));
 }
 
+/* Dividers between stacked categories so several rate rows in one card don't
+   run together — same double-spacing-around-a-divider shape TaxProfilePanel's
+   .blockingTitle already uses (outer margin from .card > * + *, inner padding
+   below the rule). */
 .pricingRow {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: var(--space-3);
   align-items: start;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-line);
+}
+
+.pricingRowFirst {
+  padding-top: 0;
+  border-top: none;
 }
 
 .pricingCategory {
