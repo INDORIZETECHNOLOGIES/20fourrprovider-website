@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Select } from "@/components/ui/Select";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { markAllNotificationsRead } from "@/lib/api/notifications";
 import { NotificationsList } from "./NotificationsList";
 import styles from "./NotificationsPanel.module.css";
@@ -30,20 +31,20 @@ export function NotificationsPanel({ accessToken }: { accessToken: string }) {
   return (
     <div className={styles.page}>
       <div className={styles.column}>
-        <div className={styles.headingRow}>
-          <div>
-            <h1 className={styles.heading}>Notifications</h1>
-            <p className={styles.subtext}>Updates on your bookings, duty, and account.</p>
-          </div>
-          <button
-            type="button"
-            className={styles.markAllButton}
-            disabled={markingAll}
-            onClick={handleMarkAllRead}
-          >
-            {markingAll ? "Marking…" : "Mark all read"}
-          </button>
-        </div>
+        <PageHeader
+          title="Notifications"
+          intro="Updates on your bookings, duty and account."
+          action={
+            <button
+              type="button"
+              className={styles.markAllButton}
+              disabled={markingAll}
+              onClick={handleMarkAllRead}
+            >
+              {markingAll ? "Marking…" : "Mark all read"}
+            </button>
+          }
+        />
 
         <div className={styles.filterRow}>
           <Select

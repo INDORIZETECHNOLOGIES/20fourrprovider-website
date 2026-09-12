@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Textarea } from "@/components/ui/Textarea";
 import { Button } from "@/components/ui/Button";
 import { Banner } from "@/components/ui/Banner";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { ApiError } from "@/lib/api/client";
 import { getCurrentUser, type AuthUser } from "@/lib/api/auth";
 import {
@@ -143,8 +144,10 @@ export function AccountPanel({ accessToken }: { accessToken: string }) {
   return (
     <div className={styles.page}>
       <div className={styles.column}>
-        <h1 className={styles.heading}>Account</h1>
-        <p className={styles.subtext}>Your data, your consent, and your right to erasure under the DPDP Act.</p>
+        <PageHeader
+          title="Account"
+          intro="Your sign-in details, your data, and your rights under the DPDP Act."
+        />
 
         {user ? (
           <>

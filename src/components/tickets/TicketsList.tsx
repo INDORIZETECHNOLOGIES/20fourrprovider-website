@@ -3,11 +3,12 @@
 import { useEffect, useState } from "react";
 import { Banner } from "@/components/ui/Banner";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { RowList } from "@/components/ui/RowList";
+import { LoadMore } from "@/components/ui/LoadMore";
 import { listTickets, type Ticket } from "@/lib/api/tickets";
 import type { Pagination } from "@/lib/api/bookings";
 import type { TicketStatus } from "@/lib/constants/ticket";
 import { TicketRow } from "./TicketRow";
-import styles from "./TicketsPanel.module.css";
 
 type TicketsListProps = {
   statusFilter: TicketStatus | "";
@@ -65,25 +66,27 @@ export function TicketsList({ statusFilter, accessToken }: TicketsListProps) {
     <>
       {error ? <Banner>{error}</Banner> : null}
 
-      {!loading && tickets.length === 0 ? (statusFilter ? (
-        <EmptyState icon="chat" title="No tickets with this status" body="Try another status, or choose All." />
-      ) : (
-        <EmptyState
-          icon="chat"
-          title="No support tickets"
-          body="If something goes wrong on a booking or with a payout, open a new ticket and we'll follow up here."
-        />
-      )) : null}
-
-      {tickets.map((ticket) => (
-        <TicketRow key={ticket._id} ticket={ticket} />
-      ))}
-
-      {hasMore ? (
-        <button type="button" className={styles.loadMore} disabled={loadingMore} onClick={handleLoadMore}>
-          {loadingMore ? "Loading…" : "Load more"}
-        </button>
+      {!loading && tickets.length === 0 ? (
+        statusFilter ? (
+          <EmptyState icon="chat" title="No tickets with this status" body="Try another status, or choose All." />
+        ) : (
+          <EmptyState
+            icon="chat"
+            title="No support tickets"
+            body="If something goes wrong on a booking or with a payout, open a new ticket and we'll follow up here."
+          />
+        )
       ) : null}
+
+      {tickets.length > 0 ? (
+        <RowList>
+          {tickets.map((ticket) => (
+            <TicketRow key={ticket._id} ticket={ticket} />
+          ))}
+        </RowList>
+      ) : null}
+
+      {hasMore ? <LoadMore loading={loadingMore} onClick={handleLoadMore} what="tickets" /> : null}
     </>
   );
 }

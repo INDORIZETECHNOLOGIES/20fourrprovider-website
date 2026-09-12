@@ -3,10 +3,11 @@
 import { useEffect, useState } from "react";
 import { Banner } from "@/components/ui/Banner";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { RowList } from "@/components/ui/RowList";
+import { LoadMore } from "@/components/ui/LoadMore";
 import { listNotifications, type Notification } from "@/lib/api/notifications";
 import type { Pagination } from "@/lib/api/bookings";
 import { NotificationRow } from "./NotificationRow";
-import styles from "./NotificationsPanel.module.css";
 
 type ReadFilter = "" | "unread" | "read";
 
@@ -84,33 +85,33 @@ export function NotificationsList({ filter, accessToken }: NotificationsListProp
 
       {!loading && notifications.length === 0 ? (
         filter === "unread" ? (
-        <EmptyState icon="bell" title="You're all caught up" body="No unread notifications." />
-      ) : filter === "read" ? (
-        <EmptyState icon="bell" title="No read notifications" />
-      ) : (
-        <EmptyState
-          icon="bell"
-          title="No notifications yet"
-          body="Booking requests, duty reminders and payout updates will appear here."
-        />
-      )
+          <EmptyState icon="bell" title="You're all caught up" body="No unread notifications." />
+        ) : filter === "read" ? (
+          <EmptyState icon="bell" title="No read notifications" />
+        ) : (
+          <EmptyState
+            icon="bell"
+            title="No notifications yet"
+            body="Booking requests, duty reminders and payout updates will appear here."
+          />
+        )
       ) : null}
 
-      {notifications.map((notification) => (
-        <NotificationRow
-          key={notification._id}
-          notification={notification}
-          accessToken={accessToken}
-          onRead={handleRead}
-          onDeleted={handleDeleted}
-        />
-      ))}
-
-      {hasMore ? (
-        <button type="button" className={styles.loadMore} disabled={loadingMore} onClick={handleLoadMore}>
-          {loadingMore ? "Loading…" : "Load more"}
-        </button>
+      {notifications.length > 0 ? (
+        <RowList>
+          {notifications.map((notification) => (
+            <NotificationRow
+              key={notification._id}
+              notification={notification}
+              accessToken={accessToken}
+              onRead={handleRead}
+              onDeleted={handleDeleted}
+            />
+          ))}
+        </RowList>
       ) : null}
+
+      {hasMore ? <LoadMore loading={loadingMore} onClick={handleLoadMore} what="notifications" /> : null}
     </>
   );
 }

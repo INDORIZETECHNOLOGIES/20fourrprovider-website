@@ -1,3 +1,4 @@
+import { Stars } from "@/components/ui/Stars";
 import type { Rating } from "@/lib/api/ratings";
 import { RATING_TAG_LABELS } from "@/lib/constants/rating";
 import { formatDate } from "@/lib/format";
@@ -9,11 +10,15 @@ export function RatingRow({ rating }: { rating: Rating }) {
   return (
     <div className={styles.row}>
       <div className={styles.top}>
-        <span className={styles.stars}>{"★".repeat(rating.rating)}{"☆".repeat(5 - rating.rating)}</span>
+        <div className={styles.who}>
+          <Stars value={rating.rating} />
+          <span className={styles.reviewer}>{reviewer}</span>
+        </div>
         <span className={styles.date}>{formatDate(rating.createdAt)}</span>
       </div>
-      <p className={styles.reviewer}>{reviewer}</p>
+
       {rating.review ? <p className={styles.review}>{rating.review}</p> : null}
+
       {rating.tags && rating.tags.length > 0 ? (
         <div className={styles.tags}>
           {rating.tags.map((tag) => (

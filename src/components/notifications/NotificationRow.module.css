@@ -1,21 +1,21 @@
+/* Inside RowList — the container owns the border and hairline dividers. */
+
 .row {
   display: flex;
   align-items: flex-start;
   gap: var(--space-3);
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-md);
-  background: var(--color-paper-raised);
   padding: var(--space-4) var(--space-5);
-  margin-bottom: var(--space-3);
 }
 
+/* An unread notification gets a brass marker; a read one keeps the same indent
+   so titles stay on one line down the list. */
 .dot {
   flex-shrink: 0;
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background: var(--color-brass);
-  margin-top: 6px;
+  margin-top: 7px;
 }
 
 .dotHidden {
@@ -28,13 +28,17 @@
 }
 
 .title {
+  font-size: 0.9375rem;
   font-weight: 600;
+  margin: 0;
 }
 
 .body {
   font-size: 0.9375rem;
+  line-height: 1.5;
   color: var(--color-ink-muted);
-  margin: var(--space-1) 0;
+  margin: 2px 0 0;
+  max-width: 68ch;
 }
 
 .meta {
@@ -43,6 +47,7 @@
   align-items: center;
   font-size: 0.8125rem;
   color: var(--color-ink-muted);
+  margin-top: var(--space-2);
 }
 
 .actionButton {
@@ -50,9 +55,14 @@
   border: none;
   padding: 0;
   text-decoration: underline;
+  text-underline-offset: 2px;
   cursor: pointer;
   font-size: 0.8125rem;
   color: var(--color-ink-muted);
+}
+
+.actionButton:hover:not(:disabled) {
+  color: var(--color-ink);
 }
 
 .actionButton:disabled {

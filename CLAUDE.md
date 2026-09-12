@@ -92,6 +92,20 @@ to choose the shift). The checklist disappears once every item is done rather th
 a row of ticks. The counters below it are one bordered strip divided by hairlines, not three
 separately-shadowed cards each with a gradient accent bar — that was the page's main slop tell.
 
+**Four shared primitives carry every signed-in page — use them instead of re-declaring the same
+CSS per module.** `PageHeader` (`src/components/ui/`) is the page's title block: title, optional
+intro, optional single page-level action (Support's "New ticket", Notifications' "Mark all read").
+Ten modules had their own identical `.heading`/`.subtext` rules before it existed. `RowList` is the
+list container — one border, one background, hairline dividers supplied by the container
+(`.list > * + *`), so a row component carries no border, radius, shadow or bottom margin of its own;
+every list (bookings, settlements, ratings, tickets, notifications, tax documents, documents,
+days off) renders through it. `LoadMore` is the paginated "Load more" button that five lists had
+five copies of. `Stars` draws the rating stars as SVG with the same geometry as `Icon`'s star —
+ratings used to concatenate "★"/"☆" text characters, which take the body font's metrics and can't
+be sized or half-filled. Rows follow one shape: identity and timing on the left, the number (amount,
+net payout) right-aligned in the display face, then a `Badge` for status — and per-row actions sit
+below a hairline inside the row, only on the statuses that can act.
+
 **Link to a booking with `booking._id`, never `booking.bookingId`.** The detail route and
 `GET /bookings/:bookingId` take the Mongo id; `bookingId` is the human-readable reference. The first
 dashboard design linked recent bookings by the reference, so every one of those links 404'd.

@@ -1,38 +1,49 @@
+/* Inside RowList — the container owns the border and hairline dividers. */
+
 .row {
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-md);
-  background: var(--color-paper-raised);
   padding: var(--space-4) var(--space-5);
-  margin-bottom: var(--space-4);
 }
 
-.top {
+.head {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: var(--space-3);
-  margin-bottom: var(--space-2);
-  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.headText {
+  min-width: 0;
 }
 
 .number {
-  font-family: var(--font-display);
-  font-size: 1.0625rem;
+  font-size: 0.9375rem;
   font-weight: 600;
+  color: var(--color-ink);
+  margin: 0;
 }
 
 .details {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1) var(--space-4);
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   color: var(--color-ink-muted);
-  margin-bottom: var(--space-3);
+  margin: 2px 0 0;
+}
+
+.amountCol {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-2);
+  flex-shrink: 0;
+  text-align: right;
 }
 
 .amount {
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   color: var(--color-ink);
+  margin: 0;
 }
 
 .actions {
@@ -40,6 +51,7 @@
   gap: var(--space-3);
   align-items: center;
   flex-wrap: wrap;
+  margin-top: var(--space-3);
 }
 
 .link {
@@ -51,6 +63,11 @@
   font-weight: 600;
   cursor: pointer;
   color: var(--color-ink);
+  transition: border-color var(--transition-base);
+}
+
+.link:hover {
+  border-color: color-mix(in srgb, var(--color-brass) 45%, var(--color-line));
 }
 
 .link:disabled {
@@ -67,6 +84,11 @@
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
+  transition: background var(--transition-base);
+}
+
+.downloadLink:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-navy) 85%, var(--color-brass));
 }
 
 .downloadLink:disabled {
@@ -111,4 +133,18 @@
   font-size: 0.8125rem;
   color: var(--color-danger);
   margin-top: var(--space-2);
+}
+
+@media (max-width: 560px) {
+  .head {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .amountCol {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-3);
+    text-align: left;
+  }
 }

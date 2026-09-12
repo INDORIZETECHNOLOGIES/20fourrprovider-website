@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react";
 import { Banner } from "@/components/ui/Banner";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { RowList } from "@/components/ui/RowList";
+import { LoadMore } from "@/components/ui/LoadMore";
 import { listTaxDocuments, type TaxDocumentHeader, type TaxDocumentType, type Pagination } from "@/lib/api/taxDocuments";
 import { TaxDocumentRow } from "./TaxDocumentRow";
-import styles from "./TaxDocumentsPanel.module.css";
 
 export function TaxDocumentsList({
   docTypeFilter,
@@ -64,25 +65,25 @@ export function TaxDocumentsList({
 
       {!loading && documents.length === 0 ? (
         docTypeFilter ? (
-        <EmptyState icon="receipt" title="No documents of this type" body="Try another type, or choose All." />
-      ) : (
-        <EmptyState
-          icon="receipt"
-          title="No tax documents yet"
-          body="Invoices and settlement statements are issued automatically as your bookings are confirmed and completed."
-        />
-      )
+          <EmptyState icon="receipt" title="No documents of this type" body="Try another type, or choose All." />
+        ) : (
+          <EmptyState
+            icon="receipt"
+            title="No tax documents yet"
+            body="Invoices and settlement statements are issued automatically as your bookings are confirmed and completed."
+          />
+        )
       ) : null}
 
-      {documents.map((doc) => (
-        <TaxDocumentRow key={doc._id} document={doc} accessToken={accessToken} />
-      ))}
-
-      {hasMore ? (
-        <button type="button" className={styles.loadMore} disabled={loadingMore} onClick={handleLoadMore}>
-          {loadingMore ? "Loading…" : "Load more"}
-        </button>
+      {documents.length > 0 ? (
+        <RowList>
+          {documents.map((doc) => (
+            <TaxDocumentRow key={doc._id} document={doc} accessToken={accessToken} />
+          ))}
+        </RowList>
       ) : null}
+
+      {hasMore ? <LoadMore loading={loadingMore} onClick={handleLoadMore} what="documents" /> : null}
     </>
   );
 }

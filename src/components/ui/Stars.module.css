@@ -1,0 +1,15 @@
+.row {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.starFilled {
+  fill: var(--color-brass);
+  stroke: var(--color-brass);
+}
+
+.starEmpty {
+  fill: none;
+  stroke: color-mix(in srgb, var(--color-brass) 45%, transparent);
+}

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Select } from "@/components/ui/Select";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { SETTLEMENT_STATES, SETTLEMENT_STATE_LABELS, type SettlementState } from "@/lib/constants/settlementState";
 import { SettlementsList } from "./SettlementsList";
 import { BankDetailsSection } from "./BankDetailsSection";
@@ -13,12 +14,14 @@ export function EarningsPanel({ accessToken }: { accessToken: string }) {
   return (
     <div className={styles.page}>
       <div className={styles.column}>
-        <h1 className={styles.heading}>Earnings</h1>
-        <p className={styles.subtext}>
-          Settlements for your completed bookings, including tax withheld and payout timing.
-        </p>
+        <PageHeader
+          title="Earnings"
+          intro="Settlements for your completed bookings, including tax withheld and payout timing."
+        />
 
         <BankDetailsSection accessToken={accessToken} />
+
+        <h2 className={styles.sectionTitle}>Settlements</h2>
 
         <div className={styles.filterRow}>
           <Select

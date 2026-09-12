@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Select } from "@/components/ui/Select";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { BOOKING_STATUSES, BOOKING_STATUS_LABELS, type BookingStatus } from "@/lib/constants/bookingStatus";
 import { BookingsList } from "./BookingsList";
 import styles from "./BookingsPanel.module.css";
@@ -26,8 +27,10 @@ export function BookingsPanel({ isVerified, accessToken }: BookingsPanelProps) {
   return (
     <div className={styles.page}>
       <div className={styles.column}>
-        <h1 className={styles.heading}>Bookings</h1>
-        <p className={styles.subtext}>Requests from clients, and the bookings you&apos;ve accepted.</p>
+        <PageHeader
+          title="Bookings"
+          intro="Requests from clients, and the bookings you've accepted."
+        />
 
         <div className={styles.filterRow}>
           <Select

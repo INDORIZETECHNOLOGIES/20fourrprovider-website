@@ -1,0 +1,10 @@
+.list {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-paper-raised);
+  overflow: hidden;
+}
+
+.list > * + * {
+  border-top: 1px solid var(--color-line);
+}
