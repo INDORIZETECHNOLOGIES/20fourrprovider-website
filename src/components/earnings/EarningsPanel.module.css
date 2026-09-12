@@ -1,13 +1,10 @@
 .page {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  padding: var(--space-8) var(--space-6);
+  width: 100%;
 }
 
 .column {
   width: 100%;
-  max-width: 640px;
+  max-width: 800px;
 }
 
 .heading {
@@ -26,11 +23,6 @@
 .filterRow {
   max-width: 260px;
   margin-bottom: var(--space-6);
-}
-
-.empty {
-  color: var(--color-ink-muted);
-  font-size: 0.9375rem;
 }
 
 .loadMore {

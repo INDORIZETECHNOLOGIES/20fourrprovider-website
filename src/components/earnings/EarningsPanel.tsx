@@ -11,7 +11,7 @@ export function EarningsPanel({ accessToken }: { accessToken: string }) {
   const [stateFilter, setStateFilter] = useState<SettlementState | "">("");
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <div className={styles.column}>
         <h1 className={styles.heading}>Earnings</h1>
         <p className={styles.subtext}>
@@ -38,6 +38,6 @@ export function EarningsPanel({ accessToken }: { accessToken: string }) {
 
         <SettlementsList key={stateFilter} stateFilter={stateFilter} accessToken={accessToken} />
       </div>
-    </main>
+    </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSession, useRedirectIfLoggedOut } from "@/lib/auth/session";
 import { getProviderProfile, type ProviderProfile } from "@/lib/api/provider";
 import { AppShell } from "@/components/layout/AppShell";
@@ -33,7 +33,10 @@ export default function BookingsPage() {
 
   return (
     <AppShell title="Bookings">
-      <BookingsPanel isVerified={profile.isVerified} accessToken={session.tokens.accessToken} />
+      {/* BookingsPanel reads ?status= via useSearchParams, which needs a Suspense boundary on a static route. */}
+      <Suspense fallback={null}>
+        <BookingsPanel isVerified={profile.isVerified} accessToken={session.tokens.accessToken} />
+      </Suspense>
     </AppShell>
   );
 }

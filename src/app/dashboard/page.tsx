@@ -3,10 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import {
-  useSession,
-  useRedirectIfLoggedOut,
-} from "@/lib/auth/session";
+import { useSession, useRedirectIfLoggedOut } from "@/lib/auth/session";
 import {
   getProviderProfile,
   isProfileComplete,
@@ -14,44 +11,67 @@ import {
   type ProviderProfile,
 } from "@/lib/api/provider";
 import { BOOKING_STATUS_LABELS, BOOKING_STATUS_TONE, type BookingStatus } from "@/lib/constants/bookingStatus";
-import {
-  listBookings,
-  type Booking,
-} from "@/lib/api/bookings";
+import { listBookings, type Booking } from "@/lib/api/bookings";
 import { listSettlements } from "@/lib/api/settlements";
 import { setAvailability } from "@/lib/api/availability";
-import { AppSidebar } from "@/components/layout/AppSidebar";
+import { AppShell } from "@/components/layout/AppShell";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { Icon } from "@/components/ui/Icon";
 import styles from "./page.module.css";
 
+// Only the latest page of released settlements is summed — an all-time total
+// would need every page loaded (see the Earnings note in CLAUDE.md), so the
+// card says which sample it covers instead of implying a lifetime figure.
+const PAYOUT_SAMPLE = 50;
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-function formatPaise(paise: number): string {
+function formatCompactPaise(paise: number): string {
   const rupees = paise / 100;
-  if (rupees >= 100_000)
-    return `₹${(rupees / 100_000).toFixed(1)}L`;
-  if (rupees >= 1_000)
-    return `₹${(rupees / 1_000).toFixed(1)}K`;
+  if (rupees >= 100_000) return `₹${(rupees / 100_000).toFixed(1)}L`;
+  if (rupees >= 1_000) return `₹${(rupees / 1_000).toFixed(1)}K`;
   return `₹${rupees.toFixed(0)}`;
 }
 
 function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "short",
-  });
+  return new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short" });
 }
 
 function statusPillClass(status: BookingStatus): string {
-  const tone = BOOKING_STATUS_TONE[status];
-  switch (tone) {
-    case "action":  return styles.statusPillPending;
-    case "active":  return styles.statusPillAccepted;
-    case "muted":   return styles.statusPillCompleted;
-    case "danger":  return styles.statusPillRejected;
-    default:        return styles.statusPillCompleted;
+  switch (BOOKING_STATUS_TONE[status]) {
+    case "action":
+      return styles.statusPillPending;
+    case "active":
+      return styles.statusPillAccepted;
+    case "danger":
+      return styles.statusPillRejected;
+    default:
+      return styles.statusPillCompleted;
   }
 }
+
+// One readable sentence, e.g. "Security guard and bouncer in Pune, Maharashtra,
+// with 5 years of experience." — rather than a dot-separated meta string.
+function profileSummary(profile: ProviderProfile): string | null {
+  const labels = profile.serviceCategories.map((category, i) => {
+    const label = SERVICE_CATEGORY_LABELS[category];
+    return i === 0 ? label : label.charAt(0).toLowerCase() + label.slice(1);
+  });
+  if (labels.length === 0) return null;
+
+  const services =
+    labels.length === 1 ? labels[0] : `${labels.slice(0, -1).join(", ")} and ${labels[labels.length - 1]}`;
+  const place = [profile.serviceCity, profile.serviceState].filter(Boolean).join(", ");
+  const years = profile.yearsExperience;
+
+  return `${services}${place ? ` in ${place}` : ""}${
+    years ? `, with ${years} ${years === 1 ? "year" : "years"} of experience` : ""
+  }.`;
+}
+
+type PayoutSummary = { paise: number; counted: number; total: number };
+
+type EmptyCopy = { title: string; body: string; action?: { href: string; label: string } };
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -61,8 +81,8 @@ export default function DashboardPage() {
 
   const [profile, setProfile] = useState<ProviderProfile | null | "loading">("loading");
   const [pendingCount, setPendingCount] = useState<number | null>(null);
-  const [activeCount, setActiveCount] = useState<number | null>(null);
-  const [settledPaise, setSettledPaise] = useState<number | null>(null);
+  const [confirmedCount, setConfirmedCount] = useState<number | null>(null);
+  const [payouts, setPayouts] = useState<PayoutSummary | null>(null);
   const [recentBookings, setRecentBookings] = useState<Booking[] | null>(null);
   const [availToggling, setAvailToggling] = useState(false);
 
@@ -73,40 +93,56 @@ export default function DashboardPage() {
     const token = session.tokens.accessToken;
     let cancelled = false;
 
-    // Profile
-    getProviderProfile(token).then(({ profile: p }) => {
-      if (cancelled) return;
-      if (!isProfileComplete(p)) {
-        router.replace("/profile/setup");
-        return;
-      }
-      setProfile(p);
-    }).catch(() => { if (!cancelled) setProfile(null); });
+    getProviderProfile(token)
+      .then(({ profile: p }) => {
+        if (cancelled) return;
+        if (!isProfileComplete(p)) {
+          router.replace("/profile/setup");
+          return;
+        }
+        setProfile(p);
+      })
+      .catch(() => {
+        if (!cancelled) setProfile(null);
+      });
 
-    // Pending bookings count
-    listBookings(token, { status: "pending", limit: 1 }).then(({ pagination }) => {
-      if (!cancelled) setPendingCount(pagination.total);
-    }).catch(() => {});
+    listBookings(token, { status: "pending", limit: 1 })
+      .then(({ pagination }) => {
+        if (!cancelled) setPendingCount(pagination.total);
+      })
+      .catch(() => {});
 
-    // Active bookings count (all statuses that mean "in-flight")
-    listBookings(token, { status: "provider_accepted", limit: 1 }).then(({ pagination }) => {
-      if (!cancelled) setActiveCount(pagination.total);
-    }).catch(() => {});
+    // "Confirmed" = paid and not yet finished — the bookings a provider has to
+    // turn up for. The list endpoint filters by a single status, hence two calls.
+    Promise.all([
+      listBookings(token, { status: "payment_done", limit: 1 }),
+      listBookings(token, { status: "duty_started", limit: 1 }),
+    ])
+      .then(([paid, onDuty]) => {
+        if (!cancelled) setConfirmedCount(paid.pagination.total + onDuty.pagination.total);
+      })
+      .catch(() => {});
 
-    // Settled earnings (first page, sum netPaise)
-    listSettlements(token, { state: "released", limit: 50 }).then(({ settlements }) => {
-      if (!cancelled) {
-        const total = settlements.reduce((sum, s) => sum + (s.netPaise ?? 0), 0);
-        setSettledPaise(total);
-      }
-    }).catch(() => {});
+    listSettlements(token, { state: "released", limit: PAYOUT_SAMPLE })
+      .then(({ settlements, pagination }) => {
+        if (cancelled) return;
+        setPayouts({
+          paise: settlements.reduce((sum, s) => sum + (s.netPaise ?? 0), 0),
+          counted: settlements.length,
+          total: pagination.total,
+        });
+      })
+      .catch(() => {});
 
-    // Recent bookings (last 5 across all statuses)
-    listBookings(token, { limit: 5 }).then(({ bookings }) => {
-      if (!cancelled) setRecentBookings(bookings);
-    }).catch(() => {});
+    listBookings(token, { limit: 5 })
+      .then(({ bookings }) => {
+        if (!cancelled) setRecentBookings(bookings);
+      })
+      .catch(() => {});
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [session, router]);
 
   async function handleAvailabilityToggle(next: boolean) {
@@ -117,10 +153,10 @@ export default function DashboardPage() {
       setProfile((prev) =>
         prev && prev !== "loading"
           ? { ...prev, availability: { ...prev.availability, isAvailable: next } }
-          : prev
+          : prev,
       );
     } catch {
-      // Silently ignore — user can go to /availability for full control
+      // Silently ignore — the provider can use /availability for full control.
     } finally {
       setAvailToggling(false);
     }
@@ -129,60 +165,40 @@ export default function DashboardPage() {
   if (!session || profile === "loading") return null;
 
   const isAvailable = profile ? profile.availability.isAvailable : false;
+  const summary = profile ? profileSummary(profile) : null;
 
-  const serviceLabel =
-    profile && profile.serviceCategories.length > 0
-      ? profile.serviceCategories
-          .map((c) => SERVICE_CATEGORY_LABELS[c])
-          .join(", ")
-      : null;
-
-  const locationLabel =
-    profile ? `${profile.serviceCity}, ${profile.serviceState}` : null;
-
-  const expLabel =
-    profile && profile.yearsExperience
-      ? `${profile.yearsExperience} yr exp`
-      : null;
+  // Tell the provider what's actually standing between them and their first
+  // request, instead of a generic "nothing here".
+  const emptyBookings: EmptyCopy = !profile
+    ? { title: "No bookings yet", body: "Requests from clients will appear here." }
+    : !profile.isVerified
+      ? {
+          title: "No bookings yet",
+          body: "Clients can book you once your documents are verified.",
+          action: { href: "/documents", label: "Check your documents" },
+        }
+      : !isAvailable
+        ? {
+            title: "No bookings yet",
+            body: "You're paused, so clients can't find you. Switch your availability back on above to start receiving requests.",
+          }
+        : { title: "No bookings yet", body: "You're visible to clients — new requests will show up here." };
 
   return (
-    <div className={styles.shell}>
-      {/* Sidebar */}
-      <AppSidebar />
-
-      {/* Top header (mobile: wordmark; desktop: page title) */}
-      <header className={styles.header}>
-        <Link href="/dashboard" className={styles.headerWordmark}>
-          20fourr
-        </Link>
-        <h1 className={styles.headerPageTitle}>Dashboard</h1>
-        <div className={styles.headerRight} />
-      </header>
-
-      <main className={styles.main}>
+    <AppShell title="Dashboard">
+      <div className={styles.content}>
         {/* Welcome greeting */}
         <div className={styles.greeting}>
-          <p className={styles.greetingText}>
-            Welcome back, {session.name.split(" ")[0]}.
-          </p>
-          <p className={styles.greetingMeta}>
-            {serviceLabel && <span>{serviceLabel}</span>}
-            {serviceLabel && locationLabel && (
-              <span className={styles.greetingPipe}>·</span>
-            )}
-            {locationLabel && <span>{locationLabel}</span>}
-            {expLabel && (
-              <>
-                <span className={styles.greetingPipe}>·</span>
-                <span>{expLabel}</span>
-              </>
-            )}
-          </p>
+          <h1 className={styles.greetingText}>Welcome back, {session.name.split(" ")[0]}.</h1>
+          {summary ? <p className={styles.greetingMeta}>{summary}</p> : null}
         </div>
 
         {/* ── Stat cards ── */}
         <div className={styles.statRow}>
-          <Link href="/bookings?status=pending" className={`${styles.statCard} ${styles.statCardAccentPending}`}>
+          <Link
+            href="/bookings?status=pending"
+            className={`${styles.statCard} ${styles.statCardAccentPending}`}
+          >
             <p className={styles.statLabel}>Pending requests</p>
             {pendingCount === null ? (
               <div className={styles.statSkeleton} />
@@ -193,40 +209,44 @@ export default function DashboardPage() {
               {pendingCount === null
                 ? "Loading…"
                 : pendingCount === 0
-                ? "No pending requests"
-                : "Tap to review"}
+                  ? "Nothing waiting on you"
+                  : "Waiting for your response"}
             </p>
           </Link>
 
-          <Link href="/bookings?status=accepted" className={`${styles.statCard} ${styles.statCardAccentActive}`}>
-            <p className={styles.statLabel}>Active bookings</p>
-            {activeCount === null ? (
+          <Link href="/bookings" className={`${styles.statCard} ${styles.statCardAccentActive}`}>
+            <p className={styles.statLabel}>Confirmed bookings</p>
+            {confirmedCount === null ? (
               <div className={styles.statSkeleton} />
             ) : (
-              <p className={styles.statValue}>{activeCount}</p>
+              <p className={styles.statValue}>{confirmedCount}</p>
             )}
             <p className={styles.statSub}>
-              {activeCount === null
+              {confirmedCount === null
                 ? "Loading…"
-                : activeCount === 0
-                ? "None in progress"
-                : "Currently running"}
+                : confirmedCount === 0
+                  ? "Nothing scheduled yet"
+                  : "Paid and scheduled"}
             </p>
           </Link>
 
           <Link href="/earnings" className={`${styles.statCard} ${styles.statCardAccentEarnings}`}>
-            <p className={styles.statLabel}>Settled earnings</p>
-            {settledPaise === null ? (
+            <p className={styles.statLabel}>Paid out</p>
+            {payouts === null ? (
               <div className={styles.statSkeleton} />
             ) : (
-              <p className={styles.statValue}>{settledPaise === 0 ? "—" : formatPaise(settledPaise)}</p>
+              <p className={styles.statValue}>
+                {payouts.total === 0 ? "—" : formatCompactPaise(payouts.paise)}
+              </p>
             )}
             <p className={styles.statSub}>
-              {settledPaise === null
+              {payouts === null
                 ? "Loading…"
-                : settledPaise === 0
-                ? "No settlements yet"
-                : "From released settlements"}
+                : payouts.total === 0
+                  ? "No payouts released yet"
+                  : payouts.total > payouts.counted
+                    ? `Your latest ${payouts.counted} of ${payouts.total} payouts`
+                    : `Across ${payouts.total} ${payouts.total === 1 ? "payout" : "payouts"}`}
             </p>
           </Link>
         </div>
@@ -235,7 +255,7 @@ export default function DashboardPage() {
         <div className={styles.sectionHead}>
           <h2 className={styles.sectionTitle}>Availability</h2>
           <Link href="/availability" className={styles.sectionLink}>
-            Manage →
+            Manage availability
           </Link>
         </div>
 
@@ -266,32 +286,32 @@ export default function DashboardPage() {
         {/* ── Recent bookings ── */}
         <div className={styles.sectionHead}>
           <h2 className={styles.sectionTitle}>Recent bookings</h2>
-          <Link href="/bookings" className={styles.sectionLink}>
-            View all →
-          </Link>
+          {recentBookings && recentBookings.length > 0 ? (
+            <Link href="/bookings" className={styles.sectionLink}>
+              View all bookings
+            </Link>
+          ) : null}
         </div>
 
-        <div className={styles.bookingsList}>
-          {recentBookings === null ? (
-            [1, 2, 3].map((i) => (
-              <div key={i} className={styles.bookingRow} style={{ opacity: 0.5 }}>
+        {recentBookings === null ? (
+          <div className={styles.bookingsList}>
+            {[1, 2, 3].map((i) => (
+              <div key={i} className={`${styles.bookingRow} ${styles.bookingRowSkeleton}`}>
                 <div className={styles.bookingRowLeft}>
-                  <div className={styles.statSkeleton} style={{ width: 120, marginBottom: 6 }} />
-                  <div className={styles.statSkeleton} style={{ width: 80, height: "0.75rem" }} />
+                  <div className={`${styles.statSkeleton} ${styles.skeletonLine}`} />
+                  <div className={`${styles.statSkeleton} ${styles.skeletonLineShort}`} />
                 </div>
               </div>
-            ))
-          ) : recentBookings.length === 0 ? (
-            <div className={styles.emptyState}>
-              No bookings yet. Once clients book you, they&apos;ll appear here.
-            </div>
-          ) : (
-            recentBookings.map((b) => (
-              <Link
-                key={b._id}
-                href={`/bookings/${b.bookingId}`}
-                className={styles.bookingRow}
-              >
+            ))}
+          </div>
+        ) : recentBookings.length === 0 ? (
+          <div className={styles.emptyWrap}>
+            <EmptyState icon="clipboard" {...emptyBookings} />
+          </div>
+        ) : (
+          <div className={styles.bookingsList}>
+            {recentBookings.map((b) => (
+              <Link key={b._id} href={`/bookings/${b._id}`} className={styles.bookingRow}>
                 <div className={styles.bookingRowLeft}>
                   <p className={styles.bookingClient}>{b.clientId.name}</p>
                   <div className={styles.bookingMeta}>
@@ -306,11 +326,11 @@ export default function DashboardPage() {
                 <span className={`${styles.statusPill} ${statusPillClass(b.status)}`}>
                   {BOOKING_STATUS_LABELS[b.status] ?? b.status}
                 </span>
-                <span className={styles.bookingChevron}>›</span>
+                <Icon name="arrow-right" size={16} className={styles.bookingChevron} />
               </Link>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* ── Quick actions ── */}
         <div className={styles.sectionHead}>
@@ -359,7 +379,7 @@ export default function DashboardPage() {
             <p className={styles.actionSub}>Privacy, data &amp; settings</p>
           </Link>
         </div>
-      </main>
-    </div>
+      </div>
+    </AppShell>
   );
 }

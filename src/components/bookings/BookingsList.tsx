@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Banner } from "@/components/ui/Banner";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { listBookings, type Booking, type Pagination } from "@/lib/api/bookings";
 import type { BookingStatus } from "@/lib/constants/bookingStatus";
 import { BookingRow } from "./BookingRow";
@@ -68,7 +69,16 @@ export function BookingsList({ statusFilter, isVerified, accessToken }: Bookings
     <>
       {error ? <Banner>{error}</Banner> : null}
 
-      {!loading && bookings.length === 0 ? <p className={styles.empty}>No bookings here yet.</p> : null}
+      {!loading && bookings.length === 0 ? (statusFilter ? (
+        <EmptyState icon="clipboard" title="No bookings with this status" body="Try another status, or choose All." />
+      ) : (
+        <EmptyState
+          icon="clipboard"
+          title="No bookings yet"
+          body="Requests from clients appear here. Clients can only find you while you're marked available."
+          action={{ href: "/availability", label: "Check your availability" }}
+        />
+      )) : null}
 
       {bookings.map((booking) => (
         <BookingRow

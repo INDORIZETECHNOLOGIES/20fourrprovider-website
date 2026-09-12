@@ -55,18 +55,36 @@ need comes up, don't hardcode one-off colors.
 
 ### The authenticated app shell: `AppShell`/`AppSidebar`, not `AppTopBar`
 
-Every signed-in page now wraps its content in `<AppShell title="...">` (`src/components/layout/
-AppShell.tsx`) instead of the old `<AppTopBar />`. `AppShell` renders a fixed 240px desktop sidebar
-(`AppSidebar` — nav, verification-status badge, user row, sign-out) plus a bottom tab bar on mobile
-(< 1024px), and a sticky header showing the wordmark on mobile / a small page title on desktop. This
-came out of a design pass that also merged in every feature branch landed since the sidebar was
-first built (`ratings`, `tax-profile`, `tax-documents`, auth-completeness, etc.) — those pages had
-never been migrated off `AppTopBar`, so half the app had no left nav at all. If you add a new
-top-level page, wrap it in `AppShell` from the start rather than reaching for `AppTopBar` (which
-still exists only because `profile/setup` deliberately keeps the plain bar — see below).
-`AppSidebar` self-fetches `isVerified`/unread-notification-count on mount (matching what
-`AppTopBar` already did for the unread count); it takes no props, so don't re-plumb those through
-a page just to satisfy it.
+Every signed-in page wraps its content in `<AppShell title="...">` (`src/components/layout/
+AppShell.tsx`), not `<AppTopBar />`. `AppShell` renders a fixed 240px desktop sidebar (`AppSidebar`
+— nav, verification-status badge, user row, sign-out), a bottom tab bar on mobile (< 1024px), and a
+thin wordmark bar on mobile only. There is deliberately no desktop top bar: the sidebar carries the
+brand and each page's own `<h1>` carries the title — an earlier version repeated the page name in a
+sticky desktop header directly above an identical `<h1>`. `title` only sets the browser tab (a
+`<title>` element, which React 19 hoists into `<head>`). If you add a new top-level page, wrap it in
+`AppShell` from the start (`AppTopBar` survives only for `profile/setup` — see below).
+`AppSidebar` self-fetches `isVerified`/unread-notification-count on mount; it takes no props, so
+don't re-plumb those through a page just to satisfy it.
+
+**`AppShell` owns the page's single `<main>` landmark and all page padding.** Panels render a plain
+`<div className={styles.page}>` — they used to render their own `<main>`, which nested inside
+`AppShell`'s and was invalid HTML (and confusing to screen readers). Content is left-aligned to the
+sidebar edge, not centred in the viewport; each page sets only its measure through its `.column`
+max-width: ~560–640px for forms, 800px for lists, 1000px for the dashboard. Don't reintroduce
+`justify-content: center` or padding in a panel's `.page` rule.
+
+**Empty lists use `src/components/ui/EmptyState.tsx`**, not a bare "No X here yet." line: an icon, a
+title, a sentence saying what fills the list, and — only when there's a real next step — an action
+link. With a filter active, the copy just says nothing matches. The dashboard's version is
+context-aware (unverified → check documents; paused → turn availability back on). Short inline
+notes inside a section ("No days off blocked.") stay as plain text.
+
+**Link to a booking with `booking._id`, never `booking.bookingId`.** The detail route and
+`GET /bookings/:bookingId` take the Mongo id; `bookingId` is the human-readable reference. The first
+dashboard design linked recent bookings by the reference, so every one of those links 404'd.
+`/bookings?status=<status>` preselects the list filter (the dashboard's stat cards use it) —
+`BookingsPanel` reads it with `useSearchParams`, which is why `bookings/page.tsx` wraps the panel in
+`<Suspense>`: a static route needs that boundary or the build fails.
 
 **`profile/setup` is the one page that intentionally still uses `AppTopBar`.** It's only reachable
 before the provider profile is complete (every other page redirects here until it is), so a sidebar

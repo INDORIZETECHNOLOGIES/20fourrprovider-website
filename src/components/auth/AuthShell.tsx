@@ -29,11 +29,11 @@ export function AuthShell({ tagline, children, wide }: AuthShellProps) {
             </div>
             <div className={styles.trustItem}>
               <span className={styles.trustIcon}>
-                <Icon name="bolt" size={14} />
+                <Icon name="receipt" size={14} />
               </span>
               <span className={styles.trustText}>
-                <strong>Instant payouts</strong>
-                Earnings settle directly to your bank, no delays.
+                <strong>Bank-direct payouts</strong>
+                Earnings settle to your bank account after each completed shift.
               </span>
             </div>
             <div className={styles.trustItem}>

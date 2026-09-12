@@ -30,22 +30,12 @@ export default function LandingPage() {
       {/* ── Hero ── */}
       <section className={styles.hero}>
         <div className={styles.heroContent}>
-          <p className={styles.heroEyebrow}>
-            For guards
-            <span className={styles.heroEyebrowDot} />
-            Bouncers
-            <span className={styles.heroEyebrowDot} />
-            Gunmen
-            <span className={styles.heroEyebrowDot} />
-            PSOs
-          </p>
-
           <h1 className={styles.heroHeadline}>Get booked. Work. Get paid.</h1>
 
           <p className={styles.heroSub}>
-            20fourr connects verified security professionals with clients
-            across India. One profile. Instant payouts. Every shift tracked
-            and signed off.
+            For guards, bouncers, armed guards and personal security officers.
+            One verified profile, bookings from clients across India, and
+            payouts straight to your bank — every shift tracked and signed off.
           </p>
 
           <div className={styles.heroCtas}>
@@ -108,7 +98,6 @@ export default function LandingPage() {
       {/* ── How it works ── */}
       <section className={styles.section}>
         <div className={styles.sectionInner}>
-          <p className={styles.sectionLabel}>How it works</p>
           <h2 className={styles.sectionTitle}>
             Three steps from registration to your first payout
           </h2>
@@ -151,7 +140,6 @@ export default function LandingPage() {
       {/* ── Features ── */}
       <section className={styles.sectionAlt}>
         <div className={styles.sectionInner}>
-          <p className={styles.sectionLabel}>Platform features</p>
           <h2 className={styles.sectionTitle}>
             Everything you need. Nothing you don&apos;t.
           </h2>
@@ -212,7 +200,6 @@ export default function LandingPage() {
       {/* ── Who can join ── */}
       <section className={styles.section}>
         <div className={styles.sectionInner}>
-          <p className={styles.sectionLabel}>Service categories</p>
           <h2 className={styles.sectionTitle}>Who can join 20fourr?</h2>
           <p className={styles.sectionSub}>
             The platform is open to individual professionals and registered
@@ -227,7 +214,6 @@ export default function LandingPage() {
                 Gate guard, property protection, and perimeter duty for
                 residential and commercial premises.
               </p>
-              <span className={styles.categoryTag}>Guard</span>
             </div>
             <div className={styles.categoryCard}>
               <span className={styles.categoryEmoji}><Icon name="stanchion" size={26} /></span>
@@ -236,7 +222,6 @@ export default function LandingPage() {
                 Event security, crowd control, and venue access management
                 for concerts, clubs, and gatherings.
               </p>
-              <span className={styles.categoryTag}>Bouncer</span>
             </div>
             <div className={styles.categoryCard}>
               <span className={styles.categoryEmoji}><Icon name="target" size={26} /></span>
@@ -245,7 +230,6 @@ export default function LandingPage() {
                 Licensed armed escort and asset protection. Weapon licence
                 required at registration.
               </p>
-              <span className={styles.categoryTag}>Gunman</span>
             </div>
             <div className={styles.categoryCard}>
               <span className={styles.categoryEmoji}><Icon name="person-shield" size={26} /></span>
@@ -254,7 +238,6 @@ export default function LandingPage() {
                 Close-protection for individuals, executives, and VIPs.
                 Personal Security Officer services.
               </p>
-              <span className={styles.categoryTag}>PSO</span>
             </div>
           </div>
         </div>
@@ -309,7 +292,6 @@ export default function LandingPage() {
       {/* ── Earnings table ── */}
       <section className={styles.sectionAlt}>
         <div className={styles.sectionInner}>
-          <p className={styles.sectionLabel}>Earnings potential</p>
           <h2 className={styles.sectionTitle}>What can you earn?</h2>
           <p className={styles.sectionSub}>
             You set your own daily rate on your profile. The ranges below are

@@ -1,8 +1,5 @@
 .page {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  padding: var(--space-6);
+  width: 100%;
 }
 
 .column {
@@ -10,7 +7,9 @@
   max-width: 640px;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 64px - var(--space-6) * 2);
+  /* Fill the viewport inside AppShell: mobile subtracts its top bar (60px) and
+     bottom nav (72px); desktop has neither. Padding matches AppShell .main. */
+  height: calc(100dvh - 60px - 72px - var(--space-6) * 2);
 }
 
 .heading {
@@ -150,4 +149,16 @@
   font-size: 0.8125rem;
   color: var(--color-danger);
   margin: var(--space-2) 0 0;
+}
+
+@media (min-width: 640px) {
+  .column {
+    height: calc(100dvh - 60px - 72px - var(--space-8) * 2);
+  }
+}
+
+@media (min-width: 1024px) {
+  .column {
+    height: calc(100dvh - var(--space-10) * 2);
+  }
 }

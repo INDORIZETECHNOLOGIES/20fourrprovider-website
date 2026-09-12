@@ -34,7 +34,7 @@ export function DocumentChecklist({ providerType, initialDocuments, accessToken 
   }
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <div className={styles.column}>
         <h1 className={styles.heading}>Documents</h1>
         <p className={styles.subtext}>
@@ -57,6 +57,6 @@ export function DocumentChecklist({ providerType, initialDocuments, accessToken 
           </div>
         ))}
       </div>
-    </main>
+    </div>
   );
 }

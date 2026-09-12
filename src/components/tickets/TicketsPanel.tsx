@@ -11,7 +11,7 @@ export function TicketsPanel({ accessToken }: { accessToken: string }) {
   const [statusFilter, setStatusFilter] = useState<TicketStatus | "">("");
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <div className={styles.column}>
         <div className={styles.headingRow}>
           <div>
@@ -41,6 +41,6 @@ export function TicketsPanel({ accessToken }: { accessToken: string }) {
 
         <TicketsList key={statusFilter} statusFilter={statusFilter} accessToken={accessToken} />
       </div>
-    </main>
+    </div>
   );
 }

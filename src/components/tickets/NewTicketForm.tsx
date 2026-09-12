@@ -52,7 +52,7 @@ export function NewTicketForm({ accessToken }: { accessToken: string }) {
   }
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <div className={styles.column}>
         <h1 className={styles.heading}>New ticket</h1>
         <p className={styles.subtext}>Tell us what happened — we&apos;ll follow up here.</p>
@@ -104,6 +104,6 @@ export function NewTicketForm({ accessToken }: { accessToken: string }) {
           </Button>
         </form>
       </div>
-    </main>
+    </div>
   );
 }

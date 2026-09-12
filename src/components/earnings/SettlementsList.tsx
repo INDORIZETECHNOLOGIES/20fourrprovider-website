@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Banner } from "@/components/ui/Banner";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { listSettlements, type Settlement } from "@/lib/api/settlements";
 import type { Pagination } from "@/lib/api/bookings";
 import type { SettlementState } from "@/lib/constants/settlementState";
@@ -65,7 +66,15 @@ export function SettlementsList({ stateFilter, accessToken }: SettlementsListPro
       {error ? <Banner>{error}</Banner> : null}
 
       {!loading && settlements.length === 0 ? (
-        <p className={styles.empty}>No settlements here yet.</p>
+        stateFilter ? (
+        <EmptyState icon="receipt" title="No settlements with this status" body="Try another status, or choose All." />
+      ) : (
+        <EmptyState
+          icon="receipt"
+          title="No settlements yet"
+          body="Each completed booking settles here, with the tax withheld and the date the payout reaches your bank."
+        />
+      )
       ) : null}
 
       {settlements.map((settlement) => (

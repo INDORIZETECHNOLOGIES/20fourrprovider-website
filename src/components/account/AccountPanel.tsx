@@ -141,7 +141,7 @@ export function AccountPanel({ accessToken }: { accessToken: string }) {
   }
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <div className={styles.column}>
         <h1 className={styles.heading}>Account</h1>
         <p className={styles.subtext}>Your data, your consent, and your right to erasure under the DPDP Act.</p>
@@ -257,6 +257,6 @@ export function AccountPanel({ accessToken }: { accessToken: string }) {
           )}
         </div>
       </div>
-    </main>
+    </div>
   );
 }

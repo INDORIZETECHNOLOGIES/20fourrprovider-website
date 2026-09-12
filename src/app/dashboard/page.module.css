@@ -1,85 +1,8 @@
-/* ─── Page shell ─────────────────────────────────────────────────────── */
+/* ─── Content column ─────────────────────────────────────────────────── */
+/* AppShell supplies the padding; the dashboard is the widest page in the app. */
 
-.shell {
-  display: flex;
-  flex-direction: column;
-  min-height: 100%;
-  /* Reserve space for sidebar on desktop */
-  padding-left: 0;
-  /* Reserve space for mobile bottom nav */
-  padding-bottom: 72px;
-}
-
-@media (min-width: 1024px) {
-  .shell {
-    padding-left: 240px;
-    padding-bottom: 0;
-  }
-}
-
-/* ─── Top header bar (inside content area) ───────────────────────────── */
-
-.header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: var(--color-paper);
-  border-bottom: 1px solid var(--color-line);
-  padding: var(--space-4) var(--space-6);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
-}
-
-/* Mobile: show wordmark in top bar since sidebar is hidden */
-.headerWordmark {
-  font-family: var(--font-display);
-  font-size: 1.125rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--color-ink);
-  text-decoration: none;
-}
-
-@media (min-width: 1024px) {
-  .headerWordmark {
-    display: none;
-  }
-}
-
-.headerRight {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.headerPageTitle {
-  font-family: var(--font-display);
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 0;
-  display: none;
-}
-
-@media (min-width: 1024px) {
-  .headerPageTitle {
-    display: block;
-  }
-}
-
-/* ─── Main content ───────────────────────────────────────────────────── */
-
-.main {
-  flex: 1;
-  padding: var(--space-6) var(--space-5);
+.content {
   max-width: 1000px;
-}
-
-@media (min-width: 640px) {
-  .main {
-    padding: var(--space-8) var(--space-8);
-  }
 }
 
 /* ─── Welcome heading ────────────────────────────────────────────────── */
@@ -90,7 +13,7 @@
 
 .greetingText {
   font-family: var(--font-display);
-  font-size: 1.625rem;
+  font-size: 1.875rem;
   font-weight: 700;
   letter-spacing: -0.02em;
   margin: 0 0 var(--space-1);
@@ -99,16 +22,10 @@
 
 .greetingMeta {
   font-size: 0.9375rem;
+  line-height: 1.55;
   color: var(--color-ink-muted);
   margin: 0;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: var(--space-2) var(--space-3);
-}
-
-.greetingPipe {
-  color: var(--color-line);
+  max-width: 64ch;
 }
 
 /* ─── Stat cards row ─────────────────────────────────────────────────── */
@@ -165,10 +82,8 @@
 .statCardAccentEarnings::before{ background: linear-gradient(90deg, var(--color-brass), transparent); opacity: 0.7; }
 
 .statLabel {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
+  font-size: 0.875rem;
+  font-weight: 600;
   color: var(--color-ink-muted);
   margin: 0;
 }
@@ -220,11 +135,11 @@
 }
 
 .sectionTitle {
-  font-size: 0.875rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--color-ink-muted);
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
   margin: 0;
 }
 
@@ -390,16 +305,6 @@
   flex-shrink: 0;
 }
 
-.emptyState {
-  background: var(--color-paper-raised);
-  border: 1px dashed var(--color-line);
-  border-radius: var(--radius-md);
-  padding: var(--space-8);
-  text-align: center;
-  color: var(--color-ink-muted);
-  font-size: 0.9375rem;
-}
-
 /* ─── Quick actions grid ─────────────────────────────────────────────── */
 
 .actionsGrid {
@@ -454,4 +359,30 @@
   font-size: 0.75rem;
   color: var(--color-ink-muted);
   margin: 0;
+}
+
+/* ─── Loading + empty states ─────────────────────────────────────────── */
+
+.emptyWrap {
+  margin-bottom: var(--space-6);
+}
+
+.bookingRowSkeleton {
+  opacity: 0.5;
+}
+
+.skeletonLine {
+  width: 120px;
+  height: 1rem;
+  margin-bottom: 6px;
+}
+
+.skeletonLineShort {
+  width: 80px;
+  height: 0.75rem;
+}
+
+.bookingChevron {
+  flex-shrink: 0;
+  color: var(--color-ink-muted);
 }

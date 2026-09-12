@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Banner } from "@/components/ui/Banner";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { listTickets, type Ticket } from "@/lib/api/tickets";
 import type { Pagination } from "@/lib/api/bookings";
 import type { TicketStatus } from "@/lib/constants/ticket";
@@ -64,7 +65,15 @@ export function TicketsList({ statusFilter, accessToken }: TicketsListProps) {
     <>
       {error ? <Banner>{error}</Banner> : null}
 
-      {!loading && tickets.length === 0 ? <p className={styles.empty}>No tickets here yet.</p> : null}
+      {!loading && tickets.length === 0 ? (statusFilter ? (
+        <EmptyState icon="chat" title="No tickets with this status" body="Try another status, or choose All." />
+      ) : (
+        <EmptyState
+          icon="chat"
+          title="No support tickets"
+          body="If something goes wrong on a booking or with a payout, open a new ticket and we'll follow up here."
+        />
+      )) : null}
 
       {tickets.map((ticket) => (
         <TicketRow key={ticket._id} ticket={ticket} />

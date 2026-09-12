@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Banner } from "@/components/ui/Banner";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { listNotifications, type Notification } from "@/lib/api/notifications";
 import type { Pagination } from "@/lib/api/bookings";
 import { NotificationRow } from "./NotificationRow";
@@ -82,7 +83,17 @@ export function NotificationsList({ filter, accessToken }: NotificationsListProp
       {error ? <Banner>{error}</Banner> : null}
 
       {!loading && notifications.length === 0 ? (
-        <p className={styles.empty}>No notifications here.</p>
+        filter === "unread" ? (
+        <EmptyState icon="bell" title="You're all caught up" body="No unread notifications." />
+      ) : filter === "read" ? (
+        <EmptyState icon="bell" title="No read notifications" />
+      ) : (
+        <EmptyState
+          icon="bell"
+          title="No notifications yet"
+          body="Booking requests, duty reminders and payout updates will appear here."
+        />
+      )
       ) : null}
 
       {notifications.map((notification) => (

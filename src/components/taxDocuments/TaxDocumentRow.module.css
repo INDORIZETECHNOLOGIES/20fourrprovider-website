@@ -93,12 +93,10 @@
 }
 
 .lineItemsTitle {
-  font-size: 0.8125rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  color: var(--color-ink-muted);
-  margin: var(--space-3) 0 var(--space-2);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  margin: var(--space-4) 0 var(--space-2);
 }
 
 .lineItemRow {

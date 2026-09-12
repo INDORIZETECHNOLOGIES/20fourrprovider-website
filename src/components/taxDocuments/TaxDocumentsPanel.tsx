@@ -11,7 +11,7 @@ export function TaxDocumentsPanel({ accessToken }: { accessToken: string }) {
   const [docTypeFilter, setDocTypeFilter] = useState<TaxDocumentType | "">("");
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <div className={styles.column}>
         <h1 className={styles.heading}>Tax documents</h1>
         <p className={styles.subtext}>
@@ -37,6 +37,6 @@ export function TaxDocumentsPanel({ accessToken }: { accessToken: string }) {
 
         <TaxDocumentsList key={docTypeFilter} docTypeFilter={docTypeFilter} accessToken={accessToken} />
       </div>
-    </main>
+    </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Banner } from "@/components/ui/Banner";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { getProviderProfile } from "@/lib/api/provider";
 import { getRatingsForUser, type Rating, type Pagination } from "@/lib/api/ratings";
 import { RatingRow } from "./RatingRow";
@@ -58,7 +59,7 @@ export function RatingsPanel({ accessToken }: { accessToken: string }) {
   const hasMore = pagination ? pagination.page < pagination.pages : false;
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <div className={styles.column}>
         <h1 className={styles.heading}>Your ratings</h1>
         <p className={styles.subtext}>What clients have said after a completed booking.</p>
@@ -82,7 +83,7 @@ export function RatingsPanel({ accessToken }: { accessToken: string }) {
         ) : null}
 
         {!loading && ratings.length === 0 ? (
-          <p className={styles.empty}>No ratings yet — they&apos;ll show up here after clients rate a completed booking.</p>
+          <EmptyState icon="star" title="No ratings yet" body="Clients can rate you once a booking is completed." />
         ) : null}
 
         {ratings.map((rating) => (
@@ -95,6 +96,6 @@ export function RatingsPanel({ accessToken }: { accessToken: string }) {
           </button>
         ) : null}
       </div>
-    </main>
+    </div>
   );
 }

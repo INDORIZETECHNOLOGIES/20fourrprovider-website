@@ -33,18 +33,18 @@ export function TaxProfilePanel({ accessToken }: { accessToken: string }) {
 
   if (error) {
     return (
-      <main className={styles.page}>
+      <div className={styles.page}>
         <div className={styles.column}>
           <Banner>{error}</Banner>
         </div>
-      </main>
+      </div>
     );
   }
 
   if (!taxProfile) return null;
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <div className={styles.column}>
         <h1 className={styles.heading}>Tax profile</h1>
         <p className={styles.subtext}>
@@ -88,6 +88,6 @@ export function TaxProfilePanel({ accessToken }: { accessToken: string }) {
 
         <PsaraCoverageSection taxProfile={taxProfile} accessToken={accessToken} onUpdated={setTaxProfile} />
       </div>
-    </main>
+    </div>
   );
 }

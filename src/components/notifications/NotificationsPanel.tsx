@@ -28,7 +28,7 @@ export function NotificationsPanel({ accessToken }: { accessToken: string }) {
   }
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <div className={styles.column}>
         <div className={styles.headingRow}>
           <div>
@@ -60,6 +60,6 @@ export function NotificationsPanel({ accessToken }: { accessToken: string }) {
 
         <NotificationsList key={`${filter}-${refreshKey}`} filter={filter} accessToken={accessToken} />
       </div>
-    </main>
+    </div>
   );
 }

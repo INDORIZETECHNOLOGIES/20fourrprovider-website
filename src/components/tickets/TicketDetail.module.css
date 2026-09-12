@@ -1,8 +1,5 @@
 .page {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  padding: var(--space-6);
+  width: 100%;
 }
 
 .column {

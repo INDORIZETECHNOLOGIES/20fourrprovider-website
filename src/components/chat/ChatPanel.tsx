@@ -103,7 +103,7 @@ export function ChatPanel({ bookingId, accessToken }: { bookingId: string; acces
   }
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <div className={styles.column}>
         <h1 className={styles.heading}>Chat</h1>
 
@@ -165,6 +165,6 @@ export function ChatPanel({ bookingId, accessToken }: { bookingId: string; acces
           </button>
         </form>
       </div>
-    </main>
+    </div>
   );
 }
