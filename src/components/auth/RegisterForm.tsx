@@ -62,7 +62,10 @@ export function RegisterForm() {
         marketingConsent,
       });
       saveSession({ tokens: result.tokens, name });
-      router.push("/profile/setup");
+      // Registration leaves both email and phone unverified (phone gets a
+      // fire-and-forget OTP, email gets nothing) — /verify is where that gets
+      // finished before profile setup, not skipped straight past.
+      router.push("/verify");
     } catch (error) {
       setFormError(describeRegisterError(error));
     } finally {
