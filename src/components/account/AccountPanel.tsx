@@ -16,7 +16,8 @@ import {
 import { validateConsentReason, validateErasureReason } from "@/lib/validation/account";
 import { formatDate } from "@/lib/format";
 import { ProfilePhotoSection } from "./ProfilePhotoSection";
-import { EmailVerificationSection } from "./EmailVerificationSection";
+import { EmailVerificationSection } from "@/components/verification/EmailVerificationSection";
+import { PhoneVerificationSection } from "@/components/verification/PhoneVerificationSection";
 import styles from "./AccountPanel.module.css";
 
 const CONSENT_PURPOSES: { value: ConsentPurpose; label: string }[] = [
@@ -155,6 +156,12 @@ export function AccountPanel({ accessToken }: { accessToken: string }) {
               user={user}
               accessToken={accessToken}
               onUpdated={(profilePhoto) => setUser((current) => (current ? { ...current, profilePhoto } : current))}
+            />
+            <PhoneVerificationSection
+              phone={user.phone}
+              phoneVerified={user.phoneVerified}
+              accessToken={accessToken}
+              onVerified={() => setUser((current) => (current ? { ...current, phoneVerified: true } : current))}
             />
             <EmailVerificationSection
               email={user.email}

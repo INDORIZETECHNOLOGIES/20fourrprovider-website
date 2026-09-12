@@ -7,6 +7,7 @@ import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
 import { Button } from "@/components/ui/Button";
 import { Banner } from "@/components/ui/Banner";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { ApiError } from "@/lib/api/client";
 import {
   updateProviderProfile,
@@ -131,99 +132,130 @@ export function ProfileSetupForm({ accessToken }: { accessToken: string }) {
   return (
     <main className={styles.page}>
       <div className={styles.column}>
-        <h1 className={styles.heading}>Set up your provider profile</h1>
-        <p className={styles.subtext}>
-          This is what clients and the verification team see. You can add documents and bank
-          details afterwards.
-        </p>
+        <PageHeader
+          title="Set up your provider profile"
+          intro="This is what clients and the verification team see. You can add documents and bank details afterwards."
+        />
+
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
           {formError ? <Banner>{formError}</Banner> : null}
 
-          <div className={styles.section}>
-            <span className={styles.sectionLabel}>You are</span>
-            <div className={styles.segmented} role="radiogroup" aria-label="Provider type">
-              {(["individual", "firm"] as const).map((type) => (
-                <button
-                  key={type}
-                  type="button"
-                  role="radio"
-                  aria-checked={providerType === type}
-                  className={`${styles.segmentButton} ${providerType === type ? styles.segmentButtonActive : ""}`}
-                  onClick={() => setProviderType(type)}
-                >
-                  {type === "individual" ? "An individual" : "A firm"}
-                </button>
-              ))}
+          {/* What you do: the two facts that shape everything else on this form —
+              a firm gets a business-name field later, and the categories chosen
+              here are exactly what the rates card below asks a price for. */}
+          <div className={styles.card}>
+            <h2 className={styles.cardTitle}>What you do</h2>
+
+            <div className={styles.field}>
+              <span className={styles.fieldLabel}>You are</span>
+              <div className={styles.segmented} role="radiogroup" aria-label="Provider type">
+                {(["individual", "firm"] as const).map((type) => (
+                  <button
+                    key={type}
+                    type="button"
+                    role="radio"
+                    aria-checked={providerType === type}
+                    className={`${styles.segmentButton} ${providerType === type ? styles.segmentButtonActive : ""}`}
+                    onClick={() => setProviderType(type)}
+                  >
+                    {type === "individual" ? "An individual" : "A firm"}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className={styles.field}>
+              <span className={styles.fieldLabel}>Services you provide</span>
+              <div className={styles.chips}>
+                {SERVICE_CATEGORIES.map((category) => (
+                  <button
+                    key={category}
+                    type="button"
+                    aria-pressed={categories.includes(category)}
+                    className={`${styles.chip} ${categories.includes(category) ? styles.chipActive : ""}`}
+                    onClick={() => toggleCategory(category)}
+                  >
+                    {SERVICE_CATEGORY_LABELS[category]}
+                  </button>
+                ))}
+              </div>
+              {fieldErrors.categories ? <Banner>{fieldErrors.categories}</Banner> : null}
             </div>
           </div>
 
-          <div className={styles.section}>
-            <span className={styles.sectionLabel}>Services you provide</span>
-            <div className={styles.chips}>
-              {SERVICE_CATEGORIES.map((category) => (
-                <button
-                  key={category}
-                  type="button"
-                  aria-pressed={categories.includes(category)}
-                  className={`${styles.chip} ${categories.includes(category) ? styles.chipActive : ""}`}
-                  onClick={() => toggleCategory(category)}
-                >
-                  {SERVICE_CATEGORY_LABELS[category]}
-                </button>
-              ))}
+          {/* Your profile: where you work, how long you've done it, and — for a
+              firm — who you work as. Grouped together since these are all plain
+              facts about the practice, not decisions like the card above. */}
+          <div className={styles.card}>
+            <h2 className={styles.cardTitle}>Your profile</h2>
+
+            {providerType === "firm" ? (
+              <Field
+                id="businessName"
+                label="Business name"
+                value={businessName}
+                onChange={(e) => setBusinessName(e.target.value)}
+              />
+            ) : null}
+
+            <div className={styles.row}>
+              <Field
+                id="serviceCity"
+                label="Service city"
+                value={serviceCity}
+                onChange={(e) => setServiceCity(e.target.value)}
+                error={fieldErrors.city}
+              />
+              <Select
+                id="serviceState"
+                label="Service state"
+                value={serviceState}
+                onChange={(e) => setServiceState(e.target.value)}
+                error={fieldErrors.state}
+              >
+                <option value="">Select a state</option>
+                {INDIAN_STATES.map((state) => (
+                  <option key={state} value={state}>
+                    {state}
+                  </option>
+                ))}
+              </Select>
             </div>
-            {fieldErrors.categories ? <Banner>{fieldErrors.categories}</Banner> : null}
+
+            <Field
+              id="yearsExperience"
+              label="Years of experience"
+              type="number"
+              min={0}
+              max={50}
+              value={yearsExperience}
+              onChange={(e) => setYearsExperience(e.target.value)}
+              error={fieldErrors.yearsExperience}
+            />
+
+            <Textarea
+              id="description"
+              label="About you (optional)"
+              hint="A sentence or two — clients see this on your profile."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
           </div>
 
-          <div className={styles.row}>
-            <Field
-              id="serviceCity"
-              label="Service city"
-              value={serviceCity}
-              onChange={(e) => setServiceCity(e.target.value)}
-              error={fieldErrors.city}
-            />
-            <Select
-              id="serviceState"
-              label="Service state"
-              value={serviceState}
-              onChange={(e) => setServiceState(e.target.value)}
-              error={fieldErrors.state}
-            >
-              <option value="">Select a state</option>
-              {INDIAN_STATES.map((state) => (
-                <option key={state} value={state}>
-                  {state}
-                </option>
-              ))}
-            </Select>
-          </div>
-
-          <Field
-            id="yearsExperience"
-            label="Years of experience"
-            type="number"
-            min={0}
-            max={50}
-            value={yearsExperience}
-            onChange={(e) => setYearsExperience(e.target.value)}
-            error={fieldErrors.yearsExperience}
-          />
-
-          {providerType === "firm" ? (
-            <Field
-              id="businessName"
-              label="Business name"
-              value={businessName}
-              onChange={(e) => setBusinessName(e.target.value)}
-            />
-          ) : null}
-
+          {/* Your rates: only appears once there's something to price. Its own
+              card because it's money, not a fact about the practice. */}
           {categories.length > 0 ? (
-            <div className={styles.section}>
-              <span className={styles.sectionLabel}>Pricing</span>
-              {categories.map((category) => (
-                <div key={category} className={styles.pricingRow}>
+            <div className={styles.card}>
+              <h2 className={styles.cardTitle}>Your rates</h2>
+              <p className={styles.cardIntro}>
+                What a client pays for one day of each service. You can change these any time from
+                Availability.
+              </p>
+              {categories.map((category, index) => (
+                <div
+                  key={category}
+                  className={`${styles.pricingRow} ${index === 0 ? styles.pricingRowFirst : ""}`}
+                >
                   <span className={styles.pricingCategory}>{SERVICE_CATEGORY_LABELS[category]}</span>
                   <Field
                     id={`dailyRate-${category}`}
@@ -249,13 +281,6 @@ export function ProfileSetupForm({ accessToken }: { accessToken: string }) {
               ))}
             </div>
           ) : null}
-
-          <Textarea
-            id="description"
-            label="About you (optional)"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
 
           <Button type="submit" disabled={submitting}>
             {submitting ? "Saving…" : "Save profile"}

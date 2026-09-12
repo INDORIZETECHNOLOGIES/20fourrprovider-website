@@ -24,7 +24,8 @@ per-booking chat, support tickets, notifications, account/DPDP (data export, con
 erasure request), duty safety (SOS + live check-in), incident reporting, absence-alert, ratings
 (submit + own-ratings view), payout bank details (submit + one-tap confirm), payment status, tax
 profile (PAN + GST tier + turnover declaration), PSARA state coverage, tax documents (list +
-detail + PDF download), forgot/reset password, email verification, profile photo.
+detail + PDF download), forgot/reset password, email + phone verification (both during onboarding
+and resumable later from Account), profile photo.
 
 **Not built yet** — a previous status note here claimed the provider surface was fully complete;
 it wasn't, and a full pass against the reference doc turned up real gaps, roughly in order of how
@@ -375,6 +376,62 @@ not (yet) reflect this:
   caches." Don't go looking in Redis for an email OTP hash, a password-reset token, or an OTP-resend
   cooldown while debugging locally; query `CoordinationKey` by `_id` instead (the key names match
   what the service code uses, e.g. `email-otp:<userId>`, `password-reset:<token>`).
+- **`requireVerified` (the middleware that would 403 with `SC_104` on an unverified email/phone) is
+  dead code** — it's imported in `client.routes.ts` but applied to zero routes anywhere in the
+  backend, and `provider.routes.ts` doesn't even import it. Confirmed by grep, not inference: no
+  provider (or client) endpoint has ever actually required email/phone verification. This is *why*
+  onboarding didn't verify either one for a long time — nothing forced it. The `/verify` flow below
+  exists anyway, as a product decision, not because the backend started enforcing anything.
+- **`POST /auth/verify-otp` silently no-ops on a non-matching phone** — it verifies the OTP against
+  MSG91 first, then does `User.findOne({phone})` and only flips `phoneVerified` if a match exists;
+  if not, it still returns a 200 "Phone verified successfully" without having verified anyone.
+  Confirmed live. Never trust that response directly — re-read `GET /auth/me` afterward and check
+  `phoneVerified` before declaring success (see `PhoneVerificationSection`'s comment).
+- **Phone OTP send/verify (`POST /auth/send-otp`, `POST /auth/verify-otp`) are unauthenticated** —
+  keyed by the phone number itself against MSG91, not by `req.user`. Email verification's equivalent
+  pair (`send-email-verification`/`verify-email`) is the opposite: authenticated, keyed to
+  `req.user._id`. `sendPhoneOtp`/`verifyPhoneOtp` in `src/lib/api/auth.ts` don't take an
+  `accessToken` for this reason — `PhoneVerificationSection` still receives one, but only to make
+  the confirmation `GET /auth/me` call above.
+- **This dev environment's MSG91 phone OTP send succeeds, but verify comes back `"IP is not
+  whitelisted"`** (a real MSG91-side error, not a bug) — confirmed live while building the `/verify`
+  flow. A different failure shape than the already-documented broken `MSG91_EMAIL_TEMPLATE_ID`/auth
+  key for email OTP, but the same lesson: don't assume either OTP channel actually delivers in this
+  environment, and don't build UI that assumes a send always succeeds.
+
+### Onboarding verification (`/verify`)
+
+Registration leaves both `emailVerified` and `phoneVerified` false — it fires a phone OTP
+fire-and-forget (silently swallows failure) and does nothing for email. Until this flow existed,
+nothing in this app ever asked a provider to verify either one; `POST /auth/register` routed
+straight to `/profile/setup`. Given the dead-`requireVerified` finding above, this is a deliberate
+soft gate the frontend adds, not something the backend requires:
+
+- **`src/components/verification/`** holds three shared pieces: `EmailVerificationSection` (moved
+  here from `src/components/account/`, unchanged otherwise), the new `PhoneVerificationSection`, and
+  `VerificationPanel`, which renders both side by side and derives which is outstanding from a fresh
+  `GET /auth/me` on every mount — never from whatever the previous screen assumed. That's what makes
+  an interrupted flow resumable rather than a dead end: if email finishes and then the tab closes
+  before phone does (a crash, a lost connection, MSG91 rejecting the send), the next visit — whether
+  that's `/verify` again or the Account page — reads the true state and shows exactly phone as
+  outstanding, never re-asks for email, and never fakes a "both done" state it can't back up.
+- **`src/app/verify/page.tsx`** sits between registration/login and `/profile/setup`, using
+  `AppTopBar` for the same reason `profile/setup` does (a sidebar this early is premature). It
+  redirects onward — to `/dashboard` or `/profile/setup`, via the same `isProfileComplete` check
+  `profile/setup` itself uses — once both channels are verified, or immediately if "Skip for now" is
+  clicked. Skip exists because this is a soft gate: nothing downstream actually blocks an unverified
+  provider (see the dead-middleware finding), so trapping them here would be make-believe strictness
+  with a worse UX than just letting them continue and finish later.
+- **`RegisterForm` pushes to `/verify` instead of `/profile/setup`.** `LoginForm` checks the login
+  response's `requiresVerification` flag (true whenever either channel is still false) and routes to
+  `/verify` instead of `/dashboard` when it's set — this is what makes the flow resumable across a
+  full session loss, not just a same-tab interruption: log back in later having verified nothing, or
+  only one of the two, and you land back on `/verify` with accurate per-channel state, not skipped
+  straight through.
+- **`AccountPanel` renders both sections too** (`PhoneVerificationSection` alongside the existing
+  `EmailVerificationSection`), so "Skip for now" is genuinely resumable rather than a trap door —
+  whatever wasn't finished during onboarding stays reachable from Account indefinitely, the same
+  components, same behavior, just not gating anything.
 
 ### Frontend structure
 

@@ -31,7 +31,11 @@ export function LoginForm() {
     try {
       const result = await loginProvider({ email, password });
       saveSession({ tokens: result.tokens, name: result.user.name });
-      router.push("/dashboard");
+      // requiresVerification means email and/or phone OTP is still pending from
+      // registration (or was skipped) — route back to finish it rather than
+      // straight to the dashboard. /dashboard itself still redirects on to
+      // /profile/setup if the profile isn't complete either.
+      router.push(result.requiresVerification ? "/verify" : "/dashboard");
     } catch (error) {
       setFormError(
         error instanceof Error ? error.message : "Something went wrong. Try again.",

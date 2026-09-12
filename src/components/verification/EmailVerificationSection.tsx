@@ -8,8 +8,11 @@ import { Badge } from "@/components/ui/Badge";
 import { ApiError } from "@/lib/api/client";
 import { sendEmailVerification, verifyEmail } from "@/lib/api/auth";
 import { validateOtp } from "@/lib/validation/auth";
-import panelStyles from "./AccountPanel.module.css";
+import styles from "./EmailVerificationSection.module.css";
 
+// Shared by the Account page and the post-registration /verify step — moved out
+// of src/components/account so both can import one implementation rather than
+// two copies drifting apart.
 export function EmailVerificationSection({
   email,
   emailVerified,
@@ -49,6 +52,9 @@ export function EmailVerificationSection({
     setError(null);
     setVerifying(true);
     try {
+      // verifyEmail is authenticated and keyed to req.user._id server-side (unlike
+      // phone verification, which matches by phone string) — a 200 here is a
+      // reliable signal, no need to re-confirm via a follow-up /auth/me read.
       await verifyEmail(otp.trim(), accessToken);
       onVerified();
     } catch (err) {
@@ -59,23 +65,23 @@ export function EmailVerificationSection({
   }
 
   return (
-    <div className={panelStyles.section}>
-      <h2 className={panelStyles.sectionTitle}>Email verification</h2>
-      <div className={panelStyles.checkboxRow}>
+    <div className={styles.section}>
+      <h2 className={styles.sectionTitle}>Email verification</h2>
+      <div className={styles.statusRow}>
         <span>{email}</span>
         {emailVerified ? <Badge tone="active">Verified</Badge> : <Badge tone="muted">Not verified</Badge>}
       </div>
 
       {!emailVerified ? (
         <>
-          <p className={panelStyles.sectionText}>
+          <p className={styles.sectionText}>
             Verify your email so we can reach you about your account and payouts.
           </p>
 
           {error ? <Banner>{error}</Banner> : null}
 
           {!codeSent ? (
-            <div className={panelStyles.actions}>
+            <div className={styles.actions}>
               <Button type="button" disabled={sending} onClick={handleSendCode}>
                 {sending ? "Sending…" : "Send verification code"}
               </Button>
@@ -91,11 +97,11 @@ export function EmailVerificationSection({
                 maxLength={6}
                 inputMode="numeric"
               />
-              <div className={panelStyles.actions}>
+              <div className={styles.actions}>
                 <Button type="button" disabled={verifying} onClick={handleVerify}>
                   {verifying ? "Verifying…" : "Verify"}
                 </Button>
-                <button type="button" disabled={sending} onClick={handleSendCode} className={panelStyles.textButton}>
+                <button type="button" disabled={sending} onClick={handleSendCode} className={styles.textButton}>
                   {sending ? "Resending…" : "Resend code"}
                 </button>
               </div>

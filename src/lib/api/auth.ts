@@ -84,6 +84,20 @@ export function getCurrentUser(accessToken: string): Promise<{ user: AuthUser }>
   return apiRequest("/auth/me", { accessToken });
 }
 
+// Phone OTP verification — deliberately NOT authenticated (no accessToken param).
+// The backend keys both calls off the phone number itself via MSG91, not off the
+// signed-in user, so these work the instant a phone number exists, before or after
+// login. See CLAUDE.md: verify-otp silently no-ops (no error) if the phone doesn't
+// match any User document, which is why callers must confirm via GET /auth/me
+// afterward rather than trust this call's own success response.
+export function sendPhoneOtp(phone: string): Promise<void> {
+  return apiRequest("/auth/send-otp", { method: "POST", body: { phone } });
+}
+
+export function verifyPhoneOtp(phone: string, otp: string): Promise<void> {
+  return apiRequest("/auth/verify-otp", { method: "POST", body: { phone, otp } });
+}
+
 // Message-only responses (no `data`) — see CLAUDE.md. The frontend shows its own
 // static copy rather than the backend's message text.
 export function forgotPassword(email: string): Promise<void> {
