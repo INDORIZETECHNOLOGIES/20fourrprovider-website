@@ -79,6 +79,19 @@ link. With a filter active, the copy just says nothing matches. The dashboard's 
 context-aware (unverified → check documents; paused → turn availability back on). Short inline
 notes inside a section ("No days off blocked.") stay as plain text.
 
+**The dashboard leads with one thing, and it is never a grid of links to other pages.** It used to
+end in a "Quick actions" grid of eight cards that duplicated the sidebar nav item for item — that's
+gone; the sidebar is the navigation. The lead slot holds either the next shift (the booking the
+provider is on, else the soonest `payment_done` one that hasn't ended — a navy panel, the only
+raised element on the page) or, while setup is incomplete, a checklist of what's actually blocking
+bookings (documents uploaded vs. required per `PROVIDER_DOCUMENT_CATALOG`, bank account added/
+verified/confirmed, verification). Both come from data the page already fetches: the checklist adds
+no request, and the shift is picked out of the same `payment_done`/`duty_started` calls that feed
+the counters (`pagination.total` remains the source of the counts — the fetched page is only used
+to choose the shift). The checklist disappears once every item is done rather than sitting there as
+a row of ticks. The counters below it are one bordered strip divided by hairlines, not three
+separately-shadowed cards each with a gradient accent bar — that was the page's main slop tell.
+
 **Link to a booking with `booking._id`, never `booking.bookingId`.** The detail route and
 `GET /bookings/:bookingId` take the Mongo id; `bookingId` is the human-readable reference. The first
 dashboard design linked recent bookings by the reference, so every one of those links 404'd.
