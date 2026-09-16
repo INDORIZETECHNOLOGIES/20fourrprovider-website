@@ -386,6 +386,29 @@ export default function LandingPage() {
                 Start earning
               </Link>
             </div>
+
+            <div className={styles.inlineVisual} aria-hidden="true">
+              <div className={styles.jobList}>
+                <div className={styles.jobRow}>
+                  <div className={styles.jobHead}>
+                    <div>
+                      <p className={styles.jobClient}>Security guard</p>
+                      <p className={styles.jobWhen}>Start date, 09:00–17:00</p>
+                      <p className={styles.jobWhere}>1 day · your listed city</p>
+                    </div>
+                    <div className={styles.jobAmountCol}>
+                      <p className={styles.jobAmount}>Your daily rate</p>
+                      <Badge tone="action">Pending</Badge>
+                    </div>
+                  </div>
+                  <div className={styles.jobLinks}>
+                    <span className={styles.jobLink}>View details</span>
+                    <span className={styles.jobAccept}>Accept</span>
+                    <span className={styles.jobGhost}>Decline</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -520,6 +543,24 @@ export default function LandingPage() {
                 </li>
               ))}
             </ol>
+
+            <div className={styles.inlineVisual} aria-hidden="true">
+              <div className={styles.jobList}>
+                <div className={styles.jobRow}>
+                  <div className={styles.jobHead}>
+                    <div>
+                      <p className={styles.jobClient}>Security guard</p>
+                      <p className={styles.jobWhen}>Duty ended</p>
+                      <p className={styles.jobWhere}>Gross ₹4,000 · TCS − ₹20</p>
+                    </div>
+                    <div className={styles.jobAmountCol}>
+                      <p className={styles.jobAmount}>₹3,980</p>
+                      <Badge tone="active">Released</Badge>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 

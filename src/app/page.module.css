@@ -603,6 +603,10 @@
   background: var(--color-brass-strong);
 }
 
+.inlineVisual {
+  margin-top: var(--space-8);
+}
+
 .valueGrid {
   display: grid;
   grid-template-columns: 1fr;
