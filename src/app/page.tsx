@@ -15,109 +15,67 @@ const VALUE_CARDS = [
   {
     icon: "receipt" as const,
     title: "Set your rate",
-    body: "You choose which of the four categories you offer and set a daily rate for each, between ₹100 and ₹1,00,000, for shifts of 4–24 hours. You can change both later on Availability.",
+    body: "Pick your categories and a daily rate for each. ₹100–₹1,00,000, shifts of 4–24 hours. Change it later on Availability.",
   },
   {
     icon: "clipboard" as const,
     title: "Receive bookings",
-    body: "Clients book you for a date, time and category. You see the request, accept or decline, then talk in-app once payment is in. There is no public job board to browse.",
+    body: "Clients book you. You accept or decline. There is no public job board to browse.",
   },
   {
     icon: "shield-check" as const,
     title: "Get verified",
-    body: "Upload the documents required for your account type. Our team reviews them. Accepting work waits on verification; building your profile and adding a bank account does not.",
+    body: "Upload the documents for your account type. Review happens once. Accepting work waits on that review.",
   },
   {
     icon: "building" as const,
     title: "Get paid",
-    body: "After the shift is signed off, a settlement is calculated and paid to the bank account you confirmed. Payouts are not instant — they follow completed duty and settlement.",
+    body: "After duty is signed off, the settlement goes to the bank account you confirmed. Not instant.",
   },
 ];
 
 const JOURNEY = [
-  {
-    title: "Create your profile",
-    body: "Register, then fill in who you are: individual or firm, city and state, categories, and years of experience.",
-  },
-  {
-    title: "Complete verification",
-    body: "Upload KYC and compliance documents. Firms also attach a PSARA licence. The team reviews what you send — verification is a document check, not a guarantee of future work.",
-  },
-  {
-    title: "Set rate and availability",
-    body: "Set a daily rate per category, then turn availability on. Block days off when you cannot work. Pause with one switch.",
-  },
-  {
-    title: "Receive a booking request",
-    body: "A client books you. The request lands in Bookings as pending until you accept or decline.",
-  },
-  {
-    title: "Accept the shift",
-    body: "Accept once you can do the work. The client then pays. Guard shifts start without OTP; other categories start when the client shares a 6-digit code in person.",
-  },
-  {
-    title: "Complete the shift",
-    body: "End duty the same way you started it. Hours are logged. You can then mark the booking complete.",
-  },
-  {
-    title: "Receive the payout",
-    body: "A settlement is issued for that booking, with TCS and TDS withheld where they apply, then released to your confirmed bank account.",
-  },
+  { title: "Create your profile", body: "Individual or firm, city, categories, experience." },
+  { title: "Complete verification", body: "Upload KYC. Firms add a PSARA licence. Review is a document check, not a guarantee of work." },
+  { title: "Set rate and availability", body: "Daily rate per category. One switch to go live. Days off when you cannot work." },
+  { title: "Receive a booking", body: "It lands in Bookings as pending until you respond." },
+  { title: "Accept the shift", body: "Client pays after you accept. Guards start on confirm; other categories use a 6-digit client OTP." },
+  { title: "Complete the shift", body: "End duty the same way you started. Hours are logged." },
+  { title: "Receive the payout", body: "Settlement with TCS/TDS where they apply, then Razorpay Route to your confirmed bank." },
 ];
 
 const PAYMENT_STEPS = [
-  {
-    title: "Booking accepted",
-    body: "You accept a request. Nothing is paid to you yet.",
-  },
-  {
-    title: "Client pays",
-    body: "The client pays their total — your rate, plus the platform fee and taxes billed to them.",
-  },
-  {
-    title: "Shift starts and ends",
-    body: "Duty is signed off with OTP (or a guard confirm). Starting duty does not release an advance on current bookings.",
-  },
-  {
-    title: "Settlement calculated",
-    body: "Your payable is your listed rate (plus service GST if you are GST-registered). TCS and, where it applies, TDS are withheld.",
-  },
-  {
-    title: "Payout to your bank",
-    body: "Once bank details are verified by our team and confirmed by you, the net amount is sent via Razorpay Route, with a UTR when released.",
-  },
+  { title: "Accepted", body: "No payout yet." },
+  { title: "Client pays", body: "Your rate plus their platform fee." },
+  { title: "Duty signed off", body: "OTP or guard confirm. No advance on start." },
+  { title: "Settled", body: "Rate, minus TCS/TDS where due." },
+  { title: "Paid out", body: "To your confirmed bank, with UTR." },
 ];
 
-const BENEFITS = [
+const FEATURES = [
   {
-    icon: "clipboard" as const,
-    title: "Booking requests in one list",
-    body: "Pending, accepted and completed shifts live on Bookings, with the same actions on the list and the detail page.",
+    icon: "shield-check" as const,
+    title: "Verified profile",
+    body: "Clients book a profile the team has reviewed. That is a document check, not a quality certificate.",
+    visual: "verified" as const,
   },
   {
     icon: "receipt" as const,
-    title: "A settlement for every completed booking",
-    body: "Gross, TCS, TDS and net are itemised. You can also download tax documents for the same booking.",
+    title: "Bank-direct payouts",
+    body: "Each completed booking gets a settlement: gross, tax withheld, net to your bank.",
+    visual: "payout" as const,
   },
   {
     icon: "clipboard-check" as const,
-    title: "Duty signed off digitally",
-    body: "OTP start and end for most categories; gate-guard bookings use an on-site confirm. The record is the hours the client signed.",
-  },
-  {
-    icon: "shield-check" as const,
-    title: "A verified professional profile",
-    body: "Clients book against a profile the team has reviewed. Verification is a document check, not an endorsement of how you will work.",
+    title: "Duty signed off",
+    body: "Six-digit client OTP for most categories. Gate-guard bookings use an on-site confirm.",
+    visual: "otp" as const,
   },
   {
     icon: "life-ring" as const,
-    title: "Safety tools on duty",
-    body: "SOS and live check-in while a shift is in progress, incident notes after, and in-app chat so you need not share a personal number.",
-  },
-  {
-    icon: "chat" as const,
-    title: "Support tickets in the app",
-    body: "Raise a booking, payout or account issue and follow it in Support. Written grievances also go to grievance@20fourr.com.",
+    title: "Safety on duty",
+    body: "SOS and check-in while a shift is live. Chat stays in the app.",
+    visual: "safety" as const,
   },
 ];
 
@@ -177,6 +135,58 @@ const FAQS = [
   },
 ];
 
+function FeatureVisual({ kind }: { kind: "verified" | "payout" | "otp" | "safety" }) {
+  if (kind === "verified") {
+    return (
+      <div className={styles.miniUi} aria-hidden="true">
+        <span className={styles.miniVerified}>
+          <Icon name="check" size={12} />
+          Verified
+        </span>
+        <span className={styles.miniMuted}>On your profile after review</span>
+      </div>
+    );
+  }
+  if (kind === "payout") {
+    return (
+      <div className={styles.miniUi} aria-hidden="true">
+        <p className={styles.miniLabel}>Settlement</p>
+        <p className={styles.miniLine}>
+          <span>Gross</span>
+          <span>Your rate</span>
+        </p>
+        <p className={styles.miniLine}>
+          <span>TCS / TDS</span>
+          <span>Withheld</span>
+        </p>
+        <p className={`${styles.miniLine} ${styles.miniStrong}`}>
+          <span>Net</span>
+          <span>To your bank</span>
+        </p>
+      </div>
+    );
+  }
+  if (kind === "otp") {
+    return (
+      <div className={styles.miniUi} aria-hidden="true">
+        <p className={styles.miniLabel}>Start duty</p>
+        <div className={styles.otpBoxes}>
+          {Array.from({ length: 6 }, (_, i) => (
+            <span key={i} className={styles.otpBox} />
+          ))}
+        </div>
+        <span className={styles.miniGhost}>Confirm</span>
+      </div>
+    );
+  }
+  return (
+    <div className={styles.miniUi} aria-hidden="true">
+      <p className={styles.miniSos}>SOS</p>
+      <span className={styles.miniMuted}>On duty_started bookings</span>
+    </div>
+  );
+}
+
 export default function LandingPage() {
   return (
     <div className={styles.page}>
@@ -190,7 +200,8 @@ export default function LandingPage() {
           <div className={styles.heroInner}>
             <div className={styles.heroContent}>
               <h1 id="hero-heading" className={styles.heroHeadline}>
-                Get booked. Work. Get paid.
+                Get booked. Work.{" "}
+                <span className={styles.heroClose}>Get paid.</span>
               </h1>
               <p className={styles.heroSub}>
                 Join 20fourr, get verified, choose relevant opportunities, set
@@ -208,24 +219,47 @@ export default function LandingPage() {
             </div>
 
             <div className={styles.heroVisual}>
-              <div className={styles.productFrame} aria-hidden="false">
-                <div className={styles.productBar}>
+              <div className={styles.productFrame}>
+                <div className={styles.productChrome}>
                   <span className={styles.productBrand}>20fourr Provider</span>
-                  <Badge tone="active">Verified</Badge>
+                  <span className={styles.verifiedChip}>
+                    <Icon name="check" size={12} />
+                    Verified
+                  </span>
                 </div>
-                <p className={styles.productRole}>Security professional</p>
-                <p className={styles.productMeta}>
-                  Profile, bookings and settlements — the same screens you use
-                  after you sign in.
-                </p>
+                <div className={styles.productIdentity}>
+                  <span className={styles.productAvatar} aria-hidden="true">
+                    SP
+                  </span>
+                  <div>
+                    <p className={styles.productRole}>Security professional</p>
+                    <p className={styles.productPlace}>Your city · your state</p>
+                  </div>
+                </div>
+                <dl className={styles.productFields}>
+                  <div>
+                    <dt>Availability</dt>
+                    <dd>You switch this on</dd>
+                  </div>
+                  <div>
+                    <dt>Daily rate</dt>
+                    <dd>₹100–₹1,00,000</dd>
+                  </div>
+                  <div>
+                    <dt>Hours / day</dt>
+                    <dd>4–24</dd>
+                  </div>
+                  <div>
+                    <dt>Rating</dt>
+                    <dd>From completed work</dd>
+                  </div>
+                </dl>
                 <div className={styles.productJob}>
                   <div className={styles.productJobHead}>
                     <div>
                       <p className={styles.productJobClient}>Booking request</p>
-                      <p className={styles.productJobWhen}>Date · start–end time</p>
-                      <p className={styles.productJobWhere}>
-                        Security guard · your listed city
-                      </p>
+                      <p className={styles.productJobWhen}>Start date · 09:00–17:00</p>
+                      <p className={styles.productJobWhere}>Security guard · 1 day</p>
                     </div>
                     <div className={styles.productJobAmount}>
                       <p className={styles.productJobRate}>Your daily rate</p>
@@ -236,9 +270,31 @@ export default function LandingPage() {
                 </div>
               </div>
               <p className={styles.heroCaption}>
-                Example of the provider app. Not a live account, rating, or
-                earnings figure.
+                Layout of the provider app. Not a live account, rating, or
+                payout figure.
               </p>
+            </div>
+          </div>
+        </section>
+
+        <section className={styles.sectionAlt} aria-labelledby="value-heading">
+          <div className={styles.sectionInner}>
+            <h2 id="value-heading" className={styles.sectionTitle}>
+              Why providers use 20fourr
+            </h2>
+            <p className={styles.sectionSub}>
+              Rate, bookings, verification, payout — the four things you control.
+            </p>
+            <div className={styles.valueGrid}>
+              {VALUE_CARDS.map((card) => (
+                <article key={card.title} className={styles.valueCard}>
+                  <span className={styles.valueIcon}>
+                    <Icon name={card.icon} size={20} />
+                  </span>
+                  <h3 className={styles.valueTitle}>{card.title}</h3>
+                  <p className={styles.valueBody}>{card.body}</p>
+                </article>
+              ))}
             </div>
           </div>
         </section>
@@ -250,16 +306,18 @@ export default function LandingPage() {
             </h2>
             <p className={styles.sectionSub}>
               You keep your listed daily rate. The platform fee is invoiced to
-              the client. Statutory withholding is taken at settlement, not as
-              a second commission.
+              the client.
             </p>
 
             <div className={styles.ledger}>
-              <p className={styles.ledgerKicker}>
-                Worked example at the current default rates — a ₹4,000 shift,
-                unregistered individual, PAN verified, under the annual TDS
-                threshold
-              </p>
+              <div className={styles.earnHero}>
+                <p className={styles.earnLabel}>You receive</p>
+                <p className={styles.earnBig}>₹3,980</p>
+                <p className={styles.earnCaption}>
+                  Worked example: ₹4,000 listed rate, unregistered individual,
+                  verified PAN, under the annual TDS threshold.
+                </p>
+              </div>
               <dl className={styles.ledgerList}>
                 <div className={styles.ledgerRow}>
                   <dt>Your listed daily rate</dt>
@@ -267,7 +325,7 @@ export default function LandingPage() {
                 </div>
                 <div className={styles.ledgerRow}>
                   <dt>
-                    Platform fee billed to the client
+                    Platform fee, billed to the client
                     <span className={styles.ledgerHint}>15% of your rate</span>
                   </dt>
                   <dd className={styles.ledgerMuted}>₹600</dd>
@@ -285,7 +343,7 @@ export default function LandingPage() {
                 </div>
                 <div className={styles.ledgerRow}>
                   <dt>
-                    TCS withheld from your settlement
+                    TCS withheld at settlement
                     <span className={styles.ledgerHint}>0.5% of your rate</span>
                   </dt>
                   <dd>− ₹20</dd>
@@ -293,10 +351,7 @@ export default function LandingPage() {
                 <div className={styles.ledgerRow}>
                   <dt>
                     TDS under 194-O
-                    <span className={styles.ledgerHint}>
-                      Nil here — individuals with a verified PAN are exempt until
-                      ₹5,00,000 of gross in the financial year
-                    </span>
+                    <span className={styles.ledgerHint}>Nil in this example</span>
                   </dt>
                   <dd>₹0</dd>
                 </div>
@@ -305,75 +360,32 @@ export default function LandingPage() {
                   <dd>₹3,980</dd>
                 </div>
               </dl>
-              <p className={styles.ledgerNote}>
-                GST-registered providers also collect 18% service GST on the
-                rate (remitted by you) and have TDS from the first rupee if they
-                are a firm. Without a verified PAN, TDS is 5%. Daily rates must
-                sit between ₹100 and ₹1,00,000. Figures above use the platform’s
-                current default settings; a live booking uses the rates locked
-                at quote time.
-              </p>
+              <details className={styles.ledgerDetails}>
+                <summary>How this example is calculated</summary>
+                <p>
+                  GST-registered providers also collect 18% service GST on the
+                  rate (remitted by you) and have TDS from the first rupee if
+                  they are a firm. Without a verified PAN, TDS is 5%. Daily
+                  rates must sit between ₹100 and ₹1,00,000. Figures use the
+                  platform’s current default settings; a live booking uses the
+                  rates locked at quote time. Individuals with a verified PAN
+                  have no TDS until ₹5,00,000 of gross in the financial year.
+                </p>
+              </details>
             </div>
-          </div>
-        </section>
 
-        <section className={styles.sectionAlt} aria-labelledby="value-heading">
-          <div className={styles.sectionInner}>
-            <h2 id="value-heading" className={styles.sectionTitle}>
-              How the work actually runs
-            </h2>
-            <p className={styles.sectionSub}>
-              Four things you control on 20fourr — rate, bookings, verification
-              and payout — and nothing that the product does not do.
-            </p>
-            <div className={styles.valueGrid}>
-              {VALUE_CARDS.map((card) => (
-                <article key={card.title} className={styles.valueCard}>
-                  <span className={styles.valueIcon}>
-                    <Icon name={card.icon} size={20} />
-                  </span>
-                  <h3 className={styles.valueTitle}>{card.title}</h3>
-                  <p className={styles.valueBody}>{card.body}</p>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className={styles.section} aria-labelledby="job-heading">
-          <div className={styles.sectionInner}>
-            <h2 id="job-heading" className={styles.sectionTitle}>
-              What a booking looks like
-            </h2>
-            <p className={styles.sectionSub}>
-              Same shape as Bookings in the app: who booked you, when, which
-              category, and the amount. Accept or decline sits on pending
-              requests.
-            </p>
-            <div className={styles.jobList}>
-              <div className={styles.jobRow}>
-                <div className={styles.jobHead}>
-                  <div>
-                    <p className={styles.jobClient}>Client name</p>
-                    <p className={styles.jobWhen}>Start date, 09:00–17:00</p>
-                    <p className={styles.jobWhere}>Security guard · 1 day</p>
-                  </div>
-                  <div className={styles.jobAmountCol}>
-                    <p className={styles.jobAmount}>Your daily rate</p>
-                    <Badge tone="action">Pending</Badge>
-                  </div>
-                </div>
-                <div className={styles.jobLinks}>
-                  <span className={styles.jobLink}>View details</span>
-                  <span className={styles.jobGhost}>Accept</span>
-                  <span className={styles.jobGhost}>Decline</span>
-                </div>
+            <div className={styles.inlineCta}>
+              <div>
+                <p className={styles.inlineCtaTitle}>Ready to start earning?</p>
+                <p className={styles.inlineCtaBody}>
+                  Create your profile, complete verification, start receiving
+                  booking requests.
+                </p>
               </div>
+              <Link href="/register" className={styles.inlineCtaButton}>
+                Start earning
+              </Link>
             </div>
-            <p className={styles.tableNote}>
-              Sample layout using the fields on a real booking. Not an open
-              assignment.
-            </p>
           </div>
         </section>
 
@@ -382,10 +394,7 @@ export default function LandingPage() {
             <h2 id="journey-heading" className={styles.sectionTitle}>
               From registration to payout
             </h2>
-            <p className={styles.sectionSub}>
-              The path every provider follows. Nothing here is skipped, and
-              nothing extra is invented.
-            </p>
+            <p className={styles.sectionSub}>The path every provider follows.</p>
             <ol className={styles.steps}>
               {JOURNEY.map((step, index) => (
                 <li key={step.title} className={styles.step}>
@@ -400,46 +409,96 @@ export default function LandingPage() {
           </div>
         </section>
 
+        <section className={styles.section} aria-labelledby="job-heading">
+          <div className={styles.sectionInner}>
+            <h2 id="job-heading" className={styles.sectionTitle}>
+              What a booking looks like
+            </h2>
+            <p className={styles.sectionSub}>
+              Same fields as Bookings: category, date, time, your rate, pending
+              until you respond.
+            </p>
+            <div className={styles.jobList}>
+              <div className={styles.jobRow}>
+                <div className={styles.jobHead}>
+                  <div>
+                    <p className={styles.jobClient}>Security guard</p>
+                    <p className={styles.jobWhen}>Start date, 09:00–17:00</p>
+                    <p className={styles.jobWhere}>1 day · your listed city</p>
+                  </div>
+                  <div className={styles.jobAmountCol}>
+                    <p className={styles.jobAmount}>Your daily rate</p>
+                    <Badge tone="action">Pending</Badge>
+                  </div>
+                </div>
+                <div className={styles.jobLinks}>
+                  <span className={styles.jobLink}>View details</span>
+                  <span className={styles.jobAccept}>Accept</span>
+                  <span className={styles.jobGhost}>Decline</span>
+                </div>
+              </div>
+            </div>
+            <p className={styles.tableNote}>
+              Sample layout of a real booking request. Not an open assignment.
+            </p>
+          </div>
+        </section>
+
+        <section className={styles.sectionAlt} aria-labelledby="benefits-heading">
+          <div className={styles.sectionInner}>
+            <h2 id="benefits-heading" className={styles.sectionTitle}>
+              What you have in the app
+            </h2>
+            <div className={styles.featureGrid}>
+              {FEATURES.map((item) => (
+                <article key={item.title} className={styles.featureCard}>
+                  <span className={styles.featureIcon}>
+                    <Icon name={item.icon} size={20} />
+                  </span>
+                  <h3 className={styles.featureTitle}>{item.title}</h3>
+                  <p className={styles.featureBody}>{item.body}</p>
+                  <FeatureVisual kind={item.visual} />
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section id="verification" className={styles.section} aria-labelledby="verify-heading">
           <div className={styles.sectionInner}>
             <h2 id="verify-heading" className={styles.sectionTitle}>
               Your profile. Verified and ready for work.
             </h2>
             <p className={styles.sectionSub}>
-              Verification means the documents you uploaded have been reviewed.
-              It does not guarantee bookings, and it does not certify how you
-              will perform on a shift.
+              Verification means your documents have been reviewed. It does not
+              guarantee bookings or certify how you will perform.
             </p>
-
             <div className={styles.verifyGrid}>
-              <div className={styles.verifyCol}>
-                <h3 className={styles.verifyTitle}>Individuals</h3>
+              <details className={styles.docDetails}>
+                <summary>Documents for individuals</summary>
                 <ul className={styles.docList}>
                   {INDIVIDUAL_DOCS.map((item) => (
                     <li key={item}>{item}</li>
                   ))}
                 </ul>
-              </div>
-              <div className={styles.verifyCol}>
-                <h3 className={styles.verifyTitle}>Firms and agencies</h3>
+              </details>
+              <details className={styles.docDetails}>
+                <summary>Documents for firms and agencies</summary>
                 <ul className={styles.docList}>
                   {FIRM_DOCS.map((item) => (
                     <li key={item}>{item}</li>
                   ))}
                 </ul>
-              </div>
+              </details>
             </div>
-
             <div className={styles.verifyFoot}>
               <p>
-                After you upload every required file, the checklist tells you
-                the team has what it needs. When review finishes, a verified
-                badge appears in the app and you can accept work and switch
-                availability on. Add and confirm a bank account before the
-                first payout can be released.
+                When every required file is in, the team reviews. A verified
+                badge means you can accept work and switch availability on.
+                Confirm a bank account before the first payout.
               </p>
               <Link href="/register" className={styles.textLink}>
-                Create an account to start the checklist
+                Start earning
               </Link>
             </div>
           </div>
@@ -451,13 +510,11 @@ export default function LandingPage() {
               How payment moves
             </h2>
             <p className={styles.sectionSub}>
-              Current bookings settle once, after duty-end. Older bookings used
-              a 30/70 split; new work does not.
+              One settlement after duty-end. No 30/70 split on current bookings.
             </p>
             <ol className={styles.paySteps}>
-              {PAYMENT_STEPS.map((step, index) => (
+              {PAYMENT_STEPS.map((step) => (
                 <li key={step.title} className={styles.payStep}>
-                  <span className={styles.payNum}>{String(index + 1).padStart(2, "0")}</span>
                   <h3 className={styles.payTitle}>{step.title}</h3>
                   <p className={styles.payBody}>{step.body}</p>
                 </li>
@@ -466,35 +523,13 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className={styles.section} aria-labelledby="benefits-heading">
-          <div className={styles.sectionInner}>
-            <h2 id="benefits-heading" className={styles.sectionTitle}>
-              What you have in the app
-            </h2>
-            <div className={styles.features}>
-              {BENEFITS.map((item) => (
-                <div key={item.title} className={styles.feature}>
-                  <span className={styles.featureIcon}>
-                    <Icon name={item.icon} size={20} />
-                  </span>
-                  <div>
-                    <h3 className={styles.featureTitle}>{item.title}</h3>
-                    <p className={styles.featureBody}>{item.body}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className={styles.sectionAlt} aria-labelledby="categories-heading">
+        <section className={styles.section} aria-labelledby="categories-heading">
           <div className={styles.sectionInner}>
             <h2 id="categories-heading" className={styles.sectionTitle}>
               Four categories, one profile
             </h2>
             <p className={styles.sectionSub}>
-              Individuals and registered agencies. Offer one category or all
-              four — you choose, and you can change it later.
+              Individuals and agencies. Offer one category or all four.
             </p>
             <div className={styles.categoryGrid}>
               <div className={styles.categoryCard}>
@@ -503,8 +538,7 @@ export default function LandingPage() {
                 </span>
                 <h3 className={styles.categoryName}>Security guard</h3>
                 <p className={styles.categoryDesc}>
-                  Gate guard, property protection, and perimeter duty for
-                  residential and commercial premises.
+                  Gate, property, and perimeter duty.
                 </p>
               </div>
               <div className={styles.categoryCard}>
@@ -513,8 +547,7 @@ export default function LandingPage() {
                 </span>
                 <h3 className={styles.categoryName}>Bouncer</h3>
                 <p className={styles.categoryDesc}>
-                  Event security, crowd control, and venue access for concerts,
-                  clubs, and gatherings.
+                  Events, crowd control, venue access.
                 </p>
               </div>
               <div className={styles.categoryCard}>
@@ -523,8 +556,8 @@ export default function LandingPage() {
                 </span>
                 <h3 className={styles.categoryName}>Armed guard (gunman)</h3>
                 <p className={styles.categoryDesc}>
-                  Licensed armed escort and asset protection. A firearms licence
-                  is required where you offer this category.
+                  Licensed armed escort. Firearms licence required for this
+                  category.
                 </p>
               </div>
               <div className={styles.categoryCard}>
@@ -533,7 +566,7 @@ export default function LandingPage() {
                 </span>
                 <h3 className={styles.categoryName}>Personal security officer</h3>
                 <p className={styles.categoryDesc}>
-                  Close protection for individuals, executives, and VIPs.
+                  Close protection for individuals and executives.
                 </p>
               </div>
             </div>
@@ -541,6 +574,10 @@ export default function LandingPage() {
         </section>
 
         <div className={styles.trustStrip}>
+          <div className={styles.trustIntro}>
+            <h2 className={styles.trustHeading}>Why the platform is set up this way</h2>
+            <p className={styles.trustLead}>Compliance detail — not a marketing claim.</p>
+          </div>
           <div className={styles.trustGrid}>
             <div className={styles.trustItem}>
               <div className={styles.trustCheck}>
@@ -561,8 +598,7 @@ export default function LandingPage() {
               <div>
                 <p className={styles.trustItemTitle}>DPDP Act 2023</p>
                 <p className={styles.trustItemBody}>
-                  Account data export, consent withdrawal, and erasure requests
-                  live in Account.
+                  Data export, consent withdrawal, and erasure live in Account.
                 </p>
               </div>
             </div>
@@ -573,8 +609,8 @@ export default function LandingPage() {
               <div>
                 <p className={styles.trustItemTitle}>Razorpay Route</p>
                 <p className={styles.trustItemBody}>
-                  Settlements deposit to the bank account you confirmed, after
-                  the team has verified it.
+                  Settlements go to the bank account you confirmed, after the
+                  team has verified it.
                 </p>
               </div>
             </div>
@@ -600,7 +636,7 @@ export default function LandingPage() {
             </h2>
             <div className={styles.faqList}>
               {FAQS.map((item) => (
-                <details key={item.q} className={styles.faqItem}>
+                <details key={item.q} name="landing-faq" className={styles.faqItem}>
                   <summary className={styles.faqSummary}>
                     {item.q}
                     <Icon name="chevron" size={18} />

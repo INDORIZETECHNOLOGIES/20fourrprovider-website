@@ -114,6 +114,17 @@
   min-height: 44px;
   display: inline-flex;
   align-items: center;
+  transition: background var(--transition-base);
+}
+
+@media (max-width: 430px) {
+  .cta {
+    padding: 10px var(--space-3);
+  }
+
+  .actions {
+    gap: var(--space-1);
+  }
 }
 
 .cta:hover {
