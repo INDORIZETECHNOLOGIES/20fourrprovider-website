@@ -27,7 +27,10 @@ export type IconName =
   | "person-shield"
   | "check"
   | "arrow-right"
-  | "building";
+  | "building"
+  | "menu"
+  | "close"
+  | "chevron";
 
 type IconProps = Omit<SVGProps<SVGSVGElement>, "viewBox" | "fill"> & {
   name: IconName;
@@ -68,6 +71,9 @@ const PATHS: Record<IconName, string> = {
   "arrow-right": "M5 12h13M13 6l6 6-6 6",
   building:
     "M6.5 3.5h11a.5.5 0 0 1 .5.5v16h-12V4a.5.5 0 0 1 .5-.5ZM9 7h1.6M13.4 7H15M9 10.5h1.6M13.4 10.5H15M9 14h1.6M13.4 14H15M10 20v-3.5h4V20",
+  menu: "M4 7h16M4 12h16M4 17h16",
+  close: "M6 6l12 12M18 6 6 18",
+  chevron: "M6 9l6 6 6-6",
 };
 
 export function Icon({ name, size = 20, ...props }: IconProps) {
