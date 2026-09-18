@@ -68,6 +68,7 @@
   line-height: 1;
   letter-spacing: -0.03em;
   color: var(--color-brass);
+  font-variant-numeric: tabular-nums;
 }
 
 .shiftMonth {
@@ -293,6 +294,7 @@
   line-height: 1;
   margin: 0;
   color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
 }
 
 .ledgerSub {
@@ -324,7 +326,7 @@
   width: 60px;
   background: var(--color-line);
   border-radius: var(--radius-sm);
-  animation: shimmer-skeleton 1.4s ease infinite;
+  animation: shimmer-skeleton 1.4s linear infinite;
   background-size: 200% 100%;
   background-image: linear-gradient(
     90deg,
@@ -483,7 +485,7 @@
 .skeletonLine {
   width: 120px;
   height: 1rem;
-  margin-bottom: 6px;
+  margin-bottom: var(--space-2);
 }
 
 .skeletonLineShort {

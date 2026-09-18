@@ -84,6 +84,7 @@ export function RegisterForm() {
             id="name"
             label="Full name"
             autoComplete="name"
+            maxLength={100}
             value={name}
             onChange={(e) => setName(e.target.value)}
             error={fieldErrors.name}
@@ -93,6 +94,7 @@ export function RegisterForm() {
             label="Email"
             type="email"
             autoComplete="email"
+            maxLength={255}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             error={fieldErrors.email}
@@ -105,6 +107,7 @@ export function RegisterForm() {
             type="tel"
             inputMode="numeric"
             autoComplete="tel"
+            maxLength={10}
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             error={fieldErrors.phone}

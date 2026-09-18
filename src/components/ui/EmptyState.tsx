@@ -17,7 +17,7 @@ export function EmptyState({ icon, title, body, action }: EmptyStateProps) {
       <span className={styles.icon}>
         <Icon name={icon} size={20} />
       </span>
-      <div>
+      <div className={styles.content}>
         <p className={styles.title}>{title}</p>
         {body ? <p className={styles.body}>{body}</p> : null}
         {action ? (

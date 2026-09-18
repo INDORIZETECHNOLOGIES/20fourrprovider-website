@@ -259,7 +259,30 @@ export default function DashboardPage() {
     }
   }
 
-  if (!session || profile === "loading") return null;
+  if (!session || profile === "loading") {
+    return (
+      <AppShell title="Dashboard">
+        <div className={styles.content}>
+          <div className={styles.greeting}>
+            <div className={styles.skeleton} style={{ width: "240px", marginBottom: "var(--space-2)" }} />
+            <div className={styles.skeleton} style={{ width: "320px", height: "1.25rem" }} />
+          </div>
+          <div className={styles.ledger}>
+            <div className={styles.ledgerCell}>
+              <p className={styles.ledgerLabel}>Pending requests</p>
+              <div className={styles.skeleton} />
+              <div className={styles.skeleton} style={{ width: "100px", height: "0.875rem", marginTop: "var(--space-1)" }} />
+            </div>
+            <div className={styles.ledgerCell}>
+              <p className={styles.ledgerLabel}>Total earned</p>
+              <div className={styles.skeleton} />
+              <div className={styles.skeleton} style={{ width: "140px", height: "0.875rem", marginTop: "var(--space-1)" }} />
+            </div>
+          </div>
+        </div>
+      </AppShell>
+    );
+  }
 
   const isAvailable = profile ? profile.availability.isAvailable : false;
   const summary = profile ? profileSummary(profile) : null;

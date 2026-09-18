@@ -1,4 +1,6 @@
 .empty {
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: flex-start;
   gap: var(--space-4);
@@ -8,7 +10,24 @@
   background: var(--color-paper-raised);
 }
 
+.empty::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    color-mix(in srgb, var(--color-brass) 2%, transparent) 0px,
+    color-mix(in srgb, var(--color-brass) 2%, transparent) 1px,
+    transparent 1px,
+    transparent 8px
+  );
+  z-index: 0;
+}
+
 .icon {
+  position: relative;
+  z-index: 1;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
@@ -50,4 +69,9 @@
 
 .action:hover {
   color: var(--color-brass-strong);
+}
+
+.content {
+  position: relative;
+  z-index: 1;
 }

@@ -56,6 +56,7 @@ export function LoginForm() {
           label="Email"
           type="email"
           autoComplete="email"
+          maxLength={255}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           error={fieldErrors.email}
@@ -65,6 +66,7 @@ export function LoginForm() {
           label="Password"
           type="password"
           autoComplete="current-password"
+          maxLength={100}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           error={fieldErrors.password}

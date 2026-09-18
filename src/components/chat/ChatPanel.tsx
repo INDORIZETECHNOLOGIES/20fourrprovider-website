@@ -121,7 +121,7 @@ export function ChatPanel({ bookingId, accessToken }: { bookingId: string; acces
                   <div className={`${styles.bubble} ${mine ? styles.bubbleMine : styles.bubbleTheirs}`}>
                     {message.messageType === "image" && message.fileUrl ? (
                       <a href={message.fileUrl} target="_blank" rel="noopener noreferrer">
-                        <img src={message.fileUrl} alt="Attachment" className={styles.attachmentImage} />
+                        <img src={message.fileUrl} alt="Attached image" className={styles.attachmentImage} />
                       </a>
                     ) : message.messageType === "file" && message.fileUrl ? (
                       <a

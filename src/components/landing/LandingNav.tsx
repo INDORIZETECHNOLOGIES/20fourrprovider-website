@@ -20,11 +20,42 @@ export function LandingNav() {
   useEffect(() => {
     if (!open) return;
     function onKey(event: KeyboardEvent) {
-      if (event.key === "Escape") setOpen(false);
+      if (event.key === "Escape") {
+        setOpen(false);
+        return;
+      }
+      
+      if (event.key === "Tab") {
+        const panel = document.getElementById(panelId);
+        if (!panel) return;
+        
+        // We include the menu button itself since it acts as the close button
+        const focusableElements = [
+          document.querySelector(`[aria-controls="${panelId}"]`),
+          ...Array.from(panel.querySelectorAll('a[href], button:not([disabled])'))
+        ].filter(Boolean) as HTMLElement[];
+        
+        if (focusableElements.length === 0) return;
+        
+        const first = focusableElements[0];
+        const last = focusableElements[focusableElements.length - 1];
+        
+        if (event.shiftKey) {
+          if (document.activeElement === first) {
+            last.focus();
+            event.preventDefault();
+          }
+        } else {
+          if (document.activeElement === last) {
+            first.focus();
+            event.preventDefault();
+          }
+        }
+      }
     }
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [open]);
+  }, [open, panelId]);
 
   useEffect(() => {
     if (!open) return;
@@ -74,7 +105,7 @@ export function LandingNav() {
       </nav>
 
       {open ? (
-        <div id={panelId} className={styles.panel} role="dialog" aria-label="Menu">
+        <div id={panelId} className={styles.panel} role="dialog" aria-modal="true" aria-label="Menu">
           <ul className={styles.panelLinks}>
             {LINKS.map((link) => (
               <li key={link.href}>

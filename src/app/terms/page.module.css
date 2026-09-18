@@ -12,7 +12,7 @@
   top: 0;
   z-index: 10;
   background: var(--color-navy);
-  border-bottom: 1px solid rgba(169, 120, 46, 0.25);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-brass) 25%, transparent);
   padding: var(--space-4) var(--space-6);
   display: flex;
   align-items: center;
@@ -110,8 +110,8 @@
   gap: var(--space-2);
   padding: 5px var(--space-3);
   border-radius: 999px;
-  border: 1px solid rgba(169, 120, 46, 0.4);
-  background: rgba(169, 120, 46, 0.1);
+  border: 1px solid color-mix(in srgb, var(--color-brass) 40%, transparent);
+  background: color-mix(in srgb, var(--color-brass) 10%, transparent);
   font-size: 0.8125rem;
   font-weight: 500;
   color: color-mix(in srgb, var(--color-brass) 90%, white);

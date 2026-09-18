@@ -10,52 +10,31 @@
   letter-spacing: 0.01em;
   cursor: pointer;
 
-  /* Gradient base — flat on rest, shifts on hover */
-  background-image: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--color-navy) 80%, white) 0%,
-    var(--color-navy) 50%,
-    color-mix(in srgb, var(--color-navy) 88%, black) 100%
-  );
-  background-size: 100% 200%;
-  background-position: 0% 60%;
+  /* Flat solid at rest — clear, authoritative */
+  background: var(--color-navy);
 
   color: var(--color-navy-ink);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
   transition:
-    background-position 0.25s ease,
+    background 0.2s ease,
     box-shadow 0.2s ease,
     transform 0.15s ease;
 }
 
-/* Subtle gloss sheen */
-.button::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.08) 0%,
-    transparent 55%
-  );
-  pointer-events: none;
-  border-radius: inherit;
-}
-
 .button:hover:not(:disabled) {
-  background-position: 0% 0%;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25), 0 4px 16px rgba(0, 0, 0, 0.15);
+  background: color-mix(in srgb, var(--color-navy) 88%, black);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.12);
   transform: translateY(-1px);
 }
 
 .button:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
   transition-duration: 0.08s;
 }
 
 .button:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;

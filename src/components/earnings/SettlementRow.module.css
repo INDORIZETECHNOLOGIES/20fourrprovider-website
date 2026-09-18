@@ -47,6 +47,7 @@
   letter-spacing: -0.01em;
   color: var(--color-ink);
   margin: 0;
+  font-variant-numeric: tabular-nums;
 }
 
 @media (max-width: 560px) {

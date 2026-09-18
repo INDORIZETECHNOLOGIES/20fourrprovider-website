@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "src/components/auth/AuthForm.module.css"
+        ],
+        "createdAt": "2026-09-18T20:17:39.628Z",
+        "reason": "CLAUDE.md exception: legitimate alert pattern"
+      }
+    ]
+  }
+}

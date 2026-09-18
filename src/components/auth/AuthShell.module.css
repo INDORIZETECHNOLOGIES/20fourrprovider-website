@@ -38,33 +38,18 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(135deg, rgba(169, 120, 46, 0.06) 0%, transparent 60%),
-    linear-gradient(225deg, rgba(169, 120, 46, 0.04) 0%, transparent 50%),
+    linear-gradient(135deg, color-mix(in srgb, var(--color-brass) 4%, transparent) 0%, transparent 55%),
+    linear-gradient(225deg, color-mix(in srgb, var(--color-brass) 2%, transparent) 0%, transparent 45%),
     repeating-linear-gradient(
       -45deg,
-      rgba(255, 255, 255, 0.015) 0px,
-      rgba(255, 255, 255, 0.015) 1px,
+      rgba(255, 255, 255, 0.01) 0px,
+      rgba(255, 255, 255, 0.01) 1px,
       transparent 1px,
       transparent 32px
     );
   pointer-events: none;
 }
 
-/* Radial highlight from top-left — adds depth */
-.brand::after {
-  content: "";
-  position: absolute;
-  top: -120px;
-  left: -80px;
-  width: 480px;
-  height: 480px;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(169, 120, 46, 0.12) 0%,
-    transparent 70%
-  );
-  pointer-events: none;
-}
 
 .brandTop {
   position: relative;
@@ -150,8 +135,8 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: 1px solid rgba(169, 120, 46, 0.35);
-  background: rgba(169, 120, 46, 0.1);
+  border: 1px solid color-mix(in srgb, var(--color-brass) 35%, transparent);
+  background: color-mix(in srgb, var(--color-brass) 10%, transparent);
   color: var(--color-brass);
   display: flex;
   align-items: center;

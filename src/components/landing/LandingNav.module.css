@@ -2,8 +2,8 @@
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(27, 42, 74, 0.97);
-  border-bottom: 1px solid rgba(169, 120, 46, 0.15);
+  background: color-mix(in srgb, var(--color-navy) 97%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-brass) 15%, transparent);
 }
 
 .nav {

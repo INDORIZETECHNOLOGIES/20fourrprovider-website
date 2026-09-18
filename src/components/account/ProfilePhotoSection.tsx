@@ -46,7 +46,7 @@ export function ProfilePhotoSection({
 
       <div className={styles.row}>
         {user.profilePhoto ? (
-          <img src={user.profilePhoto} alt="" className={styles.avatar} />
+          <img src={user.profilePhoto} alt="Your profile photo" className={styles.avatar} />
         ) : (
           <span className={styles.avatarPlaceholder}>{user.name.charAt(0).toUpperCase()}</span>
         )}

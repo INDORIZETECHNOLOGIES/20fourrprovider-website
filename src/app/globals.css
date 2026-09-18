@@ -22,6 +22,9 @@
 
   --color-warning: #b45309;
   --color-warning-bg: #fef3e2;
+  --color-success-inverse: #4ade80;
+  --color-warning-inverse: #fbbf24;
+
 
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.05), 0 2px 8px rgba(0,0,0,0.06);
 
@@ -124,4 +127,15 @@ select {
 :focus-visible {
   outline: 2px solid var(--color-brass);
   outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
