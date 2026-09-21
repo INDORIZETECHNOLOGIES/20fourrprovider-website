@@ -17,6 +17,7 @@ import { IncidentsSection } from "./IncidentsSection";
 import { AbsenceAlertControl } from "./AbsenceAlertControl";
 import { RateBookingControl } from "./RateBookingControl";
 import { PaymentStatusSection } from "./PaymentStatusSection";
+import { ProviderInvoiceSection } from "./ProviderInvoiceSection";
 import styles from "./BookingDetail.module.css";
 
 type BookingDetailProps = {
@@ -184,6 +185,10 @@ export function BookingDetail({ bookingId, isVerified, accessToken }: BookingDet
 
         {booking.status === "duty_ended" ? (
           <CompleteBookingControl bookingId={booking._id} accessToken={accessToken} onUpdated={handleUpdated} />
+        ) : null}
+
+        {booking.status === "duty_ended" || booking.status === "completed" ? (
+          <ProviderInvoiceSection bookingId={booking._id} accessToken={accessToken} />
         ) : null}
 
         {booking.status === "duty_started" ? (

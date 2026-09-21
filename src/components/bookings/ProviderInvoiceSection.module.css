@@ -1,0 +1,192 @@
+.section {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-paper-raised);
+  padding: var(--space-5);
+  margin-bottom: var(--space-4);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.subTitle {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-ink-muted);
+  margin: var(--space-5) 0 var(--space-2);
+}
+
+.sectionText {
+  font-size: 0.875rem;
+  color: var(--color-ink-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.held {
+  color: var(--color-warning);
+  font-weight: 600;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: 0.9375rem;
+  padding: var(--space-1) 0;
+}
+
+.rowLabel {
+  color: var(--color-ink-muted);
+}
+
+.note {
+  font-size: 0.8125rem;
+  color: var(--color-ink-muted);
+  margin: var(--space-3) 0 0;
+  line-height: 1.5;
+}
+
+/* What the invoice must show — a two-column register, labels left, values right. */
+.spec {
+  display: grid;
+  grid-template-columns: minmax(120px, max-content) 1fr;
+  gap: var(--space-1) var(--space-4);
+  margin: 0;
+  font-size: 0.9375rem;
+}
+
+.spec dt {
+  color: var(--color-ink-muted);
+}
+
+.spec dd {
+  margin: 0;
+  text-align: right;
+}
+
+.subLine {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--color-ink-muted);
+}
+
+.mono {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.spec .specTotal {
+  font-weight: 700;
+  color: var(--color-ink);
+  border-top: 1px solid var(--color-line);
+  padding-top: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-line);
+}
+
+.fieldRow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+@media (max-width: 640px) {
+  .fieldRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: 0.875rem;
+}
+
+.label {
+  font-weight: 600;
+  font-size: 0.8125rem;
+}
+
+.input {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  background: var(--color-paper);
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.9375rem;
+  width: 100%;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-3);
+}
+
+.form .actions {
+  margin-top: 0;
+}
+
+.link {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.linkButton {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  color: var(--color-ink);
+}
+
+.submitButton {
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--color-navy);
+  color: var(--color-navy-ink);
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error {
+  font-size: 0.8125rem;
+  color: var(--color-danger);
+  margin: 0;
+}
