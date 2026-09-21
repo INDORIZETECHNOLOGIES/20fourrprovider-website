@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/Badge";
 import { formatPaise, formatDate } from "@/lib/format";
 import { SERVICE_CATEGORY_LABELS } from "@/lib/api/provider";
 import { BOOKING_STATUS_LABELS, BOOKING_STATUS_TONE, CHAT_ALLOWED_STATUSES } from "@/lib/constants/bookingStatus";
-import type { Booking } from "@/lib/api/bookings";
+import { clientName, type Booking } from "@/lib/api/bookings";
 import { PendingBookingActions } from "./PendingBookingActions";
 import { DutyControls } from "./DutyControls";
 import { CompleteBookingControl } from "./CompleteBookingControl";
@@ -37,7 +37,7 @@ export function BookingRow({ booking, isVerified, accessToken, onUpdated }: Book
           the other detail rather than heading the row. */}
       <div className={styles.head}>
         <div className={styles.headText}>
-          <p className={styles.client}>{booking.clientId.name}</p>
+          <p className={styles.client}>{clientName(booking)}</p>
           <p className={styles.when}>
             {dateLabel}, {booking.startTime}–{booking.endTime}
           </p>

@@ -12,7 +12,10 @@ export type BookingClient = {
 export type Booking = {
   _id: string;
   bookingId: string;
-  clientId: BookingClient;
+  // `null` when the client's account no longer exists (deleted or erased) —
+  // Mongoose's populate yields null for a dangling ref. Read the name through
+  // `clientName()` rather than dereferencing this directly.
+  clientId: BookingClient | null;
   serviceCategory: ServiceCategory;
   startDate: string;
   endDate: string;
@@ -24,6 +27,10 @@ export type Booking = {
   address?: string | null;
   notes?: string | null;
 };
+
+export function clientName(booking: Pick<Booking, "clientId">): string {
+  return booking.clientId?.name ?? "Former client";
+}
 
 export type ThreatAssessment = {
   hasKnownThreat: boolean;

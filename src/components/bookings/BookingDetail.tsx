@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
 import { Banner } from "@/components/ui/Banner";
 import { ApiError } from "@/lib/api/client";
-import { getBookingDetail, type Booking, type BookingDetail as BookingDetailType, type ThreatAssessment } from "@/lib/api/bookings";
+import { clientName, getBookingDetail, type Booking, type BookingDetail as BookingDetailType, type ThreatAssessment } from "@/lib/api/bookings";
 import { formatDate, formatPaise } from "@/lib/format";
 import { SERVICE_CATEGORY_LABELS } from "@/lib/api/provider";
 import { BOOKING_STATUS_LABELS, BOOKING_STATUS_TONE, CHAT_ALLOWED_STATUSES } from "@/lib/constants/bookingStatus";
@@ -99,18 +99,24 @@ export function BookingDetail({ bookingId, isVerified, accessToken }: BookingDet
 
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>Client</h2>
-          <div className={styles.row}>
-            <span className={styles.rowLabel}>Name</span>
-            <span>{booking.clientId.name}</span>
-          </div>
-          <div className={styles.row}>
-            <span className={styles.rowLabel}>Phone</span>
-            <span>{booking.clientId.phone}</span>
-          </div>
-          <div className={styles.row}>
-            <span className={styles.rowLabel}>Email</span>
-            <span>{booking.clientId.email}</span>
-          </div>
+          {booking.clientId ? (
+            <>
+              <div className={styles.row}>
+                <span className={styles.rowLabel}>Name</span>
+                <span>{booking.clientId.name}</span>
+              </div>
+              <div className={styles.row}>
+                <span className={styles.rowLabel}>Phone</span>
+                <span>{booking.clientId.phone}</span>
+              </div>
+              <div className={styles.row}>
+                <span className={styles.rowLabel}>Email</span>
+                <span>{booking.clientId.email}</span>
+              </div>
+            </>
+          ) : (
+            <p className={styles.clientGone}>This client&apos;s account no longer exists, so their contact details aren&apos;t available.</p>
+          )}
         </div>
 
         <div className={styles.section}>
@@ -165,7 +171,7 @@ export function BookingDetail({ bookingId, isVerified, accessToken }: BookingDet
         {CHAT_ALLOWED_STATUSES.includes(booking.status) ? (
           <div className={styles.links}>
             <Link href={`/bookings/${booking._id}/chat`} className={styles.link}>
-              Chat with {booking.clientId.name}
+              Chat with {clientName(booking)}
             </Link>
           </div>
         ) : null}
@@ -203,7 +209,7 @@ export function BookingDetail({ bookingId, isVerified, accessToken }: BookingDet
           <AbsenceAlertControl bookingId={booking._id} accessToken={accessToken} />
         ) : null}
 
-        {booking.status === "completed" ? (
+        {booking.status === "completed" && booking.clientId ? (
           <RateBookingControl
             bookingId={booking._id}
             clientId={booking.clientId._id}

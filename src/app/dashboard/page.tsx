@@ -12,7 +12,7 @@ import {
 } from "@/lib/api/provider";
 import { PROVIDER_DOCUMENT_CATALOG } from "@/lib/constants/providerDocuments";
 import { BOOKING_STATUS_LABELS, BOOKING_STATUS_TONE, type BookingStatus } from "@/lib/constants/bookingStatus";
-import { listBookings, type Booking } from "@/lib/api/bookings";
+import { clientName, listBookings, type Booking } from "@/lib/api/bookings";
 import { listSettlements } from "@/lib/api/settlements";
 import { setAvailability } from "@/lib/api/availability";
 import { AppShell } from "@/components/layout/AppShell";
@@ -336,7 +336,7 @@ export default function DashboardPage() {
                 {nextShift.status === "duty_started" ? "On duty now" : "Next shift"}
               </p>
               <p className={styles.shiftTitle}>
-                {SERVICE_CATEGORY_LABELS[nextShift.serviceCategory]} for {nextShift.clientId.name}
+                {SERVICE_CATEGORY_LABELS[nextShift.serviceCategory]} for {clientName(nextShift)}
               </p>
               <p className={styles.shiftMeta}>
                 {nextShift.startTime}–{nextShift.endTime}
@@ -494,7 +494,7 @@ export default function DashboardPage() {
             {recentBookings.map((b) => (
               <Link key={b._id} href={`/bookings/${b._id}`} className={styles.bookingRow}>
                 <div className={styles.bookingRowLeft}>
-                  <p className={styles.bookingClient}>{b.clientId.name}</p>
+                  <p className={styles.bookingClient}>{clientName(b)}</p>
                   <p className={styles.bookingMeta}>
                     {SERVICE_CATEGORY_LABELS[b.serviceCategory]} · {formatDate(b.startDate)} –{" "}
                     {formatDate(b.endDate)}
