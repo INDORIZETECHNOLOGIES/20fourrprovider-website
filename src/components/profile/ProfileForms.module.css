@@ -1,0 +1,210 @@
+/* Shared by the Your-details and Public-profile forms. Sections are the same
+   bordered boxes the Account page uses; nothing nests inside another box. */
+
+.page {
+  width: 100%;
+}
+
+.column {
+  width: 100%;
+  max-width: 640px;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-ink-muted);
+  text-decoration: none;
+}
+
+.back:hover {
+  color: var(--color-ink);
+}
+
+.section {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-paper-raised);
+  padding: var(--space-5);
+  margin-bottom: var(--space-6);
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 var(--space-2);
+}
+
+.sectionText {
+  font-size: 0.9375rem;
+  color: var(--color-ink-muted);
+  line-height: 1.5;
+  margin: 0 0 var(--space-4);
+  max-width: 62ch;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.pair {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+@media (min-width: 560px) {
+  .pair {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.divider {
+  border: 0;
+  border-top: 1px solid var(--color-line);
+  margin: var(--space-5) 0;
+}
+
+/* Who can see a section — said once, in words, not by colour. */
+.audience {
+  display: inline-block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-ink-muted);
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  padding: 2px var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.counter {
+  font-size: 0.8125rem;
+  color: var(--color-ink-muted);
+  text-align: right;
+  margin: calc(var(--space-1) * -1) 0 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.counterOver {
+  color: var(--color-danger);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: var(--space-2);
+}
+
+.actions > button {
+  width: auto;
+  min-width: 200px;
+}
+
+.saved {
+  font-size: 0.9375rem;
+  background: color-mix(in srgb, var(--color-brass) 14%, var(--color-paper-raised));
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  margin: 0 0 var(--space-4);
+}
+
+/* Tag input */
+.tags {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.tagLabel {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.tagEntry {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.tagEntry > input {
+  flex: 1;
+  min-width: 0;
+}
+
+.tagAdd {
+  border: 1.5px solid var(--color-brass-strong);
+  background: none;
+  color: var(--color-brass-strong);
+  border-radius: var(--radius-sm);
+  padding: 0 var(--space-4);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tagAdd:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-brass) 12%, transparent);
+}
+
+.tagAdd:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.chipList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  padding: 2px var(--space-1) 2px var(--space-3);
+  font-size: 0.9375rem;
+  background: var(--color-paper);
+}
+
+.chipRemove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+}
+
+.chipRemove:hover {
+  color: var(--color-danger);
+  background: var(--color-danger-bg);
+}
+
+/* Toggle rows */
+.switches {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.textarea {
+  min-height: 132px;
+  resize: vertical;
+}

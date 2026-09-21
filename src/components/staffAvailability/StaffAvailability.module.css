@@ -1,0 +1,250 @@
+.page {
+  width: 100%;
+}
+
+.column {
+  width: 100%;
+  max-width: 800px;
+}
+
+.section {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-paper-raised);
+  padding: var(--space-5);
+  margin-bottom: var(--space-6);
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 var(--space-2);
+}
+
+.sectionText {
+  font-size: 0.9375rem;
+  color: var(--color-ink-muted);
+  line-height: 1.5;
+  margin: 0 0 var(--space-4);
+  max-width: 62ch;
+}
+
+.link {
+  font-weight: 600;
+}
+
+/* Calendar */
+.monthBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.monthTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.navButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--color-ink);
+  cursor: pointer;
+}
+
+.navButton:hover:not(:disabled) {
+  border-color: var(--color-brass);
+}
+
+.navButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--space-1);
+}
+
+.weekday {
+  padding: var(--space-1) 0 var(--space-2);
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-ink-muted);
+}
+
+.blank {
+  min-height: 60px;
+}
+
+.day {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  min-height: 60px;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  text-align: left;
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+}
+
+.day:hover:not(:disabled) {
+  border-color: var(--color-brass);
+}
+
+.day:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.daySelected {
+  border-color: var(--color-brass-strong);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-brass) 30%, transparent);
+}
+
+.dayToday .dayNumber {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.dayNumber {
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.dayValue {
+  align-self: flex-end;
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+
+.dayOff {
+  align-self: flex-end;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-ink-muted);
+}
+
+.loading {
+  margin: var(--space-3) 0 0;
+  font-size: 0.875rem;
+  color: var(--color-ink-muted);
+}
+
+.legend {
+  margin: var(--space-3) 0 0;
+  font-size: 0.8125rem;
+  color: var(--color-ink-muted);
+}
+
+/* Editors */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.pair {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+@media (min-width: 560px) {
+  .pair {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.total {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.totalOver {
+  color: var(--color-danger);
+}
+
+.textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.actions > button:first-child {
+  width: auto;
+  min-width: 160px;
+}
+
+.secondary {
+  border: 1.5px solid var(--color-brass-strong);
+  background: none;
+  color: var(--color-brass-strong);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.secondary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-brass) 12%, transparent);
+}
+
+.secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.textButton {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  color: var(--color-ink-muted);
+}
+
+.saved {
+  font-size: 0.9375rem;
+  background: color-mix(in srgb, var(--color-brass) 14%, var(--color-paper-raised));
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  margin: 0 0 var(--space-4);
+}
+
+.note {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-ink-muted);
+  line-height: 1.5;
+}

@@ -34,3 +34,35 @@ export function validateTotalHoursPerDay(hours: number): string | null {
   }
   return null;
 }
+
+// Hourly bookings only apply to a single day shorter than the shift, so the
+// hourly rate is quoted per hour, in rupees, and converted to paise on save.
+export function validateHourlyRate(rupees: number): string | null {
+  if (!Number.isFinite(rupees) || rupees < 50 || rupees > 1000000) {
+    return "Enter an hourly rate between ₹50 and ₹10,00,000.";
+  }
+  return null;
+}
+
+export function validateMinimumHours(hours: number, shiftHours: number): string | null {
+  if (!Number.isInteger(hours) || hours < 1) return "Enter at least 1 hour.";
+  if (Number.isFinite(shiftHours) && shiftHours > 0 && hours >= shiftHours) {
+    return "Keep this below your shift length, or clients will never see hourly pricing.";
+  }
+  return null;
+}
+
+// Blank means "not offered". Amounts are a per-day add-on, in rupees.
+export function validateVehicleAddOn(text: string): string | null {
+  if (!text.trim()) return null;
+  const rupees = Number(text);
+  if (!Number.isFinite(rupees) || rupees < 0 || rupees > 500000) {
+    return "Enter an amount between ₹0 and ₹5,00,000, or leave it blank.";
+  }
+  return null;
+}
+
+export function validateLicenceNumber(text: string): string | null {
+  if (text.length > 50) return "Keep the licence number under 50 characters.";
+  return null;
+}

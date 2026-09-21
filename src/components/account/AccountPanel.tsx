@@ -17,6 +17,7 @@ import { validateConsentReason, validateErasureReason } from "@/lib/validation/a
 import { formatDate } from "@/lib/format";
 import { ProfilePhotoSection } from "./ProfilePhotoSection";
 import { EmailVerificationSection } from "@/components/verification/EmailVerificationSection";
+import { ChangePasswordSection } from "./ChangePasswordSection";
 import { PhoneVerificationSection } from "@/components/verification/PhoneVerificationSection";
 import styles from "./AccountPanel.module.css";
 
@@ -171,6 +172,8 @@ export function AccountPanel({ accessToken }: { accessToken: string }) {
             />
           </>
         ) : null}
+
+        <ChangePasswordSection accessToken={accessToken} />
 
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>Download your data</h2>

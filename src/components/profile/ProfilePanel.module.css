@@ -1,0 +1,197 @@
+.page {
+  width: 100%;
+}
+
+.column {
+  width: 100%;
+  max-width: 800px;
+}
+
+/* Identity — one ruled row, not a card. */
+.identity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding-bottom: var(--space-6);
+  margin-bottom: var(--space-6);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.avatar {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--color-line);
+}
+
+.avatarPlaceholder {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--color-navy);
+  color: var(--color-navy-ink);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.who {
+  min-width: 0;
+  flex: 1;
+}
+
+.name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.summary {
+  margin: var(--space-1) 0 0;
+  color: var(--color-ink-muted);
+  line-height: 1.5;
+  max-width: 60ch;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+  font-size: 0.875rem;
+  color: var(--color-ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* What's blocking — the page's one raised element while something is outstanding. */
+.attention {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-paper-raised);
+  margin-bottom: var(--space-8);
+  overflow: hidden;
+}
+
+.attentionRejected {
+  border-color: var(--color-danger);
+}
+
+.attentionHead {
+  padding: var(--space-5) var(--space-5) var(--space-4);
+}
+
+.attentionTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.attentionText {
+  margin: var(--space-2) 0 0;
+  color: var(--color-ink-muted);
+  line-height: 1.55;
+  max-width: 64ch;
+}
+
+.todo {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--color-line);
+}
+
+.todo > li + li {
+  border-top: 1px solid var(--color-line);
+}
+
+.todoLink {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  text-decoration: none;
+  color: inherit;
+}
+
+.todoLink:hover {
+  background: var(--color-paper);
+}
+
+.todoText {
+  min-width: 0;
+  flex: 1;
+}
+
+.todoTitle {
+  margin: 0;
+  font-weight: 600;
+}
+
+.todoDetail {
+  margin: 2px 0 0;
+  font-size: 0.875rem;
+  color: var(--color-ink-muted);
+}
+
+/* Hub rows */
+.groupTitle {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  text-decoration: none;
+  color: inherit;
+}
+
+.row:hover {
+  background: var(--color-paper);
+}
+
+.rowText {
+  min-width: 0;
+  flex: 1;
+}
+
+.rowTitle {
+  margin: 0;
+  font-weight: 600;
+}
+
+.rowDetail {
+  margin: 2px 0 0;
+  font-size: 0.875rem;
+  color: var(--color-ink-muted);
+}
+
+.chevron {
+  flex-shrink: 0;
+  color: var(--color-ink-muted);
+  transform: rotate(-90deg);
+}
+
+.groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
