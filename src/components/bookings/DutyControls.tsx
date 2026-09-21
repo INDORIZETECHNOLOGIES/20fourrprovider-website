@@ -2,13 +2,7 @@
 
 import { useState } from "react";
 import { ApiError } from "@/lib/api/client";
-import {
-  confirmGuardEnd,
-  confirmGuardStart,
-  getCurrentCoordinates,
-  verifyEndOtp,
-  verifyStartOtp,
-} from "@/lib/api/duty";
+import { getCurrentCoordinates, verifyEndOtp, verifyStartOtp } from "@/lib/api/duty";
 import { validateOtp } from "@/lib/validation/duty";
 import type { Booking } from "@/lib/api/bookings";
 import styles from "./BookingRow.module.css";
@@ -19,31 +13,15 @@ type DutyControlsProps = {
   onUpdated: (bookingId: string, status: Booking["status"]) => void;
 };
 
+// Every category, guard included, starts and ends duty with the 6-digit code the client
+// generates and shares in person. Guards used to self-confirm with no code, which let a
+// provider run a booking to completion without the client ever being involved.
 export function DutyControls({ booking, accessToken, onUpdated }: DutyControlsProps) {
   const [otp, setOtp] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const isGuard = booking.serviceCategory === "guard";
   const starting = booking.status === "payment_done";
-
-  async function handleGuardConfirm() {
-    setError(null);
-    setSubmitting(true);
-    try {
-      if (starting) {
-        await confirmGuardStart(booking._id, accessToken);
-        onUpdated(booking._id, "duty_started");
-      } else {
-        await confirmGuardEnd(booking._id, accessToken);
-        onUpdated(booking._id, "duty_ended");
-      }
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Something went wrong. Try again.");
-    } finally {
-      setSubmitting(false);
-    }
-  }
 
   async function handleOtpSubmit() {
     const validationError = validateOtp(otp);
@@ -71,31 +49,22 @@ export function DutyControls({ booking, accessToken, onUpdated }: DutyControlsPr
     }
   }
 
-  const guardLabel = starting ? "Confirm duty start" : "Confirm duty end";
   const otpLabel = starting ? "Start duty" : "End duty";
 
   return (
     <div className={styles.rejectForm}>
       {error ? <p className={styles.error}>{error}</p> : null}
-      {isGuard ? (
-        <button type="button" className={styles.acceptButton} disabled={submitting} onClick={handleGuardConfirm}>
-          {submitting ? "Confirming…" : guardLabel}
-        </button>
-      ) : (
-        <>
-          <input
-            className={styles.rejectInput}
-            placeholder="6-digit code from client"
-            value={otp}
-            onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-            inputMode="numeric"
-            maxLength={6}
-          />
-          <button type="button" className={styles.acceptButton} disabled={submitting} onClick={handleOtpSubmit}>
-            {submitting ? "Verifying…" : otpLabel}
-          </button>
-        </>
-      )}
+      <input
+        className={styles.rejectInput}
+        placeholder="6-digit code from client"
+        value={otp}
+        onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+        inputMode="numeric"
+        maxLength={6}
+      />
+      <button type="button" className={styles.acceptButton} disabled={submitting} onClick={handleOtpSubmit}>
+        {submitting ? "Verifying…" : otpLabel}
+      </button>
     </div>
   );
 }

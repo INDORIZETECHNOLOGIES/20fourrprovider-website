@@ -19,7 +19,7 @@ templated "AI slop" layouts — get a deliberate aesthetic direction, then execu
 The project was scaffolded with `create-next-app` (Next.js App Router, TypeScript, ESLint).
 
 **Built**: auth, provider profile setup, KYC document upload, availability, bookings (list, detail
-view, accept/reject, mark-complete), duty (OTP + gate-guard start/end), earnings/settlements,
+view, accept/reject, mark-complete), duty (client OTP start/end, every category), earnings/settlements,
 per-booking chat, support tickets, notifications, account/DPDP (data export, consent withdrawal,
 erasure request), duty safety (SOS + live check-in), incident reporting, absence-alert, ratings
 (submit + own-ratings view), payout bank details (submit + one-tap confirm), payment status, tax
@@ -471,10 +471,13 @@ features should follow:
 - **Duty (`/duty/:bookingId/*`) is not gated by `requireProviderVerified`** — by the time a booking
   reaches `payment_done`, accepting it already required verification, so duty start/end don't
   re-gate. `DutyControls` (rendered inline in `BookingRow` for `payment_done`/`duty_started`
-  bookings) branches on `serviceCategory === 'guard'`: guard bookings use the no-OTP
-  `confirm-guard-start/end` endpoints, every other category requires the 6-digit OTP the *client*
-  generates and shares in person (`verify-start-otp`/`verify-end-otp`) — there is no
-  provider-facing way to see that OTP, it must come from the client. Errors from these endpoints
+  bookings) requires the 6-digit OTP the *client* generates and shares in person
+  (`verify-start-otp`/`verify-end-otp`) for **every** category, guard included — there is no
+  provider-facing way to see that OTP, it must come from the client. **Don't reintroduce a no-OTP
+  guard path.** It used to branch guard bookings to `confirm-guard-start/end` (SRS §7.3's "gate
+  guard alternative flow"), which let a guard provider drive a booking `payment_done →
+  duty_started → duty_ended → completed` alone, with the client never involved — reported as a
+  bug and removed. The backend retired them too: both now return 410 and change nothing. Errors from these endpoints
   are plain `AppError`s with no `SC_` code (per Appendix A) — just show `error.message` as-is.
 - **Per-booking action controls are shared between the bookings list and the booking detail page**
   (`src/app/bookings/[bookingId]`) — `PendingBookingActions` (accept/decline), `DutyControls`

@@ -30,14 +30,6 @@ export function verifyEndOtp(
   });
 }
 
-export function confirmGuardStart(bookingId: string, accessToken: string): Promise<{ message: string }> {
-  return apiRequest(`/duty/${bookingId}/confirm-guard-start`, { method: "POST", accessToken });
-}
-
-export function confirmGuardEnd(bookingId: string, accessToken: string): Promise<{ message: string }> {
-  return apiRequest(`/duty/${bookingId}/confirm-guard-end`, { method: "POST", accessToken });
-}
-
 // Best-effort, non-blocking: the backend records a check-in geofence result when
 // coordinates are supplied, but never blocks OTP verification without them.
 export function getCurrentCoordinates(): Promise<Coordinates | undefined> {

@@ -68,7 +68,7 @@ const FEATURES = [
   {
     icon: "clipboard-check" as const,
     title: "Duty signed off",
-    body: "Six-digit client OTP for most categories. Gate-guard bookings use an on-site confirm.",
+    body: "Every shift starts and ends with a six-digit code from the client, so a duty is only signed off when both sides agree.",
     visual: "otp" as const,
   },
   {

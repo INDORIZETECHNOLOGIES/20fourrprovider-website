@@ -373,7 +373,9 @@ Notes: `ProviderProfile.providerType` must be `'firm'`. Document is auto-shared 
 Mounted with `authenticate + requireRole('client','provider')`; individual routes are further
 role-restricted as noted. `generate-start-otp`/`generate-end-otp` are **client-only** — included
 because a provider frontend needs to know where the OTP the guard is asked for actually comes
-from. `verify-*`/`confirm-guard-*` are **provider-only**. `GET /status` is open to both parties.
+from. `verify-*` are **provider-only**. `GET /status` is open to both parties. **Every service
+category — guard included — starts and ends duty with the client's OTP**; there is no provider-only
+way to move a booking into `duty_started` or `duty_ended`.
 
 ### POST /api/v1/duty/:bookingId/generate-start-otp (client only)
 Precondition: `booking.status === 'payment_done'`.
@@ -413,14 +415,13 @@ Notes — the richest side-effect endpoint in the API:
 - Atomically increments `ProviderProfile.successfulJobCount`; awards `trusted_provider` at 10 jobs (+₹200 SecurePoints) and `elite_provider` at 50 jobs (+₹500 SecurePoints) — strictly sequential, elite only unlocks from trusted.
 - Triggers referral rewards (deferred signup bonus, referrer reward, milestone bonus) if this is the referred client's qualifying first booking, non-blocking on failure.
 
-### POST /api/v1/duty/:bookingId/confirm-guard-start (provider only, gate-guard category only)
-No OTP. Same effects as `verify-start-otp` (advance release, atomic claim), gated to `booking.serviceCategory === 'guard'`.
-Errors: 400 if not a guard booking, plus the same PSARA re-check as the OTP path.
-
-### POST /api/v1/duty/:bookingId/confirm-guard-end (provider only, gate-guard only)
-No OTP. Identical side-effect chain to `verify-end-otp` (v6 doc issuance, T+2 schedule, badge award,
-referral trigger) — implemented as a **separate copy of that whole block**, not a shared function.
-A change to one must be mirrored in the other.
+### POST /api/v1/duty/:bookingId/confirm-guard-start · confirm-guard-end (retired — always 410)
+These used to let a guard-category provider start and end duty with **no OTP** (the SRS §7.3 "gate
+guard alternative flow"), which meant a provider could take a booking all the way to `duty_ended`
+— and then `completed` and paid out — without the client ever being involved. Retired: both now
+return **410** with a message telling the provider to get the client's code, and change nothing.
+They stay mounted only so older app builds get a readable error instead of a 404. Use
+`verify-start-otp`/`verify-end-otp` for guard bookings exactly as for every other category.
 
 ### GET /api/v1/duty/:bookingId/status (client or provider)
 Response `data`: `{ bookingStatus, dutySession: { startOtpVerified, dutyStartedAt, endOtpVerified, dutyEndedAt } | null }`
@@ -808,9 +809,7 @@ frontend integration doesn't get surprised by them:
   documented design) and the four `/provider/analytics/*` premium endpoints (rupees, with no field
   naming convention to signal it — unlike `getEarnings`, which pairs every paise field with an
   `...INR` rupee twin).
-- **Two chat surfaces, two duty-confirm code paths.** See the Chat section (`/chat/*` vs
-  `/bookings/:bookingId/chat/*`) and the Duty section (`confirm-guard-end` duplicates
-  `verify-end-otp`'s entire side-effect chain as separate code rather than a shared function).
+- **Two chat surfaces.** See the Chat section (`/chat/*` vs `/bookings/:bookingId/chat/*`).
 - **Reused error codes.** `SC_301`, `SC_403`, `SC_702` each carry a second, unrelated meaning in at
   least one handler — see Appendix A.
 - **Duplicate device-token registration.** `POST /auth/device-token` and
