@@ -24,14 +24,15 @@ per-booking chat, support tickets, notifications, account/DPDP (data export, con
 erasure request), duty safety (SOS + live check-in), incident reporting, absence-alert, ratings
 (submit + own-ratings view), payout bank details (submit + one-tap confirm), payment status, tax
 profile (PAN + GST tier + turnover declaration), PSARA state coverage, tax documents (list +
-detail + PDF download), forgot/reset password, email + phone verification (both during onboarding
+detail + PDF download), profile hub (`/profile`) with what's blocking verification, Your details
+(`/profile/edit`), Public profile with gallery (`/profile/public`), Licences (`/profile/licences`),
+change password (Account), penalties with one-time appeals (`/penalties`), firm staff availability (`/staff-availability`, agencies only), forgot/reset password, email + phone verification (both during onboarding
 and resumable later from Account), profile photo.
 
 **Not built yet** — a previous status note here claimed the provider surface was fully complete;
 it wasn't, and a full pass against the reference doc turned up real gaps, roughly in order of how
 much they matter for a working provider app:
-- Gallery (`/provider/gallery*`), firm staff-availability (`/provider/staff-availability*`),
-  replacement requests, penalties/appeals, premium analytics, wallet (v1 legacy), referral
+- Replacement requests, premium analytics, wallet (v1 legacy), referral
   program, MFA — lower priority, none built.
 - Within ratings: no detailed sub-ratings (professionalism/punctuality/etc.), no photo
   attachments, no report-a-rating flow. `submitRating` only sends `rating`, `review`, `tags`.
@@ -121,8 +122,19 @@ about this are easy to get wrong:
   them.
 - Rates are **paise on the wire, rupees in the form** (`dailyRate: 150000` is ₹1,500), bounded to
   ₹100–₹1,00,000 and 4–24 hours by `validateDailyRate`/`validateTotalHoursPerDay`.
-- The backend also accepts `hourlyRate`/`hourlyEnabled`/`weekendMultiplier`/`vehicleRate`/
-  `vehicleWithDriverRate` on pricing; the form deliberately exposes only daily rate + hours.
+- The form also edits hourly pricing (`hourlyEnabled`/`hourlyRate`/`minimumHours`, per category) and
+  the vehicle add-ons (`vehicleRate`/`vehicleWithDriverRate`, one figure written onto every category
+  row). Hourly only applies to a single-day booking shorter than `totalHoursPerDay`
+  (`booking.service.ts`); vehicle add-ons are per day.
+- **`PUT /provider/pricing` replaces the array wholesale**, so every field the form doesn't edit is
+  carried over from the saved row via `carryPricingFields` (`lib/api/provider.ts`). Before that
+  existed, saving services silently reset anything set from the phone app. `weekendMultiplier` is
+  round-tripped but **not editable on purpose**: the backend stores and validates it but no price
+  uses it, so a control would promise something the platform doesn't do. A stored value outside 1–3
+  is omitted rather than echoed, because the API would 400 the whole save.
+- **Save profile-level fields through `saveProviderProfile`**, not a hand-built object: it sends
+  every field `PUT /provider/profile` reads, filled from the loaded profile, so one page's save
+  can't blank another's. Licence numbers go as `null` (not `""`) to clear them.
 
 **There is no per-category or per-day availability for an individual provider, and don't build UI
 implying there is.** `PUT /provider/availability` accepts exactly `{isAvailable}` (plus a `reason`
@@ -131,7 +143,7 @@ every service. Working hours are *readable* (`GET /provider/availability/days-of
 `workingHours`) but no endpoint writes them, so the panel states them as fact rather than offering
 an editor. Per-date, per-category numbers exist only as `/provider/staff-availability` — firm
 headcount per category per date, capped by `numberOfPersonnel`, with a bulk date-range variant.
-That's a firm/agency surface and is still unbuilt here; it's the only place a "how many bouncers can
+That's a firm/agency surface, built at `/staff-availability` (linked from the Profile hub for agencies only); it's the only place a "how many bouncers can
 I field on the 14th" answer could come from.
 
 **Link to a booking with `booking._id`, never `booking.bookingId`.** The detail route and

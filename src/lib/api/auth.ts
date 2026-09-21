@@ -128,3 +128,17 @@ export function updateProfilePhoto(file: File, accessToken: string): Promise<{ p
   formData.append("file", file);
   return apiUpload("/auth/profile-photo", formData, accessToken, "PATCH");
 }
+
+// Changing a password is a two-step flow: an emailed 6-digit code replaces the
+// old current-password check. A successful change ends every session, so the
+// caller signs the user out afterwards.
+export function sendChangePasswordOtp(accessToken: string): Promise<Record<string, never>> {
+  return apiRequest("/auth/change-password/send-otp", { method: "POST", accessToken });
+}
+
+export function changePassword(
+  input: { otp: string; newPassword: string; confirmPassword: string },
+  accessToken: string,
+): Promise<Record<string, never>> {
+  return apiRequest("/auth/change-password", { method: "POST", body: input, accessToken });
+}

@@ -76,11 +76,13 @@ export function AppSidebar() {
 
   const complianceNav: NavItem[] = [
     { href: "/ratings", label: "Ratings", icon: "star" },
+    { href: "/penalties", label: "Penalties", icon: "shield" },
     { href: "/tax-profile", label: "Tax profile", icon: "percent" },
     { href: "/tax-documents", label: "Tax documents", icon: "receipt" },
   ];
 
   const accountNav: NavItem[] = [
+    { href: "/profile", label: "Profile", icon: "person-shield" },
     { href: "/tickets", label: "Support", icon: "chat" },
     { href: "/account", label: "Account", icon: "gear" },
   ];
@@ -95,7 +97,8 @@ export function AppSidebar() {
       icon: "bell",
       badge: unreadCount,
     },
-    { href: "/account", label: "Account", icon: "gear" },
+    // Profile is the hub; Account (photo, verification, password) is one tap in.
+    { href: "/profile", label: "Profile", icon: "person-shield" },
   ];
 
   function isActive(href: string) {

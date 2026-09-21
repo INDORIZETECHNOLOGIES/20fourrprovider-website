@@ -14,7 +14,7 @@ web
 
 2. **Security firm and agency administrators** — who manage a team of staff, handle firm-level PSARA licensing, field availability per category per date, and oversee earnings at the firm level.
 
-Both audiences work within the same authenticated shell. Firm-specific surfaces (staff availability, firm headcount management) are a subset not yet built.
+Both audiences work within the same authenticated shell. Firm-specific surfaces (staff availability, per-date headcount) live under `/staff-availability` and are shown only to agencies.
 
 ## Product Purpose
 
@@ -31,15 +31,15 @@ The differentiating mechanism is verified, licensed supply: every provider must 
 - **India, English-only UI.** Providers are based in India; currency is INR (displayed in rupees; wire values are in paise).
 - **Pre-scheduled and on-demand bookings.** Providers may have shifts booked in advance or accept requests on short notice.
 - **Duty lifecycle:** OTP-based shift start and end, live SOS, periodic check-in, incident reporting, absence alerting.
-- **Rate model:** Daily rate (₹100–₹1,00,000 / 4–24 hours per day). Hourly, weekend multiplier, and vehicle rates exist on the backend but are not exposed in the current UI.
+- **Rate model:** Daily rate (₹100–₹1,00,000 / 4–24 hours per day). Hourly pricing and per-day vehicle add-ons are editable on the Availability page. The weekend multiplier exists on the backend but no price uses it, so it is not exposed.
 - **Settlement:** Payout issued after each completed shift and admin verification, via bank transfer. Not instant.
 - **Regulated context:** PSARA licensing is a hard requirement. KYC document upload and admin verification gate full platform access. Verification status is surfaced throughout the authenticated app.
 
 ## Capabilities and Constraints
 
-**Built features (current):** Auth (login, register, forgot/reset password, email + phone verify), provider profile setup, KYC document upload, PSARA state coverage, availability (toggle + days-off), bookings (list, detail, accept/reject, mark-complete), duty lifecycle (OTP + gate-guard start/end, SOS, check-in), per-booking chat, support tickets, notifications, earnings/settlements, bank account (add + confirm), tax profile (PAN + GST tier + turnover declaration), tax documents (list + detail + PDF download), account/DPDP (data export, consent withdrawal, erasure request), ratings (submit + own-ratings view), profile photo.
+**Built features (current):** Auth (login, register, forgot/reset password, email + phone verify), provider profile setup, KYC document upload, PSARA state coverage, availability (toggle + days-off), bookings (list, detail, accept/reject, mark-complete), duty lifecycle (OTP + gate-guard start/end, SOS, check-in), per-booking chat, support tickets, notifications, earnings/settlements, bank account (add + confirm), tax profile (PAN + GST tier + turnover declaration), tax documents (list + detail + PDF download), account/DPDP (data export, consent withdrawal, erasure request), ratings (submit + own-ratings view), profile photo, profile hub, your details, public profile with gallery, licences, change password, penalties with appeals, firm staff availability.
 
-**Not yet built:** Gallery (`/provider/gallery*`), firm staff-availability, replacement requests, penalties/appeals, premium analytics, wallet, referral program, MFA, detailed sub-ratings, photo attachments on ratings, report-a-rating, PSARA document-ID picker for licence attachment.
+**Not yet built:** Replacement requests, premium analytics, wallet, referral program, MFA, detailed sub-ratings, photo attachments on ratings, report-a-rating, PSARA document-ID picker for licence attachment.
 
 **Technical constraints:**
 - Next.js App Router (v16), React 19, TypeScript, plain CSS modules (Tailwind removed).
