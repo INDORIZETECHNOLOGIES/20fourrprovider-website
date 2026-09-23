@@ -264,7 +264,7 @@ Notes: overwrites (not merges) every date in the range; `off: true` zeroes count
 
 ### PUT /api/v1/provider/bookings/:bookingId/accept
 Gated: **yes**. Body: `{ acceptedAt? (accepted but unused) }` → `data: { booking }` (now `provider_accepted`)
-Errors: `SC_401` not found · `SC_109` not this provider's booking · `SC_402` not `pending` (including a lost atomic-claim race).
+Errors: `SC_401` not found · `SC_109` not this provider's booking · `SC_402` not `pending` (including a lost atomic-claim race) · **`SC_1494`** v6 booking and the provider's Razorpay payout account is not `activated` yet (spec 0010) — show "your payout account is being verified", not a generic failure.
 
 ### PUT /api/v1/provider/bookings/:bookingId/reject
 Gated: no (deliberate — a provider who can't accept must still be able to decline). Body: `{ rejectionReason (required, max 500) }`
@@ -291,7 +291,8 @@ Response `data`: `{ payouts: [{id, payoutDate, amount (paise), status:'completed
 
 ### GET /api/v1/provider/settlements
 Gated: no. **v6 — build against this one, not the payout-history endpoint above.** Query: `page?`, `limit? (max 50)`, `state?`.
-Response `data`: `{ settlements: [{bookingId, bookingReference, grossPaise, tcsPaise, tdsPaise, netPaise, state, releaseScheduledFor, releasedAt, utr}], pagination }`
+Response `data`: `{ settlements: [{bookingId, bookingReference, grossPaise, tcsPaise, tdsPaise, netPaise, state, releaseScheduledFor, releasedAt, utr, invoiceUploaded}], pagination }`
+Notes (spec 0010): a `calculated` settlement is released as soon as `invoiceUploaded` is true — there is no T+2 wait, and `releaseScheduledFor` is no longer set on new bookings (it is kept only for older ones). After release, Razorpay settles to the provider's bank by the next working day.
 
 ### POST /api/v1/provider/bookings/:bookingId/request-replacement
 Gated: no. Body: `{ reason (required, max 500) }` → `data: { ticket }` (auto-opened support ticket, `type:'absence', priority:'high'`)
@@ -791,9 +792,10 @@ Provider-callable transitions: `pending → provider_accepted` (`PUT /provider/b
 `pending → provider_rejected` (`PUT /provider/bookings/:id/reject`), `duty_started` (duty-start
 OTP/guard-confirm), `duty_ended` (duty-end OTP/guard-confirm), `duty_ended → completed`
 (`PUT /provider/bookings/:id/complete`). Payout timing differs by engine: **v1** splits 30% at the
-duty-start OTP and 70% at T+2 after the duty-end OTP; **v6** makes one provider transfer released at
-duty-end OTP + T+2, with duty-start being a ledger/policy event only (see the open question flagged
-in the Duty section above).
+duty-start OTP and 70% at T+2 after the duty-end OTP; **v6** holds one provider transfer at
+Razorpay from payment capture and releases it once the duty-end OTP is done **and** the provider's
+invoice is uploaded (spec 0010), with duty-start being a ledger/policy event only (see the open
+question flagged in the Duty section above).
 
 Contact-detail and threat-profile visibility flips at `payment_done` — see
 `GET /bookings/:bookingId` above.

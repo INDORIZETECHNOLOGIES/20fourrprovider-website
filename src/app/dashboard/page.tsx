@@ -11,6 +11,7 @@ import {
   type ProviderProfile,
 } from "@/lib/api/provider";
 import { PROVIDER_DOCUMENT_CATALOG } from "@/lib/constants/providerDocuments";
+import { payoutAccountStatus } from "@/lib/constants/payoutAccount";
 import { BOOKING_STATUS_LABELS, BOOKING_STATUS_TONE, type BookingStatus } from "@/lib/constants/bookingStatus";
 import { clientName, listBookings, type Booking } from "@/lib/api/bookings";
 import { listSettlements } from "@/lib/api/settlements";
@@ -131,6 +132,18 @@ function setupTasks(profile: ProviderProfile): SetupTask[] {
           }
         : { id: "bank", label: "Payout bank account", detail: "Verified and confirmed.", done: true };
 
+  // Razorpay has to approve the payout account before any booking can be accepted — it can't
+  // hold a client's payment, so the backend refuses acceptance (SC_1494) until then.
+  const payout = payoutAccountStatus(bank);
+  const payoutTask: SetupTask = payout
+    ? { id: "payout", label: "Payout account approval", detail: payout.detail, done: payout.done, action: payout.action }
+    : {
+        id: "payout",
+        label: "Payout account approval",
+        detail: "Set up with Razorpay automatically once your bank account is confirmed.",
+        done: false,
+      };
+
   return [
     {
       id: "profile",
@@ -152,6 +165,7 @@ function setupTasks(profile: ProviderProfile): SetupTask[] {
           : { href: "/documents", label: "Upload documents" },
     },
     bankTask,
+    payoutTask,
     {
       id: "verification",
       label: "Account verification",

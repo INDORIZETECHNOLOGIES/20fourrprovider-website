@@ -41,6 +41,17 @@
   border-top: 1px solid var(--color-line);
 }
 
+/* The Razorpay payout account — its own step after the bank account, set off by the same hairline. */
+.payoutAccount {
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-line);
+}
+
+.payoutAccount a {
+  text-decoration: underline;
+}
+
 .actions {
   display: flex;
   gap: var(--space-3);

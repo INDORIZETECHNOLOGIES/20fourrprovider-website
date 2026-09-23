@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Field } from "@/components/ui/Field";
 import { Select } from "@/components/ui/Select";
 import { Badge } from "@/components/ui/Badge";
 import { ApiError } from "@/lib/api/client";
 import { getProviderProfile, updateBankDetails, confirmBankDetails, type BankDetails } from "@/lib/api/provider";
 import { validateAccountName, validateAccountNumber, validateIfscCode } from "@/lib/validation/bankDetails";
+import { payoutAccountStatus } from "@/lib/constants/payoutAccount";
 import styles from "./BankDetailsSection.module.css";
 
 export function BankDetailsSection({ accessToken }: { accessToken: string }) {
@@ -108,6 +110,8 @@ export function BankDetailsSection({ accessToken }: { accessToken: string }) {
 
   if (bankDetails === "loading") return null;
 
+  const payout = payoutAccountStatus(bankDetails);
+
   return (
     <div className={styles.section}>
       <h2 className={styles.sectionTitle}>Payout bank account</h2>
@@ -199,6 +203,24 @@ export function BankDetailsSection({ accessToken }: { accessToken: string }) {
                   <Badge tone="muted">Pending verification</Badge>
                 )}
               </div>
+
+              {payout ? (
+                <div className={styles.payoutAccount}>
+                  <div className={styles.row}>
+                    <span className={styles.rowLabel}>Payout account</span>
+                    <Badge tone={payout.tone}>{payout.label}</Badge>
+                  </div>
+                  <p className={styles.hint}>
+                    {payout.detail}
+                    {payout.action ? (
+                      <>
+                        {" "}
+                        <Link href={payout.action.href}>{payout.action.label}</Link>
+                      </>
+                    ) : null}
+                  </p>
+                </div>
+              ) : null}
             </>
           ) : (
             <p className={styles.sectionText}>No bank account on file yet.</p>

@@ -262,6 +262,15 @@ exists:
   summing an unbounded, paginated v6 list client-side, which would be wrong/misleading unless every
   page were loaded). Until `PlatformSettings.billingV6.enabled` is flipped, expect this list to be
   empty for real accounts — that's correct, not a bug.
+- **A v6 booking also needs an activated Razorpay payout account** (backend spec 0010). Razorpay
+  can't hold a client's payment, so `PUT /provider/bookings/:id/accept` (and the client's order
+  creation) refuse with `SC_1494` until `bankDetails.razorpayActivationStatus === 'activated'`.
+  The account is created automatically when the provider confirms an admin-verified bank account,
+  and Razorpay's review takes 24–48h. `payoutAccountStatus()` (`lib/constants/payoutAccount.ts`) is
+  the one place that turns that status into copy — the dashboard checklist, the bank section on
+  Earnings, and the accept gate note all read it. Settlements are released once duty has ended and
+  the provider's invoice is uploaded (`invoiceUploaded` on `/provider/settlements`) — no T+2 date on
+  newer bookings, so don't reintroduce an "expected on" line for them.
 - `requireProviderVerified` gates the actions that commit a provider to work (accepting a booking,
   toggling availability, days-off/staff-availability) but deliberately not profile/documents/
   pricing/bank-details, since those are the path *to* verification.

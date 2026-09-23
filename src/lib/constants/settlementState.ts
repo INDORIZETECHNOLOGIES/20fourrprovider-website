@@ -16,7 +16,7 @@ export type SettlementState = (typeof SETTLEMENT_STATES)[number];
 export const SETTLEMENT_STATE_LABELS: Record<SettlementState, string> = {
   held: "Held",
   documents_issued: "Documents issued",
-  calculated: "Calculated",
+  calculated: "Awaiting invoice",
   releasing: "Releasing",
   released: "Released",
   failed: "Failed",
@@ -40,3 +40,17 @@ export const SETTLEMENT_STATE_TONE: Record<SettlementState, BadgeTone> = {
   on_hold: "danger",
   reversed: "danger",
 };
+
+/**
+ * The badge for one settlement. `calculated` means duty is done and the payout goes out as soon
+ * as the provider's invoice is uploaded, so it reads differently depending on whether it is.
+ * (The filter menu uses the static labels above, where "Awaiting invoice" covers both.)
+ */
+export function settlementBadge(state: SettlementState, invoiceUploaded?: boolean): { label: string; tone: BadgeTone } {
+  if (state === "calculated") {
+    return invoiceUploaded
+      ? { label: "Releasing", tone: "active" }
+      : { label: "Awaiting invoice", tone: "action" };
+  }
+  return { label: SETTLEMENT_STATE_LABELS[state], tone: SETTLEMENT_STATE_TONE[state] };
+}

@@ -16,7 +16,7 @@ export function EarningsPanel({ accessToken }: { accessToken: string }) {
       <div className={styles.column}>
         <PageHeader
           title="Earnings"
-          intro="Settlements for your completed bookings, including tax withheld and payout timing."
+          intro="Settlements for your completed bookings, after tax withheld. Each is paid once the duty has ended and you've uploaded your invoice, and reaches your bank by the next working day."
         />
 
         <BankDetailsSection accessToken={accessToken} />

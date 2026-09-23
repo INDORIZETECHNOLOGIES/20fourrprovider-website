@@ -1,5 +1,6 @@
 import { apiRequest } from "./client";
 import type { DayOff, WorkingHours } from "./availability";
+import type { PayoutActivation } from "@/lib/constants/payoutAccount";
 
 export const SERVICE_CATEGORIES = ["guard", "bouncer", "gunman", "pso"] as const;
 export type ServiceCategory = (typeof SERVICE_CATEGORIES)[number];
@@ -49,6 +50,10 @@ export type BankDetails = {
   accountType?: "savings" | "current" | null;
   verified?: boolean;
   confirmedByProvider?: boolean;
+  // The Razorpay payout ("linked") account. Created once the bank account is verified and
+  // confirmed; a v6 booking can't be accepted until Razorpay activates it (SC_1494).
+  razorpayActivationStatus?: PayoutActivation | null;
+  razorpayProvisioningError?: string | null;
 };
 
 // As stored on the profile. `url` is presigned in place on read, so the storage

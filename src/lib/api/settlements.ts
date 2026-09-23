@@ -13,6 +13,9 @@ export type Settlement = {
   releaseScheduledFor: string | null;
   releasedAt: string | null;
   utr: string | null;
+  // Once duty has ended, the payout is released as soon as the provider's own invoice is on
+  // file — there's no scheduled date for newer bookings (releaseScheduledFor stays null).
+  invoiceUploaded?: boolean;
 };
 
 export function listSettlements(

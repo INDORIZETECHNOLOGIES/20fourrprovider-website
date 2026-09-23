@@ -25,6 +25,9 @@ export function PendingBookingActions({
   const [rejectionReason, setRejectionReason] = useState("");
   const [rejecting, setRejecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // SC_1494: Razorpay hasn't approved the payout account yet, so the backend won't let a v6
+  // booking be accepted. Shown as the gate note with a link, not as a raw error.
+  const [payoutPending, setPayoutPending] = useState(false);
 
   async function handleAccept() {
     setError(null);
@@ -33,7 +36,11 @@ export function PendingBookingActions({
       await acceptBooking(bookingId, accessToken);
       onUpdated(bookingId, "provider_accepted");
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Something went wrong. Try again.");
+      if (err instanceof ApiError && err.code === "SC_1494") {
+        setPayoutPending(true);
+      } else {
+        setError(err instanceof ApiError ? err.message : "Something went wrong. Try again.");
+      }
     } finally {
       setAccepting(false);
     }
@@ -63,7 +70,12 @@ export function PendingBookingActions({
       {error ? <p className={styles.error}>{error}</p> : null}
 
       <div className={styles.actions}>
-        {isVerified ? (
+        {isVerified && payoutPending ? (
+          <span className={styles.gateNote}>
+            Razorpay hasn&apos;t approved your payout account yet, so you can&apos;t accept bookings.{" "}
+            <Link href="/earnings">Check its status</Link>
+          </span>
+        ) : isVerified ? (
           <button type="button" className={styles.acceptButton} disabled={accepting} onClick={handleAccept}>
             {accepting ? "Accepting…" : "Accept"}
           </button>

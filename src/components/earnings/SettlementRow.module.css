@@ -25,6 +25,10 @@
   margin: 2px 0 0;
 }
 
+.timing a {
+  text-decoration: underline;
+}
+
 .breakdown {
   font-size: 0.875rem;
   color: var(--color-ink-muted);
