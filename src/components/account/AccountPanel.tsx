@@ -76,7 +76,9 @@ export function AccountPanel({ accessToken }: { accessToken: string }) {
       const link = document.createElement("a");
       link.href = url;
       link.download = `20fourr-account-data-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } catch (error) {
       setExportError(error instanceof ApiError ? error.message : "Couldn't export your data. Try again.");
