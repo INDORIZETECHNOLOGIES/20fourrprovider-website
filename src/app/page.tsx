@@ -30,7 +30,7 @@ const VALUE_CARDS = [
   {
     icon: "building" as const,
     title: "Get paid",
-    body: "After duty is signed off, the settlement goes to the bank account you confirmed. Not instant.",
+    body: "After duty is signed off, the settlement goes to the bank account you confirmed. directly to your bank account.",
   },
 ];
 
@@ -111,11 +111,11 @@ const FAQS = [
   },
   {
     q: "How much commission does 20fourr charge?",
-    a: "The platform fee is billed to the client, not taken off your listed daily rate. The current default is 15% of your pre-GST rate, plus 18% GST on that fee. Those rates are platform settings and can change; each booking locks the rates in force when it is quoted.",
+    a: "The platform fee is billed to the client, not taken off your listed daily rate.",
   },
   {
     q: "When do I get paid?",
-    a: "After the shift is signed off. Current bookings use a single settlement after duty-end — there is no 30% advance when you start. The net amount (your rate, plus service GST if you are registered, minus TCS and TDS where they apply) is released to the bank account you submitted, the team verified, and you confirmed.",
+    a: "The Payment will be automatically go for processing as soon as work is done.",
   },
   {
     q: "How do I find jobs?",
