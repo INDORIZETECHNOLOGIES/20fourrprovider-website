@@ -18,6 +18,7 @@ import { RateBookingControl } from "./RateBookingControl";
 import { PaymentStatusSection } from "./PaymentStatusSection";
 import { ProviderInvoiceSection } from "./ProviderInvoiceSection";
 import { StaffingCheck } from "./StaffingCheck";
+import { useLiveVersion } from "@/lib/live/accountEvents";
 import styles from "./BookingDetail.module.css";
 
 type BookingDetailProps = {
@@ -30,6 +31,9 @@ export function BookingDetail({ bookingId, isVerified, accessToken }: BookingDet
   const [booking, setBooking] = useState<BookingDetailType | null>(null);
   const [threatProfile, setThreatProfile] = useState<ThreatAssessment | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+
+  // Refetch when the server says something shown here changed (spec 0020).
+  const liveVersion = useLiveVersion({ entities: ["booking", "payment"], entityId: bookingId });
 
   useEffect(() => {
     let cancelled = false;
@@ -47,7 +51,7 @@ export function BookingDetail({ bookingId, isVerified, accessToken }: BookingDet
     return () => {
       cancelled = true;
     };
-  }, [bookingId, accessToken]);
+  }, [bookingId, accessToken, liveVersion]);
 
   function handleUpdated(_bookingId: string, status: Booking["status"]) {
     setBooking((current) => (current ? { ...current, status } : current));

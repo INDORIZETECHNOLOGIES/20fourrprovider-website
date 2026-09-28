@@ -1,0 +1,128 @@
+.rates { display: flex; flex-direction: column; }
+.notice { margin-bottom: var(--space-4); }
+
+/* ── City tabs: underline, brass indicator ───────────────────────────────── */
+.tabs {
+  display: flex; gap: var(--space-1); overflow-x: auto; scrollbar-width: none;
+  border-bottom: 1px solid var(--color-line); margin-bottom: var(--space-5);
+}
+.tab {
+  position: relative; display: inline-flex; align-items: center; gap: var(--space-2);
+  padding: var(--space-3) var(--space-4); background: none; border: none;
+  font: inherit; font-size: 0.9375rem; font-weight: 500; color: var(--color-ink-muted);
+  cursor: pointer; white-space: nowrap; transition: color var(--transition-base);
+}
+.tab::after {
+  content: ""; position: absolute; left: var(--space-3); right: var(--space-3); bottom: -1px;
+  height: 2px; background: transparent; transition: background var(--transition-base);
+}
+.tab:hover { color: var(--color-ink); }
+.tab:focus-visible { outline: 2px solid var(--color-brass); outline-offset: -2px; border-radius: var(--radius-sm); }
+.tabActive { color: var(--color-ink); font-weight: 600; }
+.tabActive::after { background: var(--color-brass); }
+.tabCount { font-size: 0.8125rem; font-variant-numeric: tabular-nums; color: var(--color-ink-muted); font-weight: 500; }
+.tabDot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-brass); }
+.tabAdd { color: var(--color-navy); }
+@media (prefers-color-scheme: dark) { .tabAdd { color: var(--color-brass); } }
+
+/* ── Loading ─────────────────────────────────────────────────────────────── */
+.skeleton { display: flex; flex-direction: column; gap: var(--space-5); }
+.skeletonTabs, .skeletonCard {
+  background: var(--color-line); border-radius: var(--radius-md); animation: pulse 1.4s ease-in-out infinite;
+}
+.skeletonTabs { height: 40px; width: 60%; }
+.skeletonCard { height: 360px; }
+@keyframes pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 0.9; } }
+@media (prefers-reduced-motion: reduce) { .skeletonTabs, .skeletonCard { animation: none; } }
+
+.inlineLink {
+  background: none; border: none; padding: 0; font: inherit; font-weight: 600;
+  color: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer;
+}
+
+/* ── City card ───────────────────────────────────────────────────────────── */
+.card {
+  border: 1px solid var(--color-line); border-radius: var(--radius-md);
+  background: var(--color-paper-raised); overflow: hidden;
+}
+.card > * + * { border-top: 1px solid var(--color-line); }
+.cardHead {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4);
+  padding: var(--space-5);
+}
+.cityName {
+  font-family: var(--font-display); font-size: 1.375rem; font-weight: 600;
+  letter-spacing: -0.01em; margin: 0; color: var(--color-ink);
+}
+.cityMeta { margin: 2px 0 0; font-size: 0.875rem; color: var(--color-ink-muted); }
+.metaSep::before { content: "·"; margin: 0 var(--space-2); }
+.metaSep { color: var(--color-brass-strong); font-weight: 600; }
+
+.confirm { display: flex; flex-direction: column; align-items: flex-end; gap: var(--space-2); max-width: 320px; }
+.confirmText { margin: 0; font-size: 0.875rem; text-align: right; color: var(--color-ink); }
+.confirmActions { display: flex; gap: var(--space-3); align-items: center; }
+.dangerButton {
+  padding: var(--space-2) var(--space-4); border-radius: var(--radius-sm); border: none;
+  background: var(--color-danger); color: #fff; font: inherit; font-size: 0.875rem; font-weight: 600;
+  cursor: pointer; transition: opacity var(--transition-base);
+}
+.dangerButton:hover:not(:disabled) { opacity: 0.9; }
+.quietButton {
+  background: none; border: none; padding: var(--space-2) 0; font: inherit; font-size: 0.875rem;
+  font-weight: 500; color: var(--color-ink-muted); cursor: pointer; text-underline-offset: 3px;
+  transition: color var(--transition-base);
+}
+.quietButton:hover:not(:disabled) { color: var(--color-ink); text-decoration: underline; }
+.dangerButton:disabled, .quietButton:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.cardNotice { padding: var(--space-4) var(--space-5) 0; border-top: none !important; }
+.cardEmpty { margin: 0; padding: var(--space-6) var(--space-5); color: var(--color-ink-muted); font-size: 0.9375rem; }
+
+/* ── Rate rows ───────────────────────────────────────────────────────────── */
+.rateRows { list-style: none; margin: 0; padding: 0; }
+.rateRow { padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-3); }
+.rateRow + .rateRow { border-top: 1px solid var(--color-line); }
+.rowHead { display: flex; align-items: center; gap: var(--space-3); }
+.rowName { margin: 0; font-size: 1rem; font-weight: 600; color: var(--color-ink); }
+.help { margin: 0; font-size: 0.8125rem; line-height: 1.5; color: var(--color-ink-muted); }
+.rateGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-3); }
+.ref, .refWarn { margin: 0; font-size: 0.8125rem; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.ref { color: var(--color-ink-muted); }
+.refWarn {
+  color: var(--color-warning); background: var(--color-warning-bg);
+  padding: var(--space-2) var(--space-3); border-radius: var(--radius-sm);
+}
+.hourly { display: flex; flex-direction: column; gap: var(--space-3); }
+.fieldPair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
+
+/* ── Second layer: vehicles + footer ─────────────────────────────────────── */
+.vehicle, .cardFoot { background: color-mix(in srgb, var(--color-paper) 70%, var(--color-paper-raised)); }
+.vehicle { padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-3); }
+.vehicleText { display: flex; flex-direction: column; gap: 2px; }
+.cardFoot {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+}
+.footStatus { min-width: 0; font-size: 0.875rem; }
+.statusError { color: var(--color-danger); font-weight: 500; }
+.statusOk { color: var(--color-success); font-weight: 500; }
+.statusDirty { color: var(--color-brass-strong); font-weight: 500; }
+.saveButton {
+  padding: var(--space-3) var(--space-5); border-radius: var(--radius-sm); border: none;
+  background: var(--color-navy); color: var(--color-paper); font: inherit; font-size: 0.9375rem;
+  font-weight: 600; cursor: pointer; white-space: nowrap; transition: background var(--transition-base);
+}
+.saveButton:hover:not(:disabled) { background: var(--color-navy-ink); }
+.saveButton:disabled { background: var(--color-line); color: var(--color-ink-muted); cursor: not-allowed; }
+.addBody { padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-4); }
+
+@media (max-width: 720px) { .rateGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) {
+  /* Rates are short numbers: two to a row stays readable and halves the scroll. */
+  .fieldPair { grid-template-columns: 1fr; }
+  .cardFoot { flex-direction: column-reverse; align-items: stretch; }
+  .saveButton { width: 100%; }
+  .cardHead { flex-direction: column; }
+  .confirm { align-items: flex-start; max-width: none; }
+  .confirmText { text-align: left; }
+}

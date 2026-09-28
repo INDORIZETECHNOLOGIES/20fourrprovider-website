@@ -30,7 +30,9 @@ export type IconName =
   | "building"
   | "menu"
   | "close"
-  | "chevron";
+  | "chevron"
+  | "plus"
+  | "map-pin";
 
 type IconProps = Omit<SVGProps<SVGSVGElement>, "viewBox" | "fill"> & {
   name: IconName;
@@ -38,6 +40,8 @@ type IconProps = Omit<SVGProps<SVGSVGElement>, "viewBox" | "fill"> & {
 };
 
 const PATHS: Record<IconName, string> = {
+  plus: "M12 5v14M5 12h14",
+  "map-pin": "M12 20.5s-6-5.4-6-10a6 6 0 1 1 12 0c0 4.6-6 10-6 10Zm0-8a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z",
   grid: "M4 4h6.5v6.5H4V4Zm9.5 0H20v6.5h-6.5V4ZM4 13.5h6.5V20H4v-6.5Zm9.5 0H20V20h-6.5v-6.5Z",
   clipboard:
     "M9 4.5h6a1 1 0 0 1 1 1V6h1.5A1.5 1.5 0 0 1 19 7.5v11A1.5 1.5 0 0 1 17.5 20h-11A1.5 1.5 0 0 1 5 18.5v-11A1.5 1.5 0 0 1 6.5 6H8v-.5a1 1 0 0 1 1-1Zm0 1.5v1.5h6V6H9ZM8.5 12h7M8.5 15.5h7",

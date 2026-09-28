@@ -20,6 +20,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Switch } from "@/components/ui/Switch";
 import { Icon } from "@/components/ui/Icon";
+import { useLiveVersion } from "@/lib/live/accountEvents";
 import styles from "./page.module.css";
 
 // Only the latest page of released settlements is summed — an all-time total
@@ -197,6 +198,9 @@ export default function DashboardPage() {
 
   useRedirectIfLoggedOut();
 
+  // Refetch when the server says something shown here changed (spec 0020).
+  const liveVersion = useLiveVersion({ entities: ["booking", "payment", "rating", "account"] });
+
   useEffect(() => {
     if (!session) return;
     const token = session.tokens.accessToken;
@@ -254,7 +258,7 @@ export default function DashboardPage() {
     return () => {
       cancelled = true;
     };
-  }, [session, router]);
+  }, [session, router, liveVersion]);
 
   async function handleAvailabilityToggle(next: boolean) {
     if (!session || !profile || profile === "loading") return;

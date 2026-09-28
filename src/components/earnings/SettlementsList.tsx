@@ -9,6 +9,7 @@ import { listSettlements, type Settlement } from "@/lib/api/settlements";
 import type { Pagination } from "@/lib/api/bookings";
 import type { SettlementState } from "@/lib/constants/settlementState";
 import { SettlementRow } from "./SettlementRow";
+import { useLiveVersion } from "@/lib/live/accountEvents";
 
 type SettlementsListProps = {
   stateFilter: SettlementState | "";
@@ -23,6 +24,9 @@ export function SettlementsList({ stateFilter, accessToken }: SettlementsListPro
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Refetch when the server says something shown here changed (spec 0020).
+  const liveVersion = useLiveVersion({ entities: ["booking", "payment"] });
 
   useEffect(() => {
     let cancelled = false;
@@ -41,7 +45,7 @@ export function SettlementsList({ stateFilter, accessToken }: SettlementsListPro
     return () => {
       cancelled = true;
     };
-  }, [accessToken, stateFilter]);
+  }, [accessToken, stateFilter, liveVersion]);
 
   async function handleLoadMore() {
     if (!pagination) return;
