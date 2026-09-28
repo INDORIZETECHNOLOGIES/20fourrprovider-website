@@ -60,6 +60,25 @@ update within seconds when their data changes.
 7. Update `CLAUDE.md` and `PRODUCT.md` "Rate model" once shipped. Both currently describe a
    single rate card.
 
+**As built** (decisions taken while building A, with the whole Availability page redesigned):
+
+- **City tabs with one card**, not a dropdown: one tab per priced city (primary first, then by
+  name) showing "priced/offered" counts, plus an **Add city** tab. The add panel picks a state
+  (defaulting to the provider's own), then a city from `GET /provider/cities/eligible`, with "My
+  city isn't listed…" → `POST /provider/cities`.
+- **Vehicle add-ons are per city**, not global.
+- **The package check is local.** Each row shows what 30 and 365 days at the daily rate come to,
+  and warns when a package is above that. No round trip is needed.
+- **Services became immediate-save switches**, separate from rates. Turning a service off keeps its
+  rates. The last service can't be turned off. The ordering constraint with `PUT /provider/pricing`
+  no longer applies to this page, which never calls the wholesale endpoint.
+- **Legacy rows with no city** are shown as a notice and offered as "Your current rates" to start
+  a city from.
+- Unsaved drafts per city survive switching tabs, carry a dot on their tab, and warn on page
+  unload.
+- **Site-wide font fix** shipped alongside. The `next/font` variables shared names with the
+  `--font-*` tokens, which made a cycle, so every page rendered in the browser default serif.
+
 ### B. Capacity: `/staff-availability` (0011), agencies only
 
 - Each date cell shows **booked / declared** per category from `GET /provider/capacity`.

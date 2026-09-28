@@ -30,6 +30,13 @@ export type ProviderPricing = {
   // Stored but not applied to any price today — carried through untouched so a
   // save never resets it, and deliberately not editable here.
   weekendMultiplier?: number | null;
+  // Backend spec 0012 — the city this row prices (null on a card not yet placed in a city).
+  cityKey?: string | null;
+  cityName?: string | null;
+  // Backend spec 0013 — package prices per person; null means not offered. Used only for
+  // v6 bookings of a month or more, and never charged above the daily price.
+  monthlyRate?: number | null;
+  yearlyRate?: number | null;
 };
 
 export type ProviderProfileDetailsInput = {
@@ -235,25 +242,6 @@ export function saveProviderProfile(
     body: { ...currentProfileFields(profile), ...patch },
     accessToken,
   });
-}
-
-// PUT /provider/pricing replaces the stored array wholesale, so anything a save
-// leaves out falls back to its schema default. Existing rows are therefore
-// carried through field by field (dropping `_id`/`updatedAt`), with the one
-// out-of-range guard the API enforces: a legacy weekend multiplier outside 1–3
-// would turn an unrelated save into a 400, so it is omitted (the server then
-// applies its default) rather than echoed.
-export function carryPricingFields(existing: ProviderPricing | undefined): Partial<ProviderPricing> {
-  if (!existing) return {};
-  const weekend = Number(existing.weekendMultiplier);
-  return {
-    hourlyEnabled: existing.hourlyEnabled,
-    hourlyRate: existing.hourlyRate,
-    minimumHours: existing.minimumHours,
-    vehicleRate: existing.vehicleRate,
-    vehicleWithDriverRate: existing.vehicleWithDriverRate,
-    ...(Number.isFinite(weekend) && weekend >= 1 && weekend <= 3 ? { weekendMultiplier: weekend } : {}),
-  };
 }
 
 export function updateProviderPricing(

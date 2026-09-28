@@ -4,13 +4,16 @@ import "./globals.css";
 import styles from "./layout.module.css";
 
 const displayFont = Roboto_Slab({
-  variable: "--font-display",
+  // next/font's own variable. globals.css builds the --font-display token from it; naming
+  // this --font-display too made that token refer to itself, which CSS treats as invalid —
+  // so every page silently fell back to the browser's default serif.
+  variable: "--font-display-face",
   subsets: ["latin"],
   weight: ["500", "600", "700"],
 });
 
 const bodyFont = Public_Sans({
-  variable: "--font-body",
+  variable: "--font-body-face", // see --font-display-face above
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
