@@ -189,7 +189,10 @@ export function ProfilePanel({ accessToken }: { accessToken: string }) {
     { href: "/availability", title: "Services and rates", detail: servicesSummary(profile) },
     // Headcount by date only makes sense for an agency.
     ...(profile.providerType === "firm"
-      ? [{ href: "/staff-availability", title: "Staff availability", detail: "Headcount by date, across your team" }]
+      ? [
+          { href: "/team", title: "Your team", detail: "The people you send on jobs, and their documents" },
+          { href: "/staff-availability", title: "Staff availability", detail: "Headcount by date, across your team" },
+        ]
       : []),
   ];
 

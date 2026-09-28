@@ -177,6 +177,20 @@ or invent them. Labels and ordering are in `lib/performance.ts`.
 - Declaring fewer staff than are already booked is allowed, and the bookings stand. The day editor
   warns rather than blocks.
 
+**Agencies keep a roster at `/team` and assign it per booking** (backend spec 0017).
+- `/provider/personnel*` is agencies only (`SC_1580`). Adding a person needs both attestations
+  (documents genuine; the person consents to being shown to clients), sent as booleans.
+- `assignable` from the API means "as of today". Assigning checks documents through the
+  booking's **last day**, so the booking page uses `blockReasonFor(person, booking.endDate)`
+  (`lib/team.ts`), not `assignable`.
+- The team can change only between acceptance and duty start (`SC_1589`). Replacing keeps the
+  old entry with `replacedAt`, so read the active team as entries without it.
+- Photo URLs are presigned for five minutes; render them with `<img>`, not `next/image`, which
+  would cache them past expiry.
+- Primary buttons use `--color-navy` with **`--color-navy-ink`** text and a navy-mixed-with-black
+  hover, like `ui/Button`. `--color-paper` is dark in dark mode and `--color-navy-ink` is
+  near-white, so swapping them hides the label.
+
 **Link to a booking with `booking._id`, never `booking.bookingId`.** The detail route and
 `GET /bookings/:bookingId` take the Mongo id; `bookingId` is the human-readable reference. The first
 dashboard design linked recent bookings by the reference, so every one of those links 404'd.

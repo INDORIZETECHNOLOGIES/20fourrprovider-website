@@ -152,6 +152,37 @@ update within seconds when their data changes.
 - Per-person ratings from clients.
 - Linked from the Profile hub for agencies only, like `/staff-availability`.
 
+**As built (F + C-team):**
+- **`/team` roster:**
+  - A summary line ("11 people · 8 ready to assign") and a category filter with counts.
+  - Inactive people are hidden behind a switch.
+  - One row per person: initials or photo, category, experience and languages, per-person stars,
+    and a Ready / Can't be assigned / Inactive badge. The block reason is spelled out under the
+    name.
+- **Editing in place:** a row expands inline, with no modal, to:
+  - the photo (five-minute presigned URL, never cached);
+  - each document the category requires, with state (valid / expires soon within 30 days /
+    expired / not uploaded) and an inline upload with an expiry date and an optional number,
+    which is stored encrypted and never shown again;
+  - details, and a switch to mark the person inactive or active.
+- **Adding a person:** an inline form with both rule-3 attestations as required checkboxes. The
+  new person's editor opens next, for the photo and documents.
+- **Booking page Team section (agencies):**
+  - Pick exactly N people of the booking's category. Ready people are listed first; blocked
+    people show their reason.
+  - Documents are checked through the booking's last day, the same rule as the backend, so a
+    document that lapses mid-booking is caught before saving.
+  - Change the whole team, or replace one person, from acceptance until duty starts. It is
+    read-only after that.
+  - Swapping is labelled "Confirm swap", distinct from each row's "Replace <name>".
+  - The team errors `SC_1582`/`1584`/`1585`/`1589`/`1590` map to plain messages.
+- **Payment gate copy:** the spec's "The client can't pay until you assign your team" is not
+  shown. `personnel.requireAssignmentBeforePayment` is off by default and isn't exposed to
+  providers, so the copy says only what is always true: the client sees who's coming before
+  they pay.
+- Verified end to end against the local API: roster and document uploads (S3), assigning six,
+  and replacing one. History is kept, one entry `replacedAt`.
+
 ### G. Live sync (0020)
 
 - One socket per session listening for `account_event`. Reuse the existing chat socket
