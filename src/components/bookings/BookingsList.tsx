@@ -8,6 +8,7 @@ import { LoadMore } from "@/components/ui/LoadMore";
 import { listBookings, type Booking, type Pagination } from "@/lib/api/bookings";
 import type { BookingStatus } from "@/lib/constants/bookingStatus";
 import { BookingRow } from "./BookingRow";
+import { useLiveVersion } from "@/lib/live/accountEvents";
 
 type BookingsListProps = {
   statusFilter: BookingStatus | "";
@@ -23,6 +24,9 @@ export function BookingsList({ statusFilter, isVerified, accessToken }: Bookings
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Refetch when the server says something shown here changed (spec 0020).
+  const liveVersion = useLiveVersion({ entities: ["booking", "payment"] });
 
   useEffect(() => {
     let cancelled = false;
@@ -41,7 +45,7 @@ export function BookingsList({ statusFilter, isVerified, accessToken }: Bookings
     return () => {
       cancelled = true;
     };
-  }, [accessToken, statusFilter]);
+  }, [accessToken, statusFilter, liveVersion]);
 
   async function handleLoadMore() {
     if (!pagination) return;

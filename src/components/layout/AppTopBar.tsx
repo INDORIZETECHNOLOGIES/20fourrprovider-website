@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { clearSession, useSession } from "@/lib/auth/session";
 import { getUnreadNotificationCount } from "@/lib/api/notifications";
+import { useLiveRefresh } from "@/lib/live/accountEvents";
 import styles from "./AppTopBar.module.css";
 
 export function AppTopBar() {
@@ -26,6 +27,14 @@ export function AppTopBar() {
       cancelled = true;
     };
   }, [session]);
+
+  // Every account event is a new notification, so the badge refetches on all of them.
+  useLiveRefresh({ entities: "any" }, () => {
+    if (!session) return;
+    return getUnreadNotificationCount(session.tokens.accessToken)
+      .then((result) => setUnreadCount(result.unreadCount))
+      .catch(() => {});
+  });
 
   function handleSignOut() {
     clearSession();

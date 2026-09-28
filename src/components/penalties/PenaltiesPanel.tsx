@@ -9,6 +9,7 @@ import { RowList } from "@/components/ui/RowList";
 import { listPenalties, type Penalty } from "@/lib/api/penalties";
 import { formatDate, formatPaise } from "@/lib/format";
 import { PenaltyRow } from "./PenaltyRow";
+import { useLiveVersion } from "@/lib/live/accountEvents";
 import styles from "./Penalties.module.css";
 
 const PAGE_SIZE = 20;
@@ -22,6 +23,9 @@ export function PenaltiesPanel({ accessToken }: { accessToken: string }) {
   const [error, setError] = useState<string | null>(null);
   // Read once on mount; a suspension date is compared against "now" only for display.
   const [now] = useState(() => Date.now());
+
+  // Refetch when the server says something shown here changed (spec 0020).
+  const liveVersion = useLiveVersion({ entities: ["account"] });
 
   useEffect(() => {
     let cancelled = false;
@@ -40,7 +44,7 @@ export function PenaltiesPanel({ accessToken }: { accessToken: string }) {
     return () => {
       cancelled = true;
     };
-  }, [accessToken]);
+  }, [accessToken, liveVersion]);
 
   async function handleLoadMore() {
     setLoadingMore(true);

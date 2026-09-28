@@ -16,6 +16,7 @@ import {
   validateInvoiceNumber,
   validateInvoiceTotal,
 } from "@/lib/validation/providerInvoice";
+import { useLiveVersion } from "@/lib/live/accountEvents";
 import styles from "./ProviderInvoiceSection.module.css";
 
 type Props = {
@@ -50,6 +51,9 @@ export function ProviderInvoiceSection({ bookingId, accessToken }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  // Refetch when the server says something shown here changed (spec 0020).
+  const liveVersion = useLiveVersion({ entities: ["booking", "payment"], entityId: bookingId });
+
   useEffect(() => {
     let cancelled = false;
     getProviderInvoice(bookingId, accessToken)
@@ -65,7 +69,7 @@ export function ProviderInvoiceSection({ bookingId, accessToken }: Props) {
     return () => {
       cancelled = true;
     };
-  }, [bookingId, accessToken]);
+  }, [bookingId, accessToken, liveVersion]);
 
   if (hidden || !view) return null;
 
