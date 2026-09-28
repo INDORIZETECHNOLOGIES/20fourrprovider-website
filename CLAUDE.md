@@ -155,6 +155,10 @@ headcount per category per date, capped by `numberOfPersonnel`, with a bulk date
 That's a firm/agency surface, built at `/staff-availability` (linked from the Profile hub for agencies only); it's the only place a "how many bouncers can
 I field on the 14th" answer could come from.
 
+**`/performance` shows search ranking as statuses, never scores** (backend spec 0015 rule 8).
+`GET /provider/performance` returns each signal's status, its importance and a server-worded count
+line, plus a tip when it needs attention. It does not return the weights or values, so don't chart
+or invent them. Labels and ordering are in `lib/performance.ts`.
 **Bookings carry a headcount, and agencies' staff calendars are now enforced** (backend spec 0011).
 - `booking.headcount` is absent on older bookings; read it through `headcountOf()` and print the
   service through `serviceLabel()` ("6 × Bouncer"), matching the backend's documents. The price on
