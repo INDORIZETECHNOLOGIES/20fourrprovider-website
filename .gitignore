@@ -40,3 +40,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Impeccable working files (screenshots, decision pages)
+.impeccable/review/
+.impeccable/questions/
+.impeccable/config.local.json

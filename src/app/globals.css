@@ -13,6 +13,8 @@
   --color-navy-ink: #f2f4f8;
   --color-brass: #a9782e;
   --color-brass-strong: #8c621f;
+  /* Label colour on a brass fill: 4.58:1 on light brass, 6.94:1 on dark-scheme brass. */
+  --color-on-brass: #0f1829;
 
   --color-danger: #b3261e;
   --color-danger-bg: #fbeceb;
@@ -141,4 +143,10 @@ select {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Browser surfaces carry the brand too: brass selection, tabular figures where set. */
+::selection {
+  background: color-mix(in srgb, var(--color-brass) 32%, transparent);
+  color: inherit;
 }

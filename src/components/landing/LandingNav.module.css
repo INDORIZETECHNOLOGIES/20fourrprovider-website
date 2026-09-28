@@ -106,7 +106,7 @@
 .cta {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--color-navy);
+  color: var(--color-on-brass);
   background: var(--color-brass);
   text-decoration: none;
   padding: 10px var(--space-4);
@@ -128,7 +128,7 @@
 }
 
 .cta:hover {
-  background: var(--color-brass-strong);
+  background: color-mix(in srgb, var(--color-brass) 88%, white);
 }
 
 .menuButton {
@@ -213,5 +213,5 @@
 
 .panelCta {
   background: var(--color-brass);
-  color: var(--color-navy);
+  color: var(--color-on-brass);
 }

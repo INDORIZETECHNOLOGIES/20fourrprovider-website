@@ -1,0 +1,331 @@
+.section {
+  padding: clamp(56px, 8vw, 104px) 0;
+}
+
+.paper {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+.raised {
+  background: var(--color-paper-raised);
+  color: var(--color-ink);
+  border-top: 1px solid var(--color-line);
+  border-bottom: 1px solid var(--color-line);
+}
+
+/* The payout section: the page's one dense, dark passage. */
+.navy {
+  background: var(--color-navy);
+  color: var(--color-navy-ink);
+}
+
+.inner {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 clamp(16px, 4vw, 40px);
+}
+
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: clamp(32px, 6vw, 88px);
+  align-items: start;
+}
+
+.text {
+  max-width: 62ch;
+}
+
+.title {
+  margin: 0 0 var(--space-5);
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 3.2vw, 2.625rem);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.text p {
+  margin: 0 0 var(--space-4);
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--color-ink-muted);
+}
+
+.text p.lede {
+  font-size: 1.1875rem;
+  line-height: 1.55;
+  color: var(--color-ink);
+}
+
+.navy .text p {
+  color: color-mix(in srgb, var(--color-navy-ink) 72%, var(--color-navy));
+}
+
+.navy .text p.lede {
+  color: var(--color-navy-ink);
+}
+
+.text a {
+  color: inherit;
+  font-weight: 600;
+  text-decoration-color: var(--color-brass);
+  text-underline-offset: 4px;
+}
+
+.live {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-6) !important;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-line);
+  font-size: 0.9375rem !important;
+  color: var(--color-ink) !important;
+}
+
+.liveDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-success);
+  flex-shrink: 0;
+}
+
+.caption {
+  margin: var(--space-3) 0 0;
+  font-size: 0.8125rem;
+  color: var(--color-ink-muted);
+}
+
+/* ── Documents: flat, ruled sheets. A heavy rule opens each; hairlines divide its rows. ───── */
+.doc {
+  margin: 0;
+  padding: clamp(20px, 2.5vw, 28px) 0 0;
+  border-top: 4px solid var(--color-ink);
+}
+
+.doc > p {
+  margin: 0;
+}
+
+.docTitle {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.docSubject {
+  margin-top: var(--space-1) !important;
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-ink);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-brass-strong);
+  text-wrap: balance;
+  font-variant-numeric: tabular-nums;
+}
+
+.rateCard table,
+.docTable,
+.statementTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.rateCard th,
+.rateCard td,
+.docTable th,
+.docTable td {
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-line);
+  text-align: left;
+  vertical-align: top;
+  font-size: 0.9375rem;
+}
+
+.rateCard thead th {
+  padding: var(--space-3) 0 var(--space-2);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-ink-muted);
+}
+
+.rateCard td {
+  text-align: right;
+  font-weight: 600;
+}
+
+.rateCard tbody th,
+.docTable th {
+  font-weight: 600;
+  padding-right: var(--space-4);
+}
+
+.docTable th {
+  width: 38%;
+}
+
+.docTable td {
+  color: var(--color-ink-muted);
+}
+
+.rateCard th span {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--color-ink-muted);
+}
+
+.rateCard td.none {
+  font-weight: 400;
+  color: var(--color-ink-muted);
+}
+
+.roster ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.roster li {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.initials {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-brass) 22%, var(--color-paper-raised));
+  color: var(--color-navy);
+  font-family: var(--font-display);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.person {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.person span {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--color-ink-muted);
+}
+
+.state {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-success);
+}
+
+.blocked .person {
+  color: var(--color-ink-muted);
+}
+
+.blocked .person span,
+.blocked .state {
+  color: var(--color-brass-strong);
+}
+
+/* The settlement statement: a flat paper sheet laid on the navy passage, square-cornered. */
+.statement {
+  padding: clamp(24px, 3vw, 36px);
+  border-top: 4px solid var(--color-brass);
+  background: var(--color-paper-raised);
+  color: var(--color-ink);
+}
+
+.statementTable th,
+.statementTable td {
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-line);
+  vertical-align: top;
+  font-size: 0.9375rem;
+}
+
+.statementTable th {
+  text-align: left;
+  font-weight: 600;
+}
+
+.statementTable th span {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--color-ink-muted);
+}
+
+.statementTable td {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.statementTable tfoot th,
+.statementTable tfoot td {
+  padding-top: var(--space-4);
+  border-bottom: none;
+  border-top: 2px solid var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 600;
+}
+
+/* Document checklist. */
+.checklist ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 2px solid var(--color-ink);
+}
+
+.checklist li {
+  display: grid;
+  grid-template-columns: 16px 1fr;
+  gap: var(--space-3);
+  align-items: baseline;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-line);
+  font-size: 1rem;
+}
+
+.checklist svg {
+  color: var(--color-brass-strong);
+  transform: translateY(2px);
+}
+
+@media (prefers-color-scheme: dark) {
+  .initials {
+    color: var(--color-ink);
+    background: color-mix(in srgb, var(--color-brass) 30%, var(--color-paper-raised));
+  }
+}
+
+@media (max-width: 900px) {
+  .split {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+@media (max-width: 520px) {
+  .rateCard td {
+    padding-left: var(--space-3);
+  }
+}
