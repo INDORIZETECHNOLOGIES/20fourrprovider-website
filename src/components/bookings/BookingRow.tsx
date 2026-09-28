@@ -3,9 +3,8 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
 import { formatPaise, formatDate } from "@/lib/format";
-import { SERVICE_CATEGORY_LABELS } from "@/lib/api/provider";
 import { BOOKING_STATUS_LABELS, BOOKING_STATUS_TONE, CHAT_ALLOWED_STATUSES } from "@/lib/constants/bookingStatus";
-import { clientName, type Booking } from "@/lib/api/bookings";
+import { clientName, serviceLabel, type Booking } from "@/lib/api/bookings";
 import { PendingBookingActions } from "./PendingBookingActions";
 import { DutyControls } from "./DutyControls";
 import { CompleteBookingControl } from "./CompleteBookingControl";
@@ -42,7 +41,7 @@ export function BookingRow({ booking, isVerified, accessToken, onUpdated }: Book
             {dateLabel}, {booking.startTime}–{booking.endTime}
           </p>
           <p className={styles.where}>
-            {SERVICE_CATEGORY_LABELS[booking.serviceCategory]}
+            {serviceLabel(booking)}
             {booking.numberOfDays > 1 ? ` · ${booking.numberOfDays} days` : ""}
             {booking.address ? ` · ${booking.address}` : ""}
           </p>

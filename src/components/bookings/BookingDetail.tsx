@@ -5,9 +5,8 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
 import { Banner } from "@/components/ui/Banner";
 import { ApiError } from "@/lib/api/client";
-import { clientName, getBookingDetail, type Booking, type BookingDetail as BookingDetailType, type ThreatAssessment } from "@/lib/api/bookings";
+import { clientName, getBookingDetail, headcountOf, serviceLabel, type Booking, type BookingDetail as BookingDetailType, type ThreatAssessment } from "@/lib/api/bookings";
 import { formatDate, formatPaise } from "@/lib/format";
-import { SERVICE_CATEGORY_LABELS } from "@/lib/api/provider";
 import { BOOKING_STATUS_LABELS, BOOKING_STATUS_TONE, CHAT_ALLOWED_STATUSES } from "@/lib/constants/bookingStatus";
 import { PendingBookingActions } from "./PendingBookingActions";
 import { DutyControls } from "./DutyControls";
@@ -18,6 +17,7 @@ import { AbsenceAlertControl } from "./AbsenceAlertControl";
 import { RateBookingControl } from "./RateBookingControl";
 import { PaymentStatusSection } from "./PaymentStatusSection";
 import { ProviderInvoiceSection } from "./ProviderInvoiceSection";
+import { StaffingCheck } from "./StaffingCheck";
 import styles from "./BookingDetail.module.css";
 
 type BookingDetailProps = {
@@ -77,7 +77,7 @@ export function BookingDetail({ bookingId, isVerified, accessToken }: BookingDet
       <div className={styles.column}>
         <div className={styles.header}>
           <div>
-            <h1 className={styles.heading}>{SERVICE_CATEGORY_LABELS[booking.serviceCategory]}</h1>
+            <h1 className={styles.heading}>{serviceLabel(booking)}</h1>
             <span className={styles.reference}>{booking.bookingId}</span>
           </div>
           <Badge tone={BOOKING_STATUS_TONE[booking.status]}>{BOOKING_STATUS_LABELS[booking.status]}</Badge>
@@ -131,6 +131,12 @@ export function BookingDetail({ bookingId, isVerified, accessToken }: BookingDet
               {booking.startTime}–{booking.endTime}
             </span>
           </div>
+          {headcountOf(booking) > 1 ? (
+            <div className={styles.row}>
+              <span className={styles.rowLabel}>People</span>
+              <span>{headcountOf(booking)} each day</span>
+            </div>
+          ) : null}
           {booking.address ? (
             <div className={styles.row}>
               <span className={styles.rowLabel}>Location</span>
@@ -144,6 +150,16 @@ export function BookingDetail({ bookingId, isVerified, accessToken }: BookingDet
             </div>
           ) : null}
         </div>
+
+        {booking.status === "pending" && headcountOf(booking) > 1 ? (
+          <StaffingCheck
+            category={booking.serviceCategory}
+            headcount={headcountOf(booking)}
+            startDate={booking.startDate}
+            endDate={booking.endDate}
+            accessToken={accessToken}
+          />
+        ) : null}
 
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>Payment</h2>

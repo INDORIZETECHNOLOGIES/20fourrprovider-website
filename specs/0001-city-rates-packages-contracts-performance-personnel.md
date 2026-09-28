@@ -74,6 +74,22 @@ update within seconds when their data changes.
   The booking shows "The client can't pay until you assign your team" until it's done.
   **Replace** a person before duty start and during contract cycles.
 
+**As built (B + C headcount):**
+- **Calendar cells:** each cell shows booked / declared with a hairline meter, and a segmented
+  filter shows All or one offered category.
+  - "All" sums every category, one capacity call per category.
+  - A day marked off that still has bookings says so in red.
+  - A date outside the calendar that has bookings shows "N booked".
+- **Day editor:** shows "N already booked" under each count and warns when a count drops below it.
+- **Bulk rule copy:** follows `requireStaffAvailabilityForBulk` both ways.
+- **Headcount display:** rows and the detail heading read "6 × Bouncer", and the detail page adds a
+  People row.
+- **Staffing preview:** a pending request for more than one person shows a Staffing section that
+  previews the accept check (short, off and unset days). `SC_1503` on Accept links to the staff
+  calendar.
+- **Assign team moves to part F.** It picks from the personnel roster that F builds, so it ships
+  with F.
+
 ### D. Contracts: new `/contracts` (0014)
 
 - `/contracts` list (tabs: Requests / Active / Ended) and `/contracts/[contractId]` detail: term,
