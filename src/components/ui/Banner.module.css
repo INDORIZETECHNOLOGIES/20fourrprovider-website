@@ -5,4 +5,27 @@
   border-radius: var(--radius-sm);
   padding: var(--space-3);
   font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.error {
+  /* The base rule above is the error treatment. */
+}
+
+.info {
+  border-color: color-mix(in srgb, var(--color-brass) 40%, var(--color-line));
+  background: color-mix(in srgb, var(--color-brass) 7%, var(--color-paper-raised));
+  color: var(--color-ink);
+}
+
+.warning {
+  border-color: color-mix(in srgb, var(--color-warning) 45%, var(--color-line));
+  background: var(--color-warning-bg);
+  color: var(--color-ink);
+}
+
+.banner a {
+  color: inherit;
+  font-weight: 600;
+  text-underline-offset: 2px;
 }

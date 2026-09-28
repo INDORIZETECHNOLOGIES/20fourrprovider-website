@@ -66,3 +66,25 @@ export function validateLicenceNumber(text: string): string | null {
   if (text.length > 50) return "Keep the licence number under 50 characters.";
   return null;
 }
+
+// Backend spec 0013 — package prices, per person, in rupees; blank means "not offered".
+export function validateMonthlyRate(text: string): string | null {
+  if (!text.trim()) return null;
+  const rupees = Number(text);
+  if (!Number.isFinite(rupees) || rupees < 1000 || rupees > 10000000) {
+    return "Enter a monthly package between ₹1,000 and ₹1,00,00,000, or leave it blank.";
+  }
+  return null;
+}
+
+export function validateYearlyRate(text: string, monthlyText: string): string | null {
+  if (!text.trim()) return null;
+  const rupees = Number(text);
+  if (!Number.isFinite(rupees) || rupees < 10000 || rupees > 100000000) {
+    return "Enter a yearly package between ₹10,000 and ₹10,00,00,000, or leave it blank.";
+  }
+  // A range is split into months first; with no monthly package it is priced by the day and
+  // the yearly package never applies.
+  if (!monthlyText.trim()) return "Set a monthly package too — without one, a yearly package never applies.";
+  return null;
+}
