@@ -14,11 +14,27 @@
   }
 }
 
-/* ── Close ───────────────────────────────────────────────────────────────────────────────────── */
+/* ── Close: the event team behind a flat navy veil ──────────────────────────────────────── */
 .close {
-  padding: clamp(64px, 9vw, 120px) 0;
-  background: var(--color-paper-raised);
-  border-top: 1px solid var(--color-line);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(80px, 11vw, 144px) 0;
+  background: var(--color-navy);
+  color: var(--color-navy-ink);
+}
+
+.closePhoto {
+  z-index: -2;
+}
+
+/* A flat veil, not a gradient: the photo reads as texture and the text keeps its contrast. */
+.close::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in srgb, var(--color-navy) 84%, transparent);
 }
 
 .closeInner {
@@ -37,7 +53,6 @@
   line-height: 1.08;
   letter-spacing: -0.02em;
   text-wrap: balance;
-  color: var(--color-ink);
 }
 
 .closeText {
@@ -45,7 +60,7 @@
   max-width: 56ch;
   font-size: 1.1875rem;
   line-height: 1.55;
-  color: var(--color-ink-muted);
+  color: color-mix(in srgb, var(--color-navy-ink) 86%, var(--color-navy));
 }
 
 .closeActions {
@@ -68,22 +83,22 @@
 }
 
 .primary {
-  background: var(--color-navy);
-  color: var(--color-navy-ink);
+  background: var(--color-brass);
+  color: var(--color-on-brass);
 }
 
 .primary:hover {
-  background: color-mix(in srgb, var(--color-navy) 88%, black);
+  background: color-mix(in srgb, var(--color-brass) 88%, white);
 }
 
 .secondary {
-  border: 1.5px solid color-mix(in srgb, var(--color-navy) 50%, var(--color-line));
-  color: var(--color-navy);
+  border: 1.5px solid color-mix(in srgb, var(--color-navy-ink) 50%, transparent);
+  color: var(--color-navy-ink);
 }
 
 .secondary:hover {
-  border-color: var(--color-navy);
-  background: color-mix(in srgb, var(--color-navy) 6%, transparent);
+  border-color: var(--color-navy-ink);
+  background: color-mix(in srgb, var(--color-navy-ink) 8%, transparent);
 }
 
 .primary:focus-visible,
@@ -95,21 +110,14 @@
 .closeSignIn {
   margin: var(--space-5) 0 0;
   font-size: 0.9375rem;
-  color: var(--color-ink-muted);
+  color: color-mix(in srgb, var(--color-navy-ink) 80%, var(--color-navy));
 }
 
 .closeSignIn a {
-  color: var(--color-ink);
+  color: var(--color-navy-ink);
   font-weight: 600;
   text-decoration-color: var(--color-brass);
   text-underline-offset: 4px;
-}
-
-@media (prefers-color-scheme: dark) {
-  .secondary {
-    color: var(--color-ink);
-    border-color: color-mix(in srgb, var(--color-ink) 35%, var(--color-line));
-  }
 }
 
 /* ── Footer ──────────────────────────────────────────────────────────────────────────────────── */

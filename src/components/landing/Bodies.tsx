@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
+import Image from "next/image";
 import Link from "next/link";
+import { PHOTO_CREDIT, PHOTOS } from "./photos";
 import styles from "./Bodies.module.css";
 
 type LiveCity = { key: string; name: string };
@@ -107,6 +109,55 @@ function Checklist({ items, optional }: { items: string[]; optional?: string }) 
       </ul>
       {optional ? <p className={styles.caption}>{optional}</p> : null}
     </div>
+  );
+}
+
+const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const WEEK: Array<{ service: string; days: Array<[booked: number, declared: number]> }> = [
+  { service: "Security guards", days: [[14, 20], [16, 20], [20, 20], [12, 20], [18, 20], [8, 12], [0, 0]] },
+  { service: "Bouncers", days: [[6, 10], [10, 10], [8, 10], [4, 8], [8, 12], [12, 12], [0, 0]] },
+];
+
+/** A week of bookings against the headcount the agency declared, per service. */
+function WeekStrip() {
+  return (
+    <figure className={`${styles.doc} ${styles.week}`} aria-label="Example: a week of bookings against the headcount declared, for two services">
+      <p className={styles.docTitle}>Staff calendar</p>
+      <p className={styles.docSubject}>Booked out of those you can field</p>
+      <div className={styles.weekDays} aria-hidden="true">
+        <span />
+        {DAYS.map((d) => (
+          <span key={d} className={styles.weekName}>
+            {d}
+          </span>
+        ))}
+      </div>
+      {WEEK.map((row) => (
+        <div key={row.service} className={styles.weekRow} aria-hidden="true">
+          <span className={styles.weekService}>{row.service}</span>
+          {row.days.map(([booked, declared], i) => (
+            <span key={DAYS[i]} className={`${styles.weekDay} ${declared === 0 ? styles.weekOff : ""}`}>
+              <span className={styles.weekFigure}>
+                {declared === 0 ? (
+                  "Off"
+                ) : (
+                  <>
+                    <b>{booked}</b>/{declared}
+                  </>
+                )}
+              </span>
+              <span className={styles.weekMeter}>
+                <span
+                  className={`${styles.weekFill} ${declared > 0 && booked >= declared ? styles.weekFull : ""}`}
+                  style={{ transform: `scaleX(${declared ? booked / declared : 0})` }}
+                />
+              </span>
+            </span>
+          ))}
+        </div>
+      ))}
+      <figcaption className={styles.caption}>Example week.</figcaption>
+    </figure>
   );
 }
 
@@ -221,6 +272,8 @@ export function AgencyBody({ cities }: { cities: LiveCity[] }) {
         tone="raised"
         title="Send the whole team"
         aside={
+          <div className={styles.asideStack}>
+          <WeekStrip />
           <figure className={`${styles.doc} ${styles.roster}`}>
             <p className={styles.docTitle}>Team</p>
             <p className={styles.docSubject}>6 × Bouncer · assign 6</p>
@@ -245,6 +298,7 @@ export function AgencyBody({ cities }: { cities: LiveCity[] }) {
             </ul>
             <figcaption className={styles.caption}>Example roster. Names are illustrative.</figcaption>
           </figure>
+          </div>
         }
       >
         <p className={styles.lede}>
@@ -443,5 +497,66 @@ export function IndividualBody({ cities }: { cities: LiveCity[] }) {
 
       <Ranking />
     </>
+  );
+}
+
+// ── An agency on 20fourr ──────────────────────────────────────────────────────────────────────
+
+/**
+ * Facts about the agency, shown only once confirmed by the owner. Leave a field null rather than
+ * estimate it; the list hides empty entries.
+ */
+const SPOTLIGHT: { name: string; facts: Array<[label: string, value: string | null]> } = {
+  name: PHOTO_CREDIT,
+  facts: [
+    ["Based in", null],
+    ["Team", null],
+    ["Services", null],
+    ["On 20fourr since", null],
+  ],
+};
+
+export function Spotlight() {
+  const facts = SPOTLIGHT.facts.filter((f): f is [string, string] => Boolean(f[1]));
+  const band = [PHOTOS.siteTeam, PHOTOS.eventTeam, PHOTOS.uniform];
+  return (
+    <section id="spotlight" className={`${styles.section} ${styles.paper}`} aria-labelledby="spotlight-title">
+      <div className={styles.inner}>
+        <div className={styles.spotlightHead}>
+          <h2 id="spotlight-title" className={styles.title}>
+            {SPOTLIGHT.name}, on 20fourr
+          </h2>
+          <p className={styles.spotlightText}>
+            {SPOTLIGHT.name} is one of the security agencies on 20fourr. The photographs on this page are of their teams.
+          </p>
+          {facts.length > 0 ? (
+            <dl className={styles.spotlightFacts}>
+              {facts.map(([label, value]) => (
+                <div key={label}>
+                  <dt>{label}</dt>
+                  <dd>{value}</dd>
+                </div>
+              ))}
+            </dl>
+          ) : null}
+        </div>
+
+        <div className={styles.band}>
+          {band.map((photo, i) => (
+            <figure key={photo.caption} className={`${styles.bandItem} ${i === 0 ? styles.bandLead : ""}`}>
+              <Image
+                src={photo.src}
+                alt={photo.alt}
+                fill
+                sizes={i === 0 ? "(max-width: 900px) 100vw, 60vw" : "(max-width: 900px) 100vw, 30vw"}
+                style={{ objectFit: "cover", objectPosition: photo.position }}
+              />
+              <figcaption className={styles.bandCaption}>{photo.caption}</figcaption>
+            </figure>
+          ))}
+        </div>
+        <p className={styles.credit}>Photographs: {PHOTO_CREDIT}, used with permission.</p>
+      </div>
+    </section>
   );
 }

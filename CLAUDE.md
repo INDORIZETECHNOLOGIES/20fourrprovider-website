@@ -243,8 +243,18 @@ name="arrow-right"`, not the `→` character).
   they are not mentioned.
 - **The live city line** comes from `GET /public/cities` (server-side, revalidated hourly) and
   hides itself if the call fails.
-- **Photo slots** are the `PHOTOS` constant in `Doors.tsx`, `null` until the owner supplies real
-  photos. Don't fill them with stock images.
+- **Photos** are Secura Force's, used with their permission (confirmed by the owner on
+  2026-09-29). They sit in `components/landing/photos/`, each with a `.webp.json` recording its
+  origin. `photos.ts` holds the alt text and captions.
+  - Captions say only what the picture shows. The agency is named in the spotlight section and
+    the photo credit.
+  - The Justdial watermarks were cropped off, not retouched. Swap in the agency's originals under
+    the same file names when they arrive.
+  - The spotlight's facts (city, team size, services, joined) are `null` until confirmed, and
+    empty ones don't render. Never estimate them.
+  - Never add stock photos.
+- **The page is desktop-first.** Phone users have the provider app, so don't spend effort on the
+  mobile layout here (owner's direction, 2026-09-29).
 - **Dark mode on this page stays navy,** scoped on the page root in `app/page.module.css`, not
   the app's slate greys.
 - **Small print on navy** uses navy-ink mixed at 76% or more, to clear 4.5:1. Never dim text to

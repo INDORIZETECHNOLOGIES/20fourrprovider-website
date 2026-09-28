@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { LandingNav } from "@/components/landing/LandingNav";
 import { Doors } from "@/components/landing/Doors";
-import { AgencyBody, IndividualBody } from "@/components/landing/Bodies";
+import Image from "next/image";
+import { AgencyBody, IndividualBody, Spotlight } from "@/components/landing/Bodies";
+import { PHOTOS } from "@/components/landing/photos";
 import { Faq } from "@/components/landing/Faq";
 import styles from "./page.module.css";
 
@@ -37,9 +39,18 @@ export default async function LandingPage() {
 
       <main id="main">
         <Doors agency={<AgencyBody cities={cities} />} individual={<IndividualBody cities={cities} />} />
+        <Spotlight />
         <Faq />
 
         <section className={styles.close} aria-labelledby="close-title">
+          <Image
+            src={PHOTOS.eventTeam.src}
+            alt=""
+            fill
+            sizes="100vw"
+            className={styles.closePhoto}
+            style={{ objectFit: "cover", objectPosition: PHOTOS.eventTeam.position }}
+          />
           <div className={styles.closeInner}>
             <h2 id="close-title" className={styles.closeTitle}>
               Register now. Set everything up while we check your documents.

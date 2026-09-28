@@ -294,6 +294,13 @@ Solid, plain and authoritative.
 - **Empty State:** Raised paper at 12px, with a brass-tinted 40px icon well (6px corners, brass monoline icon), a slab title and a single underlined action. Its ground carries a 2% brass diagonal hatch.
 - **Banner:** 1px border at 6px corners. Error uses danger colours, info a 7% brass wash, warning the warning ground.
 
+### Photography
+- **Door photo:** Full-bleed across the top of a landing door, 220–248px tall, cover-fit, with 12px top corners following the door.
+- **Photo band:** A three-photo band in the agency spotlight. The lead photo spans two rows at 2fr beside two 1fr photos, square-cornered, with 12px gaps.
+- **Caption chip:** Sits on the image, bottom left, 16px in. Navy at 90%, navy-ink text, 0.8125rem/500, 6px radius. It says only what the picture shows, never a claim.
+- **Photo behind text:** The closing section lays the event photo under a flat navy veil at 84%. Never a gradient; the text keeps its navy-field contrast.
+- **Sourcing:** Real photographs of providers on the platform only, used with permission, with provenance recorded beside each file. No stock images.
+
 ### Inputs / Fields
 - **Style:** A 1.5px hairline stroke on raised paper, 6px corners, 11px/16px padding, label above in label type.
 - **Focus:** The stroke turns brass, with a 3px brass halo at 18%.
