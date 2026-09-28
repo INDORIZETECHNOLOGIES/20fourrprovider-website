@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
 import { formatPaise, formatDate } from "@/lib/format";
 import { BOOKING_STATUS_LABELS, BOOKING_STATUS_TONE, CHAT_ALLOWED_STATUSES } from "@/lib/constants/bookingStatus";
-import { clientName, serviceLabel, type Booking } from "@/lib/api/bookings";
+import { clientName, serviceLabel, dutyRunsItself, type Booking } from "@/lib/api/bookings";
 import { PendingBookingActions } from "./PendingBookingActions";
 import { DutyControls } from "./DutyControls";
 import { CompleteBookingControl } from "./CompleteBookingControl";
@@ -25,8 +25,7 @@ export function BookingRow({ booking, isVerified, accessToken, onUpdated }: Book
 
   const hasControls =
     booking.status === "pending" ||
-    booking.status === "payment_done" ||
-    booking.status === "duty_started" ||
+    ((booking.status === "payment_done" || booking.status === "duty_started") && !dutyRunsItself(booking)) ||
     booking.status === "duty_ended";
 
   return (
@@ -42,6 +41,7 @@ export function BookingRow({ booking, isVerified, accessToken, onUpdated }: Book
           </p>
           <p className={styles.where}>
             {serviceLabel(booking)}
+            {booking.contractId ? ` · contract month ${(booking.cycleIndex ?? 0) + 1}` : ""}
             {booking.numberOfDays > 1 ? ` · ${booking.numberOfDays} days` : ""}
             {booking.address ? ` · ${booking.address}` : ""}
           </p>
@@ -75,7 +75,7 @@ export function BookingRow({ booking, isVerified, accessToken, onUpdated }: Book
             />
           ) : null}
 
-          {booking.status === "payment_done" || booking.status === "duty_started" ? (
+          {(booking.status === "payment_done" || booking.status === "duty_started") && !dutyRunsItself(booking) ? (
             <DutyControls booking={booking} accessToken={accessToken} onUpdated={onUpdated} />
           ) : null}
 

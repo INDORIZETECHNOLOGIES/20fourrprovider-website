@@ -33,6 +33,9 @@ export type Booking = {
   // The agency's team for this booking (backend spec 0017). Entries with `replacedAt` set are
   // history — people who were swapped out — and are kept so incidents stay attributable.
   assignedPersonnel?: AssignedPersonnel[];
+  // Set on a month of a long-term contract (backend spec 0014); `cycleIndex` is 0-based.
+  contractId?: string | null;
+  cycleIndex?: number | null;
 };
 
 export const headcountOf = (booking: Pick<Booking, "headcount">): number => booking.headcount ?? 1;
@@ -43,6 +46,13 @@ export function serviceLabel(booking: Pick<Booking, "headcount" | "serviceCatego
   const name = SERVICE_CATEGORY_LABELS[booking.serviceCategory];
   return n > 1 ? `${n} × ${name}` : name;
 }
+
+/**
+ * A contract month's duty runs on its own (spec 0014 rule 9): only the very first month's start
+ * uses the client's code; every later start, and every end, is done by the platform at midnight.
+ */
+export const dutyRunsItself = (booking: Pick<Booking, "contractId" | "cycleIndex" | "status">): boolean =>
+  Boolean(booking.contractId) && ((booking.cycleIndex ?? 0) >= 1 || booking.status === "duty_started");
 
 export function clientName(booking: Pick<Booking, "clientId">): string {
   return booking.clientId?.name ?? "Former client";

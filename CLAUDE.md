@@ -177,6 +177,14 @@ or invent them. Labels and ordering are in `lib/performance.ts`.
 - Declaring fewer staff than are already booked is allowed, and the bookings stand. The day editor
   warns rather than blocks.
 
+**Contracts (`/contracts`) are built but the platform ships them switched off** (backend spec
+0014). Every contract endpoint answers `SC_1530` until `contracts.enabled` is set. The sidebar
+probes `contractsEnabled()` and shows the link only on success, so don't hard-link to
+`/contracts` from elsewhere. Amounts shown are the cycle's `providerPreGstPaise`, the provider's
+own price for all people before GST; never show `clientTotalPaise` to a provider. Contract months
+are ordinary bookings with `contractId`/`cycleIndex`. Their duty starts and ends run on their own
+except month 1's start (`dutyRunsItself()`).
+
 **Agencies keep a roster at `/team` and assign it per booking** (backend spec 0017).
 - `/provider/personnel*` is agencies only (`SC_1580`). Adding a person needs both attestations
   (documents genuine; the person consents to being shown to clients), sent as booleans.
