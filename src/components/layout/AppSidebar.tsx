@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { clearSession, useSession } from "@/lib/auth/session";
 import { getProviderProfile } from "@/lib/api/provider";
+import { contractsEnabled } from "@/lib/api/contracts";
 import { getUnreadNotificationCount } from "@/lib/api/notifications";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import styles from "./AppSidebar.module.css";
@@ -23,6 +24,9 @@ export function AppSidebar() {
 
   const [isVerified, setIsVerified] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  // Contracts are switched off platform-wide until Razorpay confirms mandates (backend spec 0014);
+  // every contract endpoint answers SC_1530 until then, so a successful read is the switch.
+  const [contractsOn, setContractsEnabled] = useState(false);
 
   useEffect(() => {
     if (!session) return;
@@ -34,6 +38,10 @@ export function AppSidebar() {
         if (!cancelled) setIsVerified(profile.isVerified);
       })
       .catch(() => {});
+
+    contractsEnabled(token).then((on) => {
+      if (!cancelled) setContractsEnabled(on);
+    });
 
     getUnreadNotificationCount(token)
       .then(({ unreadCount: count }) => {
@@ -63,6 +71,7 @@ export function AppSidebar() {
   const mainNav: NavItem[] = [
     { href: "/dashboard", label: "Dashboard", icon: "grid" },
     { href: "/bookings", label: "Bookings", icon: "clipboard" },
+    ...(contractsOn ? [{ href: "/contracts", label: "Contracts", icon: "clipboard-check" as const }] : []),
     { href: "/earnings", label: "Earnings", icon: "receipt" },
     { href: "/availability", label: "Availability", icon: "calendar" },
     { href: "/documents", label: "Documents", icon: "file" },

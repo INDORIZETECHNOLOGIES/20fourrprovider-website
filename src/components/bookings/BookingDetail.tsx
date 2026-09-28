@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
 import { Banner } from "@/components/ui/Banner";
 import { ApiError } from "@/lib/api/client";
-import { clientName, getBookingDetail, headcountOf, serviceLabel, type Booking, type BookingDetail as BookingDetailType, type ThreatAssessment } from "@/lib/api/bookings";
+import { clientName, getBookingDetail, headcountOf, serviceLabel, dutyRunsItself, type Booking, type BookingDetail as BookingDetailType, type ThreatAssessment } from "@/lib/api/bookings";
 import { formatDate, formatPaise } from "@/lib/format";
 import { BOOKING_STATUS_LABELS, BOOKING_STATUS_TONE, CHAT_ALLOWED_STATUSES } from "@/lib/constants/bookingStatus";
 import { PendingBookingActions } from "./PendingBookingActions";
@@ -82,6 +82,12 @@ export function BookingDetail({ bookingId, isVerified, isAgency = false, accessT
           <div>
             <h1 className={styles.heading}>{serviceLabel(booking)}</h1>
             <span className={styles.reference}>{booking.bookingId}</span>
+            {booking.contractId ? (
+              <p className={styles.contractLink}>
+                Month {(booking.cycleIndex ?? 0) + 1} of a{" "}
+                <Link href={`/contracts/${booking.contractId}`}>long-term contract</Link>
+              </p>
+            ) : null}
           </div>
           <Badge tone={BOOKING_STATUS_TONE[booking.status]}>{BOOKING_STATUS_LABELS[booking.status]}</Badge>
         </div>
@@ -229,7 +235,15 @@ export function BookingDetail({ bookingId, isVerified, isAgency = false, accessT
           />
         ) : null}
 
-        {booking.status === "payment_done" || booking.status === "duty_started" ? (
+        {(booking.status === "payment_done" || booking.status === "duty_started") && dutyRunsItself(booking) ? (
+          <p className={styles.contractNote}>
+            {booking.status === "payment_done"
+              ? "This contract month starts on its own at midnight on its first day. No code is needed."
+              : "This contract month ends on its own at midnight after its last day. No code is needed."}
+          </p>
+        ) : null}
+
+        {(booking.status === "payment_done" || booking.status === "duty_started") && !dutyRunsItself(booking) ? (
           <DutyControls booking={booking} accessToken={accessToken} onUpdated={handleUpdated} />
         ) : null}
 

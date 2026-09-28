@@ -101,6 +101,30 @@ update within seconds when their data changes.
 - **Give notice** with the server's effective date.
 - Sidebar (`AppSidebar`) gains **Contracts**, only when the server reports contracts enabled.
 
+**As built:**
+- **"Enabled" is detected from the API.** `GET /provider/contracts?limit=1` succeeding means
+  contracts are on; `SC_1530`, or any error, means off. `/contracts` shows an honest
+  "not open yet" empty state if reached directly.
+- **List:** Requests / Active / Ended tabs with counts. It opens on Requests when any are waiting.
+  Rows show "24 × Security guard", the term, the location, the provider's price per month (before
+  GST, all people) and a status badge.
+- **Detail:**
+  - Terms: dates and months, shift, people, location, how the client pays (mandate status only)
+    and the provider's total over the term.
+  - A month list with dates, days and the provider's price. Status badges show once accepted.
+    Each month links to its booking.
+  - Suspended banner: "Client payment overdue. Don't deploy from <paused month's start>."
+  - A notice banner with the server's end date. Accept/Decline with an optional inline reason.
+    "Give notice" reads "Cancel before it starts" while `accepted`, because the server cancels
+    outright then.
+- **`SC_1534` wording:** besides capacity, it's also raised when a provider day off (`SC_406`)
+  falls inside the term, so the message names both: "…or a day you've blocked falls inside it."
+- **Booking pages:** a contract month shows "Month N of a long-term contract". Duty-code
+  controls are hidden where the platform runs the transition (every month after the first, and
+  every month's end), replaced by a one-line note. See `dutyRunsItself()`.
+- Verified against the local API with contracts switched on in the local database only: the
+  refusal on accept (24 guards against 20 declared) and notice with the server's end date.
+
 ### E. Performance: `/dashboard` card + `/performance` page (0015)
 
 - A dashboard card "How clients find you" linking to `/performance`. There, each component shows a

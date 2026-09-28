@@ -123,3 +123,22 @@
   font-weight: 600;
   text-underline-offset: 3px;
 }
+
+/* Contract months (spec 0014). */
+.contractLink {
+  margin: var(--space-1) 0 0;
+  font-size: 0.875rem;
+  color: var(--color-ink-muted);
+}
+
+.contractLink a {
+  color: var(--color-ink);
+  font-weight: 600;
+  text-underline-offset: 3px;
+}
+
+.contractNote {
+  margin: 0 0 var(--space-4);
+  font-size: 0.9375rem;
+  color: var(--color-ink-muted);
+}
