@@ -10,6 +10,7 @@ import {
   RATING_TAG_LABELS,
   type RatingTag,
 } from "@/lib/constants/rating";
+import { useLiveVersion } from "@/lib/live/accountEvents";
 import styles from "./RateBookingControl.module.css";
 
 type Props = {
@@ -30,6 +31,9 @@ export function RateBookingControl({ bookingId, clientId, clientName, accessToke
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  // Refetch when the server says something shown here changed (spec 0020).
+  const liveVersion = useLiveVersion({ entities: ["booking", "payment"], entityId: bookingId });
+
   useEffect(() => {
     let cancelled = false;
     getMyRatingStatus(accessToken)
@@ -45,7 +49,7 @@ export function RateBookingControl({ bookingId, clientId, clientName, accessToke
     return () => {
       cancelled = true;
     };
-  }, [bookingId, accessToken]);
+  }, [bookingId, accessToken, liveVersion]);
 
   function toggleTag(tag: RatingTag) {
     setSelectedTags((current) =>

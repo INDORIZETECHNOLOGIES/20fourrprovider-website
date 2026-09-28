@@ -10,6 +10,7 @@ import { Stars } from "@/components/ui/Stars";
 import { getProviderProfile } from "@/lib/api/provider";
 import { getRatingsForUser, type Rating, type Pagination } from "@/lib/api/ratings";
 import { RatingRow } from "./RatingRow";
+import { useLiveVersion } from "@/lib/live/accountEvents";
 import styles from "./RatingsPanel.module.css";
 
 export function RatingsPanel({ accessToken }: { accessToken: string }) {
@@ -20,6 +21,9 @@ export function RatingsPanel({ accessToken }: { accessToken: string }) {
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+
+  // Refetch when the server says something shown here changed (spec 0020).
+  const liveVersion = useLiveVersion({ entities: ["rating"] });
 
   useEffect(() => {
     let cancelled = false;
@@ -44,7 +48,7 @@ export function RatingsPanel({ accessToken }: { accessToken: string }) {
     return () => {
       cancelled = true;
     };
-  }, [accessToken]);
+  }, [accessToken, liveVersion]);
 
   async function handleLoadMore() {
     if (!pagination || !userId) return;

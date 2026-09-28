@@ -238,6 +238,29 @@ after running the dev server.
 
 ## Architecture
 
+### Live updates (backend spec 0020)
+
+Open pages refresh themselves when the server records a notification for the provider. One
+Socket.IO connection per tab (`src/lib/live/accountEvents.ts`) listens for `account_event`
+(`{ type, entity, entityId, at }`) and views re-run their own loader:
+
+- **`useLiveVersion(filter)`** returns a counter to add to the deps of the effect that already loads
+  the view. **`useLiveRefresh(filter, fn)`** calls a function instead (the sidebar/top-bar badges).
+  Filter by `entities` (`booking` · `payment` · `document` · `ticket` · `rating` · `contract` ·
+  `account`, or `"any"`), and by `entityId` on a detail page.
+- **Never render anything from the payload.** It says what changed, not what it is; the refetch goes
+  through `lib/api` and the backend serializer, which stays the only PII boundary.
+- A payment notification arrives as `entity: 'booking'` with the booking's id (the backend picks
+  the most specific ref, and bookings outrank payments), so booking views filter on both.
+- Bursts are debounced (400 ms) into one refetch. Missed events aren't replayed, so every
+  subscribed view refetches once on reconnect. An `AUTH_*` connect error stops the socket; the next
+  REST 401 signs the provider out, and a new login restarts it through the `storage` event.
+- Only use `useLiveVersion` with a loader that **keeps current data on screen** while it refetches.
+  One that resets to a skeleton would flash on every notification.
+- Not every backend change raises a notification — e.g. a penalty without a suspension doesn't —
+  so a page is only as live as the notifications behind it.
+- Chat still polls on its own interval; it predates this and is unaffected.
+
 ### Talking to the backend
 
 `apis-docs/PROVIDER_API_REFERENCE.md` is the authoritative reference for every endpoint this
