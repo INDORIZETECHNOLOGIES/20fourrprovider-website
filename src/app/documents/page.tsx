@@ -5,12 +5,16 @@ import { useSession, useRedirectIfLoggedOut } from "@/lib/auth/session";
 import { getProviderProfile, type ProviderProfile } from "@/lib/api/provider";
 import { AppShell } from "@/components/layout/AppShell";
 import { DocumentChecklist } from "@/components/documents/DocumentChecklist";
+import { useLiveVersion } from "@/lib/live/accountEvents";
 
 export default function DocumentsPage() {
   const session = useSession();
   const [profile, setProfile] = useState<ProviderProfile | null>(null);
 
   useRedirectIfLoggedOut();
+
+  // Refetch when the server says something shown here changed (spec 0020).
+  const liveVersion = useLiveVersion({ entities: ["document", "account"] });
 
   useEffect(() => {
     if (!session) return;
@@ -27,7 +31,7 @@ export default function DocumentsPage() {
     return () => {
       cancelled = true;
     };
-  }, [session]);
+  }, [session, liveVersion]);
 
   if (!session || !profile) return null;
 

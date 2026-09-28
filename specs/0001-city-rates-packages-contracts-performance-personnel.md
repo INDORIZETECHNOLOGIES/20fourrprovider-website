@@ -128,6 +128,28 @@ update within seconds when their data changes.
 - The sidebar's unread-notification count (which `AppSidebar` self-fetches) refetches on every
   event.
 
+**As built:**
+- There was no chat socket to reuse, because chat polls. G adds one shared connection per tab,
+  opened on first use and closed 5 s after the last view unsubscribes.
+- Views refetch through `useLiveVersion` / `useLiveRefresh` (`lib/live/accountEvents.ts`):
+
+  | Entities | Views |
+  | --- | --- |
+  | booking · payment | dashboard, bookings list, earnings, tax documents; booking detail and its payment, invoice and rating sections for that booking only |
+  | document · account | documents |
+  | account | penalties |
+  | rating | ratings |
+  | ticket | tickets list, and a ticket's detail for that ticket only |
+  | any | notifications list, both unread badges |
+  | account · document | sidebar's verified state |
+
+  The dashboard listens to booking, payment, rating and account.
+- Verified end to end against the local API. An admin action raised a notification, and the open
+  Penalties page picked up a penalty created silently just before it, with no navigation. The
+  unread badge also incremented.
+- **Backend gap found:** `applyPenalty` only notifies when it suspends. An ordinary penalty raises
+  no notification, and so no event.
+
 ## Acceptance criteria
 
 1. The city dropdown lists only the server's eligible cities.

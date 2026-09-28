@@ -8,6 +8,7 @@ import { LoadMore } from "@/components/ui/LoadMore";
 import { listNotifications, type Notification } from "@/lib/api/notifications";
 import type { Pagination } from "@/lib/api/bookings";
 import { NotificationRow } from "./NotificationRow";
+import { useLiveVersion } from "@/lib/live/accountEvents";
 
 type ReadFilter = "" | "unread" | "read";
 
@@ -31,6 +32,9 @@ export function NotificationsList({ filter, accessToken }: NotificationsListProp
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Refetch when the server says something shown here changed (spec 0020).
+  const liveVersion = useLiveVersion({ entities: "any" });
+
   useEffect(() => {
     let cancelled = false;
     listNotifications(accessToken, { isRead: toIsRead(filter), page: 1 })
@@ -48,7 +52,7 @@ export function NotificationsList({ filter, accessToken }: NotificationsListProp
     return () => {
       cancelled = true;
     };
-  }, [accessToken, filter]);
+  }, [accessToken, filter, liveVersion]);
 
   async function handleLoadMore() {
     if (!pagination) return;
