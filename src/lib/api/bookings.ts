@@ -1,5 +1,5 @@
 import { apiRequest } from "./client";
-import type { ServiceCategory } from "./provider";
+import { SERVICE_CATEGORY_LABELS, type ServiceCategory } from "./provider";
 import type { BookingStatus } from "@/lib/constants/bookingStatus";
 
 export type BookingClient = {
@@ -22,11 +22,23 @@ export type Booking = {
   startTime: string;
   endTime: string;
   numberOfDays: number;
+  // People on the deployment (backend spec 0011). Absent on bookings made before it — read
+  // through `headcountOf()`, which treats that as 1.
+  headcount?: number;
   totalAmount: number; // paise
   status: BookingStatus;
   address?: string | null;
   notes?: string | null;
 };
+
+export const headcountOf = (booking: Pick<Booking, "headcount">): number => booking.headcount ?? 1;
+
+/** "6 × Bouncer", or just "Bouncer" for one person — how the backend's documents print it. */
+export function serviceLabel(booking: Pick<Booking, "headcount" | "serviceCategory">): string {
+  const n = headcountOf(booking);
+  const name = SERVICE_CATEGORY_LABELS[booking.serviceCategory];
+  return n > 1 ? `${n} × ${name}` : name;
+}
 
 export function clientName(booking: Pick<Booking, "clientId">): string {
   return booking.clientId?.name ?? "Former client";

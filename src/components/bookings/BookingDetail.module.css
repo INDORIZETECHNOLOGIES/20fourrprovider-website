@@ -94,3 +94,32 @@
   font-size: 0.9375rem;
   color: var(--color-ink-muted);
 }
+
+/* Staffing preview on a pending multi-person request (spec 0011). */
+.staffingOk,
+.staffingShort,
+.staffingHint {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+
+.staffingOk {
+  color: var(--color-success);
+}
+
+.staffingShort {
+  color: var(--color-ink);
+}
+
+.staffingHint {
+  margin-top: var(--space-2);
+  font-size: 0.875rem;
+  color: var(--color-ink-muted);
+}
+
+.staffingHint a {
+  color: var(--color-ink);
+  font-weight: 600;
+  text-underline-offset: 3px;
+}
