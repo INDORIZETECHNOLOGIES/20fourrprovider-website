@@ -109,10 +109,10 @@
 .statusDirty { color: var(--color-brass-strong); font-weight: 500; }
 .saveButton {
   padding: var(--space-3) var(--space-5); border-radius: var(--radius-sm); border: none;
-  background: var(--color-navy); color: var(--color-paper); font: inherit; font-size: 0.9375rem;
+  background: var(--color-navy); color: var(--color-navy-ink); font: inherit; font-size: 0.9375rem;
   font-weight: 600; cursor: pointer; white-space: nowrap; transition: background var(--transition-base);
 }
-.saveButton:hover:not(:disabled) { background: var(--color-navy-ink); }
+.saveButton:hover:not(:disabled) { background: color-mix(in srgb, var(--color-navy) 88%, black); }
 .saveButton:disabled { background: var(--color-line); color: var(--color-ink-muted); cursor: not-allowed; }
 .addBody { padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-4); }
 
