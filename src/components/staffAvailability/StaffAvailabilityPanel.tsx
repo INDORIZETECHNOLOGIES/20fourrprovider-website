@@ -14,6 +14,7 @@ import { mergeCapacity, withCalendarDay, type CapacityFilter, type DayLoad } fro
 import { DayEditor } from "./DayEditor";
 import { RangeEditor } from "./RangeEditor";
 import { StaffCalendar } from "./StaffCalendar";
+import { useLiveVersion } from "@/lib/live/accountEvents";
 import styles from "./StaffAvailability.module.css";
 
 const VERIFICATION_REQUIRED =
@@ -60,6 +61,10 @@ export function StaffAvailabilityPanel({ accessToken }: { accessToken: string })
     };
   }, [accessToken]);
 
+  // Booked counts move when a booking is accepted or cancelled; refetch in place, keeping the
+  // month on screen (liveVersion is deliberately not part of requestKey, so no loading state).
+  const liveVersion = useLiveVersion({ entities: ["booking", "contract"] });
+
   useEffect(() => {
     if (!isFirm) return;
     let cancelled = false;
@@ -90,7 +95,7 @@ export function StaffAvailabilityPanel({ accessToken }: { accessToken: string })
     return () => {
       cancelled = true;
     };
-  }, [accessToken, isFirm, view.year, view.month, requestKey]);
+  }, [accessToken, isFirm, view.year, view.month, requestKey, liveVersion]);
 
   const loads = useMemo(() => {
     const dates = new Set([...capacity.keys(), ...days.keys()]);

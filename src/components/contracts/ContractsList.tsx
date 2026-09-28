@@ -13,6 +13,7 @@ import { listContracts, type Contract } from "@/lib/api/contracts";
 import { SERVICE_CATEGORY_LABELS } from "@/lib/api/provider";
 import { formatPaise } from "@/lib/format";
 import { CONTRACT_STATUS, CONTRACT_TAB, formatDay, termMonths, type ContractTab } from "@/lib/contracts";
+import { useLiveVersion } from "@/lib/live/accountEvents";
 import styles from "./Contracts.module.css";
 
 const TABS: Array<{ key: ContractTab; label: string; empty: string }> = [
@@ -30,6 +31,9 @@ export function ContractsList({ accessToken }: { accessToken: string }) {
   const [disabled, setDisabled] = useState(false);
   const [tab, setTab] = useState<ContractTab | null>(null);
 
+  // Refetch when the server says a contract or one of its months changed (spec 0020).
+  const liveVersion = useLiveVersion({ entities: ["contract", "booking", "payment"] });
+
   useEffect(() => {
     let cancelled = false;
     listContracts(accessToken)
@@ -44,7 +48,7 @@ export function ContractsList({ accessToken }: { accessToken: string }) {
     return () => {
       cancelled = true;
     };
-  }, [accessToken]);
+  }, [accessToken, liveVersion]);
 
   const grouped = useMemo(() => {
     const g: Record<ContractTab, Contract[]> = { requests: [], active: [], ended: [] };

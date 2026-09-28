@@ -16,6 +16,7 @@ import {
   termTotalPaise,
 } from "@/lib/contracts";
 import { contractTitle } from "./ContractsList";
+import { useLiveVersion } from "@/lib/live/accountEvents";
 import styles from "./Contracts.module.css";
 
 const MANDATE_TEXT: Record<Contract["mandate"]["status"], string> = {
@@ -48,6 +49,9 @@ export function ContractDetail({ contractId, isVerified, accessToken }: { contra
   const [busy, setBusy] = useState<Pending>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Refetch when the server says a contract or one of its months changed (spec 0020).
+  const liveVersion = useLiveVersion({ entities: ["contract", "booking", "payment"] });
+
   useEffect(() => {
     let cancelled = false;
     getContract(contractId, accessToken)
@@ -67,7 +71,7 @@ export function ContractDetail({ contractId, isVerified, accessToken }: { contra
     return () => {
       cancelled = true;
     };
-  }, [contractId, accessToken]);
+  }, [contractId, accessToken, liveVersion]);
 
   async function run(kind: Exclude<Pending, null>) {
     if (!contract) return;
