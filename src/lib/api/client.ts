@@ -2,6 +2,9 @@ import { clearSession } from "@/lib/auth/session";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/v1";
 
+/** Scheme + host of the API, where its Socket.IO server also listens. */
+export const API_ORIGIN = new URL(API_BASE_URL).origin;
+
 export class ApiError extends Error {
   code?: string;
   status: number;

@@ -4,10 +4,14 @@ import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { getPaymentStatus, type BookingPaymentStatus } from "@/lib/api/payments";
 import { PAYMENT_STATUS_LABELS, PAYMENT_STATUS_TONE } from "@/lib/constants/paymentStatus";
+import { useLiveVersion } from "@/lib/live/accountEvents";
 import styles from "./PaymentStatusSection.module.css";
 
 export function PaymentStatusSection({ bookingId, accessToken }: { bookingId: string; accessToken: string }) {
   const [payment, setPayment] = useState<BookingPaymentStatus | null>(null);
+
+  // Refetch when the server says something shown here changed (spec 0020).
+  const liveVersion = useLiveVersion({ entities: ["booking", "payment"], entityId: bookingId });
 
   useEffect(() => {
     let cancelled = false;
@@ -22,7 +26,7 @@ export function PaymentStatusSection({ bookingId, accessToken }: { bookingId: st
     return () => {
       cancelled = true;
     };
-  }, [bookingId, accessToken]);
+  }, [bookingId, accessToken, liveVersion]);
 
   if (!payment) return null;
 

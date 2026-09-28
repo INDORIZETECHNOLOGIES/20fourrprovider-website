@@ -31,7 +31,7 @@ The differentiating mechanism is verified, licensed supply: every provider must 
 - **India, English-only UI.** Providers are based in India; currency is INR (displayed in rupees; wire values are in paise).
 - **Pre-scheduled and on-demand bookings.** Providers may have shifts booked in advance or accept requests on short notice.
 - **Duty lifecycle:** OTP-based shift start and end, live SOS, periodic check-in, incident reporting, absence alerting.
-- **Rate model:** Daily rate (₹100–₹1,00,000 / 4–24 hours per day). Hourly pricing and per-day vehicle add-ons are editable on the Availability page. The weekend multiplier exists on the backend but no price uses it, so it is not exposed.
+- **Rate model:** Rates are set per city (a provider is only found in cities they have priced). Per service and city: daily rate (₹100–₹1,00,000, 4–24 hours per shift), optional monthly and yearly packages for bookings of a month or more, and optional hourly pricing. Vehicle add-ons are per city, per day. All edited on the Availability page. The weekend multiplier exists on the backend but no price uses it, so it is not exposed.
 - **Settlement:** Payout issued after each completed shift and admin verification, via bank transfer. Not instant.
 - **Regulated context:** PSARA licensing is a hard requirement. KYC document upload and admin verification gate full platform access. Verification status is surfaced throughout the authenticated app.
 

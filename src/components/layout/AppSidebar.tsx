@@ -7,6 +7,7 @@ import { clearSession, useSession } from "@/lib/auth/session";
 import { getProviderProfile } from "@/lib/api/provider";
 import { getUnreadNotificationCount } from "@/lib/api/notifications";
 import { Icon, type IconName } from "@/components/ui/Icon";
+import { useLiveRefresh } from "@/lib/live/accountEvents";
 import styles from "./AppSidebar.module.css";
 
 type NavItem = {
@@ -46,6 +47,22 @@ export function AppSidebar() {
     };
   }, [session]);
 
+  // Every account event is a new notification, so the badge refetches on all of them.
+  useLiveRefresh({ entities: "any" }, () => {
+    if (!session) return;
+    return getUnreadNotificationCount(session.tokens.accessToken)
+      .then(({ unreadCount: count }) => setUnreadCount(count))
+      .catch(() => {});
+  });
+
+  // Verification is decided by an admin; its notification is an account or document event.
+  useLiveRefresh({ entities: ["account", "document"] }, () => {
+    if (!session) return;
+    return getProviderProfile(session.tokens.accessToken)
+      .then(({ profile }) => setIsVerified(profile.isVerified))
+      .catch(() => {});
+  });
+
   const initials = session?.name
     ? session.name
         .split(" ")
@@ -75,6 +92,7 @@ export function AppSidebar() {
   ];
 
   const complianceNav: NavItem[] = [
+    { href: "/performance", label: "Performance", icon: "target" },
     { href: "/ratings", label: "Ratings", icon: "star" },
     { href: "/penalties", label: "Penalties", icon: "shield" },
     { href: "/tax-profile", label: "Tax profile", icon: "percent" },

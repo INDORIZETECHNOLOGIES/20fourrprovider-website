@@ -15,11 +15,14 @@ import { payoutAccountStatus } from "@/lib/constants/payoutAccount";
 import { BOOKING_STATUS_LABELS, BOOKING_STATUS_TONE, type BookingStatus } from "@/lib/constants/bookingStatus";
 import { clientName, listBookings, type Booking } from "@/lib/api/bookings";
 import { listSettlements } from "@/lib/api/settlements";
+import { getPerformance, type Performance } from "@/lib/api/performance";
+import { PERFORMANCE_LABELS, headline, summarize } from "@/lib/performance";
 import { setAvailability } from "@/lib/api/availability";
 import { AppShell } from "@/components/layout/AppShell";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Switch } from "@/components/ui/Switch";
 import { Icon } from "@/components/ui/Icon";
+import { useLiveVersion } from "@/lib/live/accountEvents";
 import styles from "./page.module.css";
 
 // Only the latest page of released settlements is summed — an all-time total
@@ -194,8 +197,12 @@ export default function DashboardPage() {
   const [payouts, setPayouts] = useState<PayoutSummary | null>(null);
   const [recentBookings, setRecentBookings] = useState<Booking[] | null>(null);
   const [availToggling, setAvailToggling] = useState(false);
+  const [performance, setPerformance] = useState<Performance | null>(null);
 
   useRedirectIfLoggedOut();
+
+  // Refetch when the server says something shown here changed (spec 0020).
+  const liveVersion = useLiveVersion({ entities: ["booking", "payment", "rating", "account"] });
 
   useEffect(() => {
     if (!session) return;
@@ -245,6 +252,12 @@ export default function DashboardPage() {
       })
       .catch(() => {});
 
+    getPerformance(token)
+      .then((result) => {
+        if (!cancelled) setPerformance(result);
+      })
+      .catch(() => {});
+
     listBookings(token, { limit: 5 })
       .then(({ bookings }) => {
         if (!cancelled) setRecentBookings(bookings);
@@ -254,7 +267,7 @@ export default function DashboardPage() {
     return () => {
       cancelled = true;
     };
-  }, [session, router]);
+  }, [session, router, liveVersion]);
 
   async function handleAvailabilityToggle(next: boolean) {
     if (!session || !profile || profile === "loading") return;
@@ -479,6 +492,38 @@ export default function DashboardPage() {
             onChange={handleAvailabilityToggle}
           />
         </div>
+
+        {/* ── Search ranking (spec 0015) ── */}
+        {performance ? (
+          <>
+            <div className={styles.sectionHead}>
+              <h2 className={styles.sectionTitle}>How clients find you</h2>
+              <Link href="/performance" className={styles.sectionLink}>
+                What affects it
+              </Link>
+            </div>
+
+            <Link href="/performance" className={styles.rankRow}>
+              <div>
+                <p className={styles.availTitle}>{headline(summarize(performance.components))}</p>
+                <p className={styles.availSubtext}>
+                  Turning up, finishing jobs and answering quickly move you up in search, as well as ratings.
+                </p>
+              </div>
+              <span className={styles.rankMarks} aria-hidden="true">
+                {performance.components.map((c) => (
+                  <span
+                    key={c.key}
+                    title={`${PERFORMANCE_LABELS[c.key].name}: ${c.status.replace(/_/g, " ")}`}
+                    className={`${styles.rankMark} ${
+                      c.status === "good" ? styles.rankGood : c.status === "needs_attention" ? styles.rankAttention : ""
+                    }`}
+                  />
+                ))}
+              </span>
+            </Link>
+          </>
+        ) : null}
 
         {/* ── Recent bookings ── */}
         <div className={styles.sectionHead}>

@@ -9,6 +9,7 @@ import { listTickets, type Ticket } from "@/lib/api/tickets";
 import type { Pagination } from "@/lib/api/bookings";
 import type { TicketStatus } from "@/lib/constants/ticket";
 import { TicketRow } from "./TicketRow";
+import { useLiveVersion } from "@/lib/live/accountEvents";
 
 type TicketsListProps = {
   statusFilter: TicketStatus | "";
@@ -23,6 +24,9 @@ export function TicketsList({ statusFilter, accessToken }: TicketsListProps) {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Refetch when the server says something shown here changed (spec 0020).
+  const liveVersion = useLiveVersion({ entities: ["ticket"] });
 
   useEffect(() => {
     let cancelled = false;
@@ -41,7 +45,7 @@ export function TicketsList({ statusFilter, accessToken }: TicketsListProps) {
     return () => {
       cancelled = true;
     };
-  }, [accessToken, statusFilter]);
+  }, [accessToken, statusFilter, liveVersion]);
 
   async function handleLoadMore() {
     if (!pagination) return;

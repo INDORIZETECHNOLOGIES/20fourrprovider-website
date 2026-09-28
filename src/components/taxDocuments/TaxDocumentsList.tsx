@@ -7,6 +7,7 @@ import { RowList } from "@/components/ui/RowList";
 import { LoadMore } from "@/components/ui/LoadMore";
 import { listTaxDocuments, type TaxDocumentHeader, type TaxDocumentType, type Pagination } from "@/lib/api/taxDocuments";
 import { TaxDocumentRow } from "./TaxDocumentRow";
+import { useLiveVersion } from "@/lib/live/accountEvents";
 
 export function TaxDocumentsList({
   docTypeFilter,
@@ -20,6 +21,9 @@ export function TaxDocumentsList({
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Refetch when the server says something shown here changed (spec 0020).
+  const liveVersion = useLiveVersion({ entities: ["booking", "payment"] });
 
   useEffect(() => {
     let cancelled = false;
@@ -38,7 +42,7 @@ export function TaxDocumentsList({
     return () => {
       cancelled = true;
     };
-  }, [accessToken, docTypeFilter]);
+  }, [accessToken, docTypeFilter, liveVersion]);
 
   async function handleLoadMore() {
     if (!pagination) return;

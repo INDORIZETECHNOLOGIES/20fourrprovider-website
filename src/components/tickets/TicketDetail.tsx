@@ -20,6 +20,7 @@ import {
   TICKET_STATUS_TONE,
   TICKET_TYPE_LABELS,
 } from "@/lib/constants/ticket";
+import { useLiveVersion } from "@/lib/live/accountEvents";
 import styles from "./TicketDetail.module.css";
 
 function senderLabel(role: string): string {
@@ -36,6 +37,9 @@ export function TicketDetail({ ticketId, accessToken }: { ticketId: string; acce
   const [closing, setClosing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Refetch when the server says something shown here changed (spec 0020).
+  const liveVersion = useLiveVersion({ entities: ["ticket"], entityId: ticketId });
+
   useEffect(() => {
     let cancelled = false;
     getTicket(ticketId, accessToken)
@@ -48,7 +52,7 @@ export function TicketDetail({ ticketId, accessToken }: { ticketId: string; acce
     return () => {
       cancelled = true;
     };
-  }, [ticketId, accessToken]);
+  }, [ticketId, accessToken, liveVersion]);
 
   async function refresh() {
     try {

@@ -492,3 +492,50 @@
   width: 80px;
   height: 0.75rem;
 }
+
+/* Search ranking: same row as availability, but the whole row links to /performance. */
+.rankRow {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-paper-raised);
+  padding: var(--space-4) var(--space-5);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  margin-bottom: var(--space-8);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color var(--transition-base);
+}
+
+.rankRow:hover {
+  border-color: var(--color-brass);
+}
+
+.rankRow:focus-visible {
+  outline: 2px solid var(--color-brass);
+  outline-offset: 2px;
+}
+
+/* One mark per signal, in the server's order. */
+.rankMarks {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.rankMark {
+  width: 8px;
+  height: 20px;
+  border-radius: 2px;
+  background: var(--color-line);
+}
+
+.rankGood {
+  background: var(--color-success);
+}
+
+.rankAttention {
+  background: var(--color-brass);
+}

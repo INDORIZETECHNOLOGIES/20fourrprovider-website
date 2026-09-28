@@ -55,6 +55,11 @@ Slab); body copy and form UI use the civic sans (`--font-body`, Public Sans). Se
 rather than introducing a second visual language — extend the token set in `globals.css` if a new
 need comes up, don't hardcode one-off colors.
 
+**`next/font` variables are `--font-display-face` / `--font-body-face`, and `globals.css` wraps them
+into `--font-display` / `--font-body` with fallbacks.** They used to share the token names, so the
+token referenced itself — a cycle, which CSS resolves to invalid — and the entire site silently
+rendered in the browser default serif. Don't rename them back.
+
 ### The authenticated app shell: `AppShell`/`AppSidebar`, not `AppTopBar`
 
 Every signed-in page wraps its content in `<AppShell title="...">` (`src/components/layout/
@@ -108,30 +113,34 @@ be sized or half-filled. Rows follow one shape: identity and timing on the left,
 net payout) right-aligned in the display face, then a `Badge` for status — and per-row actions sit
 below a hairline inside the row, only on the statuses that can act.
 
-**Which services a provider offers, and their rates, are edited on the Availability page**
-(`ServicesSection`) — before it existed, `serviceCategories` and `pricing` were settable only during
-profile setup, so a provider could never change what they offer or what they charge. Four things
-about this are easy to get wrong:
-- **`PUT /provider/pricing` must be sent *before* `PUT /provider/profile`, carrying the union of the
-  currently-saved categories and the newly-offered ones.** That endpoint validates that the payload
-  covers every category presently on the profile, so removing a category fails outright if pricing
-  is sent after (or without the category being removed). Sending profile first instead leaves a
-  window where a category exists with no pricing.
-- **`PUT /provider/profile` takes the whole details object**, so `ServicesSection` passes
-  `providerType`/`serviceCity`/`serviceState`/`yearsExperience` back unchanged. Omitting them wipes
-  them.
-- Rates are **paise on the wire, rupees in the form** (`dailyRate: 150000` is ₹1,500), bounded to
-  ₹100–₹1,00,000 and 4–24 hours by `validateDailyRate`/`validateTotalHoursPerDay`.
-- The form also edits hourly pricing (`hourlyEnabled`/`hourlyRate`/`minimumHours`, per category) and
-  the vehicle add-ons (`vehicleRate`/`vehicleWithDriverRate`, one figure written onto every category
-  row). Hourly only applies to a single-day booking shorter than `totalHoursPerDay`
-  (`booking.service.ts`); vehicle add-ons are per day.
-- **`PUT /provider/pricing` replaces the array wholesale**, so every field the form doesn't edit is
-  carried over from the saved row via `carryPricingFields` (`lib/api/provider.ts`). Before that
-  existed, saving services silently reset anything set from the phone app. `weekendMultiplier` is
-  round-tripped but **not editable on purpose**: the backend stores and validates it but no price
-  uses it, so a control would promise something the platform doesn't do. A stored value outside 1–3
-  is omitted rather than echoed, because the API would 400 the whole save.
+**Which services a provider offers, and what they charge in each city, are edited on the
+Availability page** (spec `specs/0001` part A, backend 0012/0013). Two independent saves:
+- **Services** (`ServicesOffered`) are switches that save immediately through
+  `saveProviderProfile({serviceCategories})`, optimistic with rollback; the last service can't be
+  switched off. Turning a service off keeps its rates in every city — they return if it's turned
+  back on.
+- **Rates by city** (`CityRates` → one `CityRateCard` per tab) save one city at a time with
+  `PUT /provider/pricing/cities/:cityKey` (`lib/api/pricing.ts`), which replaces **only that
+  city's rows**. Never go back to the wholesale `PUT /provider/pricing` from this page — it would
+  overwrite every other city. Onboarding (`ProfileSetupForm`) still uses the wholesale call for
+  the very first card; that's the one remaining caller.
+- A city is on the card once it has at least one priced row; clients only find the provider in
+  those cities. `DELETE /provider/pricing/cities/:cityKey` removes one — `SC_1514` means it has
+  unfinished bookings. Adding a city not in `GET /provider/cities/eligible` goes through
+  `POST /provider/cities`; `SC_1511` means no PSARA licence for that state.
+- Rows returned with `cityKey: null` are legacy rates from before city cards. They're shown as a
+  notice and offered as a "Start from" source, never edited in place.
+- Draft/validation/payload logic is pure and tested in `lib/pricing/cityRates.ts`. The payload
+  keeps rows for categories the provider no longer offers (so switching a service back on
+  restores its price) and drops a `weekendMultiplier` outside 1–3, which the API would 400 on.
+  `weekendMultiplier` is round-tripped but **not editable on purpose**: no price uses it.
+- Rates are **paise on the wire, rupees in the form**; daily ₹100–₹1,00,000, 4–24 hours; monthly
+  package ₹1,000–₹1,00,00,000; a yearly package needs a monthly one. The "for comparison" line
+  under each row (30/365 days at the daily rate) and its warning are computed locally — a package
+  priced above the daily equivalent never applies, because a client is charged the cheaper price.
+- Vehicle add-ons (`vehicleRate`/`vehicleWithDriverRate`) are **per city**, one figure written onto
+  every row of that city. Hourly only applies to a single-day booking shorter than
+  `totalHoursPerDay` (`booking.service.ts`).
 - **Save profile-level fields through `saveProviderProfile`**, not a hand-built object: it sends
   every field `PUT /provider/profile` reads, filled from the loaded profile, so one page's save
   can't blank another's. Licence numbers go as `null` (not `""`) to clear them.
@@ -146,6 +155,10 @@ headcount per category per date, capped by `numberOfPersonnel`, with a bulk date
 That's a firm/agency surface, built at `/staff-availability` (linked from the Profile hub for agencies only); it's the only place a "how many bouncers can
 I field on the 14th" answer could come from.
 
+**`/performance` shows search ranking as statuses, never scores** (backend spec 0015 rule 8).
+`GET /provider/performance` returns each signal's status, its importance and a server-worded count
+line, plus a tip when it needs attention. It does not return the weights or values, so don't chart
+or invent them. Labels and ordering are in `lib/performance.ts`.
 **Bookings carry a headcount, and agencies' staff calendars are now enforced** (backend spec 0011).
 - `booking.headcount` is absent on older bookings; read it through `headcountOf()` and print the
   service through `serviceLabel()` ("6 × Bouncer"), matching the backend's documents. The price on
@@ -269,6 +282,29 @@ inside it) — don't hand-edit it expecting the change to stick, and expect it t
 after running the dev server.
 
 ## Architecture
+
+### Live updates (backend spec 0020)
+
+Open pages refresh themselves when the server records a notification for the provider. One
+Socket.IO connection per tab (`src/lib/live/accountEvents.ts`) listens for `account_event`
+(`{ type, entity, entityId, at }`) and views re-run their own loader:
+
+- **`useLiveVersion(filter)`** returns a counter to add to the deps of the effect that already loads
+  the view. **`useLiveRefresh(filter, fn)`** calls a function instead (the sidebar/top-bar badges).
+  Filter by `entities` (`booking` · `payment` · `document` · `ticket` · `rating` · `contract` ·
+  `account`, or `"any"`), and by `entityId` on a detail page.
+- **Never render anything from the payload.** It says what changed, not what it is; the refetch goes
+  through `lib/api` and the backend serializer, which stays the only PII boundary.
+- A payment notification arrives as `entity: 'booking'` with the booking's id (the backend picks
+  the most specific ref, and bookings outrank payments), so booking views filter on both.
+- Bursts are debounced (400 ms) into one refetch. Missed events aren't replayed, so every
+  subscribed view refetches once on reconnect. An `AUTH_*` connect error stops the socket; the next
+  REST 401 signs the provider out, and a new login restarts it through the `storage` event.
+- Only use `useLiveVersion` with a loader that **keeps current data on screen** while it refetches.
+  One that resets to a skeleton would flash on every notification.
+- Not every backend change raises a notification — e.g. a penalty without a suspension doesn't —
+  so a page is only as live as the notifications behind it.
+- Chat still polls on its own interval; it predates this and is unaffected.
 
 ### Talking to the backend
 
