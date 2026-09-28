@@ -262,15 +262,11 @@ silently rendered with zero padding/gap. It looked fine at a glance (borders + l
 impression of spacing) and only showed up on close inspection. Verify visually, not just by
 reading the JSX.
 
-**`validateDayOffDate` (`src/lib/validation/availability.ts`) has a UTC-vs-local day bug, and its
-own test is time-of-day-flaky as a result.** It parses the input date string with `new Date(date)`
-(interprets a bare `YYYY-MM-DD` as UTC midnight) but computes "today" with a local
-`new Date(); .setHours(0,0,0,0)`. In a timezone ahead of UTC (IST, `+05:30`), between local midnight
-and ~5:30am the UTC calendar day is still "yesterday" — so the test's `new Date().toISOString()
-.slice(0,10)` (a UTC-dated string) reads as being in the past compared to local "today", and
-`validateDayOffDate` wrongly rejects it. Confirmed live at 01:47 IST. Not fixed here — it's a
-pre-existing logic bug unrelated to whatever you're working on if you hit this test failing; don't
-assume your own change caused it before checking the wall-clock time.
+**Compare calendar days as `YYYY-MM-DD` strings in India time, not as `Date`s.**
+`new Date("YYYY-MM-DD")` is UTC midnight, and mixing it with a local "today" once made
+`validateDayOffDate` reject today before 05:30 IST (and would in any browser behind UTC). It now
+compares against `indiaToday()` (`src/lib/validation/availability.ts`). Use that for any new
+"not in the past" check.
 
 ## Commands
 
