@@ -6,11 +6,9 @@ import { Icon } from "@/components/ui/Icon";
 import styles from "./LandingNav.module.css";
 
 const LINKS = [
-  { href: "#how-it-works", label: "How it works" },
-  { href: "#earnings", label: "Earnings" },
-  { href: "#verification", label: "Verification" },
-  { href: "#payments", label: "Payments" },
-  { href: "#faq", label: "FAQ" },
+  { href: "#agency", label: "For agencies" },
+  { href: "#individual", label: "On your own" },
+  { href: "#faq", label: "Questions" },
 ] as const;
 
 export function LandingNav() {
@@ -88,7 +86,7 @@ export function LandingNav() {
             Sign in
           </Link>
           <Link href="/register" className={styles.cta}>
-            Start earning
+            Register
           </Link>
           <button
             type="button"
@@ -120,7 +118,7 @@ export function LandingNav() {
               Sign in
             </Link>
             <Link href="/register" className={styles.panelCta} onClick={() => setOpen(false)}>
-              Start earning
+              Register
             </Link>
           </div>
         </div>

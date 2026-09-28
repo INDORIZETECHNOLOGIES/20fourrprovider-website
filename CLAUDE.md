@@ -218,10 +218,7 @@ which reads as an obvious templated/AI-slop tell against this app's disciplined 
 — it was the single biggest thing wrong with the design pass this file used to point to. `Icon` is
 a small hand-drawn monoline SVG set (stroke `currentColor`, so it inherits the surrounding text
 color and tints correctly on hover/active states) — add new glyphs there rather than reaching for
-an emoji or pulling in an icon package. The four security-category icons on the landing page
-(guard/bouncer/gunman/PSO) are deliberately all variations on a shield/protection motif rather than
-literal objects (a circus tent for "Bouncer" was one of the emoji it replaced) — keep that
-consistency if you add a fifth category.
+an emoji or pulling in an icon package.
 
 Two other slop patterns fixed in the same pass, worth not reintroducing: a single word recolored
 inside an otherwise plain-colored headline (`Get booked. **Work.** Get paid.` — the accent span is
@@ -229,21 +226,39 @@ gone, the whole headline is one color now), and a `→` appended to CTA button t
 affordance for every call-to-action (now used at most once per page, as an actual `Icon
 name="arrow-right"`, not the `→` character).
 
-**On the landing page, every section has a deliberately different form, and only one of them uses
-cards.** An earlier version ran three step cards → six feature cards → four category cards → four
-trust items: seventeen blocks sharing one bordered-and-shadowed treatment and one `translateY` hover
-lift, which flattened the hierarchy and implied every block was clickable when none of them are.
-Now the steps are a numbered vertical sequence joined by a rule (numbering is legitimate there —
-it genuinely is a sequence), the features are a two-column ruled list, and the four categories are
-the only cards. Hover lifts are gone from everything that isn't a link. Three other things worth
-keeping: the earnings table sits directly under the hero, because "what will I earn?" is a
-provider's first question and it used to be second-to-last; `.tableWrap` gives the rate table
-`overflow-x: auto` so it scrolls inside its own box at phone width rather than stretching the page
-(tables are the one exception to no-horizontal-scroll); and the hero's credential card is captioned
-as an example, since it shows a name, a rating and a shift count belonging to nobody. The page
-metadata also claimed "instant payouts" long after that copy was corrected elsewhere — payouts
-settle after a completed shift and admin verification, and `metadata.description` is what search
-results and link previews quote, so check it when payout wording changes.
+**The landing page (`/`) is "two doors": agency or on your own.** The design contract is in
+`.impeccable/surfaces/src-app-page-tsx.md`, and the system is in `DESIGN.md`.
+- **Structure:** one statement, then two doors. The agency door is wider and first, because
+  agencies are the priority audience. The chosen door is kept in the URL hash (`#agency` /
+  `#individual`), and the body below swaps with it (`components/landing/Doors.tsx`). Nav links
+  set the hash.
+- **Illustrations are flat ruled documents,** never cards or icon tiles: rate card, roster,
+  settlement statement, checklist and ranking table (`Bodies.tsx`).
+- **Every figure is real arithmetic or labelled as an example.** The two settlement statements
+  are computed in code from the actual tax rules: TCS 0.5% on the price before GST, TDS 0.1% on
+  the price with GST, individuals with a PAN relieved under ₹5 lakh. If a rule changes, change
+  the constants there.
+- **Don't add unverifiable claims:** timings, customer counts or testimonials. The review took
+  out "a day or two", "a few minutes" and "within 30 minutes". Contracts are switched off, so
+  they are not mentioned.
+- **The live city line** comes from `GET /public/cities` (server-side, revalidated hourly) and
+  hides itself if the call fails.
+- **Photos** are Secura Force's, used with their permission (confirmed by the owner on
+  2026-09-29). They sit in `components/landing/photos/`, each with a `.webp.json` recording its
+  origin. `photos.ts` holds the alt text and captions.
+  - Captions say only what the picture shows. The agency is named in the spotlight section and
+    the photo credit.
+  - The Justdial watermarks were cropped off, not retouched. Swap in the agency's originals under
+    the same file names when they arrive.
+  - The spotlight's facts (city, team size, services, joined) are `null` until confirmed, and
+    empty ones don't render. Never estimate them.
+  - Never add stock photos.
+- **The page is desktop-first.** Phone users have the provider app, so don't spend effort on the
+  mobile layout here (owner's direction, 2026-09-29).
+- **Dark mode on this page stays navy,** scoped on the page root in `app/page.module.css`, not
+  the app's slate greys.
+- **Small print on navy** uses navy-ink mixed at 76% or more, to clear 4.5:1. Never dim text to
+  show state.
 
 ### Styling: raw CSS, not Tailwind
 

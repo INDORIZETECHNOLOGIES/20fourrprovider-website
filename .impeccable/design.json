@@ -1,0 +1,514 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-29T00:00:00.000Z",
+  "title": "Design System: 20fourr Provider",
+  "extensions": {
+    "colorMeta": {
+      "navy": {
+        "role": "primary",
+        "displayName": "Uniform Navy",
+        "canonical": "oklch(28.9% 0.062 263.9)",
+        "dark": "#23355e",
+        "darkLanding": "#1b2a4a",
+        "tonalRamp": [
+          "#010825",
+          "#142342",
+          "#2f3f61",
+          "#4c5d81",
+          "#6d80a6",
+          "#91a5cc",
+          "#b6cbf4",
+          "#d9efff"
+        ]
+      },
+      "navy-deep": {
+        "role": "primary",
+        "displayName": "Deep Navy",
+        "canonical": "color-mix(in srgb, var(--color-navy) 88%, black)",
+        "tonalRamp": [
+          "#010825",
+          "#142342",
+          "#2f3f61",
+          "#4c5d81",
+          "#6d80a6",
+          "#91a5cc",
+          "#b6cbf4",
+          "#d9efff"
+        ]
+      },
+      "navy-ink": {
+        "role": "primary",
+        "displayName": "Navy Ink",
+        "canonical": "oklch(96.7% 0.006 264.5)",
+        "dark": "#eef0f4",
+        "tonalRamp": [
+          "#0a0b0e",
+          "#232427",
+          "#3e4043",
+          "#5c5e61",
+          "#7e8084",
+          "#a3a5a8",
+          "#c9cace",
+          "#eceef2"
+        ]
+      },
+      "brass": {
+        "role": "secondary",
+        "displayName": "Insignia Brass",
+        "canonical": "oklch(60.9% 0.108 74.0)",
+        "dark": "#c99a4d",
+        "tonalRamp": [
+          "#1a0500",
+          "#391c00",
+          "#5b3700",
+          "#815200",
+          "#a6752b",
+          "#c69c63",
+          "#e9c493",
+          "#ffe9bf"
+        ]
+      },
+      "brass-strong": {
+        "role": "secondary",
+        "displayName": "Struck Brass",
+        "canonical": "oklch(52.8% 0.097 74.7)",
+        "dark": "#e0b264",
+        "tonalRamp": [
+          "#190600",
+          "#371d00",
+          "#5d3600",
+          "#7d540a",
+          "#a27737",
+          "#c99c5c",
+          "#e6c599",
+          "#ffeac4"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Cool Paper",
+        "canonical": "oklch(97.3% 0.003 264.5)",
+        "dark": "#0e1116",
+        "darkLanding": "#0f1829",
+        "tonalRamp": [
+          "#0b0b0c",
+          "#232425",
+          "#3f4041",
+          "#5d5e5f",
+          "#7f8082",
+          "#a4a4a6",
+          "#c9cacc",
+          "#edeef0"
+        ]
+      },
+      "paper-raised": {
+        "role": "neutral",
+        "displayName": "Raised Paper",
+        "canonical": "#ffffff",
+        "dark": "#161b23",
+        "darkLanding": "#142038",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#242424",
+          "#404040",
+          "#5d5d5d",
+          "#808080",
+          "#a4a4a4",
+          "#cacaca",
+          "#eeeeee"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Register Ink",
+        "canonical": "oklch(19.9% 0.015 261.6)",
+        "dark": "#eef0f4",
+        "tonalRamp": [
+          "#080b12",
+          "#20242c",
+          "#3b4048",
+          "#595e67",
+          "#7b808a",
+          "#9fa5af",
+          "#c5cbd5",
+          "#e9eff9"
+        ]
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Muted Ink",
+        "canonical": "oklch(50.1% 0.025 259.2)",
+        "dark": "#9aa3b2",
+        "tonalRamp": [
+          "#050b16",
+          "#1d2430",
+          "#38404d",
+          "#555e6c",
+          "#778190",
+          "#9ba5b5",
+          "#c1cbdb",
+          "#e5efff"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "oklch(90.8% 0.008 253.9)",
+        "dark": "#262d38",
+        "darkLanding": "#26344f",
+        "tonalRamp": [
+          "#090b0f",
+          "#212428",
+          "#3d4044",
+          "#5a5e62",
+          "#7d8185",
+          "#a1a5aa",
+          "#c7cbd0",
+          "#ebeff4"
+        ]
+      },
+      "danger": {
+        "role": "status",
+        "displayName": "Danger",
+        "canonical": "oklch(50.1% 0.178 28.7)",
+        "dark": "#e5847d",
+        "tonalRamp": [
+          "#2a0000",
+          "#510000",
+          "#7b0706",
+          "#a7271f",
+          "#d24e41",
+          "#f37d6e",
+          "#ffaa9b",
+          "#ffd4c6"
+        ]
+      },
+      "danger-bg": {
+        "role": "status",
+        "displayName": "Danger Ground",
+        "canonical": "#fbeceb",
+        "dark": "#2a1516"
+      },
+      "success": {
+        "role": "status",
+        "displayName": "Success",
+        "canonical": "oklch(51.4% 0.115 155.9)",
+        "dark": "#4ade80",
+        "inverse": "#4ade80",
+        "tonalRamp": [
+          "#001201",
+          "#002f12",
+          "#004e29",
+          "#057041",
+          "#3b9462",
+          "#71b78b",
+          "#9fdbb4",
+          "#cafddb"
+        ]
+      },
+      "success-bg": {
+        "role": "status",
+        "displayName": "Success Ground",
+        "canonical": "#edf7f2",
+        "dark": "#0d2e1c"
+      },
+      "warning": {
+        "role": "status",
+        "displayName": "Warning",
+        "canonical": "oklch(55.5% 0.146 49.0)",
+        "dark": "#fbbf24",
+        "inverse": "#fbbf24",
+        "tonalRamp": [
+          "#240000",
+          "#480a00",
+          "#6e2500",
+          "#974000",
+          "#c06329",
+          "#e18c5e",
+          "#ffb78e",
+          "#ffdebb"
+        ]
+      },
+      "warning-bg": {
+        "role": "status",
+        "displayName": "Warning Ground",
+        "canonical": "#fef3e2",
+        "dark": "#2d1e06"
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Landing hero statement; balanced, max 34ch."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Landing section titles."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "App page titles (PageHeader)."
+      },
+      "doc-title": {
+        "displayName": "Doc Title",
+        "purpose": "Ruled-document title lines and statement totals."
+      },
+      "figure": {
+        "displayName": "Figure",
+        "purpose": "Money and dates in rows; always tabular numerals."
+      },
+      "lede": {
+        "displayName": "Lede",
+        "purpose": "First paragraph of a landing section."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "All reading and form text; 62-68ch measure."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Field labels, badges, table heads, captions; sentence case."
+      }
+    },
+    "shadows": [
+      {
+        "name": "card",
+        "value": "0 2px 8px rgba(0,0,0,0.06), 0 8px 32px rgba(0,0,0,0.08)",
+        "purpose": "Auth card and dashboard next-shift card only."
+      },
+      {
+        "name": "card-hover",
+        "value": "0 4px 16px rgba(0,0,0,0.1), 0 16px 48px rgba(0,0,0,0.12)",
+        "purpose": "Next-shift card on hover."
+      },
+      {
+        "name": "sm",
+        "value": "0 1px 3px rgba(0,0,0,0.05), 0 2px 8px rgba(0,0,0,0.06)",
+        "purpose": "Minor raised app elements."
+      },
+      {
+        "name": "button-rest",
+        "value": "0 1px 2px rgba(0,0,0,0.16)",
+        "purpose": "App Button primitive at rest; landing buttons are flat."
+      }
+    ],
+    "focus": [
+      {
+        "name": "focus-ring",
+        "value": "outline: 2px solid var(--color-brass); outline-offset: 2px",
+        "purpose": "Global :focus-visible; landing buttons offset 3px."
+      },
+      {
+        "name": "field-focus",
+        "value": "border-color: var(--color-brass); box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brass) 18%, transparent)",
+        "purpose": "Text inputs."
+      },
+      {
+        "name": "selection",
+        "value": "background: color-mix(in srgb, var(--color-brass) 32%, transparent)",
+        "purpose": "::selection, globally."
+      }
+    ],
+    "motion": [
+      {
+        "name": "transition-base",
+        "value": "200ms ease",
+        "purpose": "Default state transition in the app."
+      },
+      {
+        "name": "ease-out-expo",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Landing door ground (240ms), brass rule scale-in (420ms), FAQ chevron (220ms), door-body rise (360ms)."
+      },
+      {
+        "name": "door-swap-out",
+        "value": "180ms cubic-bezier(0.4, 0, 1, 1) fade to 0",
+        "purpose": "View transition: old door body."
+      },
+      {
+        "name": "door-swap-in",
+        "value": "360ms cubic-bezier(0.16, 1, 0.3, 1), from opacity 0 translateY(12px)",
+        "purpose": "View transition: new door body."
+      },
+      {
+        "name": "link-button",
+        "value": "180ms ease-out",
+        "purpose": "Landing button background/border hover."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "all durations 0.01ms",
+        "purpose": "prefers-reduced-motion: every change is instant."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "xs",
+        "value": "430px"
+      },
+      {
+        "name": "sm",
+        "value": "560px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "doors-stack",
+        "value": "860px"
+      },
+      {
+        "name": "split-stack",
+        "value": "900px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      }
+    ],
+    "layout": {
+      "container": "1200px",
+      "gutter": "clamp(16px, 4vw, 40px)",
+      "sectionPadding": "clamp(56px, 8vw, 104px)",
+      "split": "5fr 6fr, gap clamp(32px, 6vw, 88px)",
+      "doors": "7fr 5fr, gap clamp(16px, 2vw, 24px)"
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Navy solid, the default primary action on paper.",
+      "html": "<a href=\"#\" class=\"ds-btn-primary\">Register your agency</a>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; min-height: 52px; padding: 0 24px; border-radius: 6px; background: var(--color-navy, #1b2a4a); color: var(--color-navy-ink, #f2f4f8); font-family: var(--font-body, 'Public Sans', sans-serif); font-size: 1.0625rem; font-weight: 600; text-decoration: none; transition: background 180ms ease-out; } .ds-btn-primary:hover { background: color-mix(in srgb, var(--color-navy, #1b2a4a) 88%, black); } .ds-btn-primary:focus-visible { outline: 2px solid var(--color-brass, #a9782e); outline-offset: 3px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Outline companion to the primary, on paper.",
+      "html": "<a href=\"#\" class=\"ds-btn-secondary\">Register on your own</a>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; min-height: 52px; padding: 0 24px; border-radius: 6px; border: 1.5px solid color-mix(in srgb, var(--color-navy, #1b2a4a) 50%, var(--color-line, #dde1e6)); color: var(--color-navy, #1b2a4a); font-family: var(--font-body, 'Public Sans', sans-serif); font-size: 1.0625rem; font-weight: 600; text-decoration: none; transition: background 180ms ease-out, border-color 180ms ease-out; } .ds-btn-secondary:hover { border-color: var(--color-navy, #1b2a4a); background: color-mix(in srgb, var(--color-navy, #1b2a4a) 6%, transparent); } .ds-btn-secondary:focus-visible { outline: 2px solid var(--color-brass, #a9782e); outline-offset: 3px; }"
+    },
+    {
+      "name": "Brass Button (navy field)",
+      "kind": "button",
+      "refersTo": "button-brass",
+      "description": "The single call to action on a navy ground.",
+      "html": "<div class=\"ds-navy-field\"><a href=\"#\" class=\"ds-btn-brass\">Register your agency</a></div>",
+      "css": ".ds-navy-field { background: var(--color-navy, #1b2a4a); padding: 24px; } .ds-btn-brass { display: inline-flex; align-items: center; min-height: 48px; padding: 0 20px; border-radius: 6px; background: var(--color-brass, #a9782e); color: var(--color-on-brass, #0f1829); font-family: var(--font-body, 'Public Sans', sans-serif); font-size: 1rem; font-weight: 600; text-decoration: none; transition: background 180ms ease-out; } .ds-btn-brass:hover { background: color-mix(in srgb, var(--color-brass, #a9782e) 88%, white); } .ds-btn-brass:focus-visible { outline: 2px solid var(--color-brass, #a9782e); outline-offset: 3px; }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Label above, hairline stroke, brass focus halo.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">PAN</span><input class=\"ds-input\" placeholder=\"ABCDE1234F\" /></label>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 8px; font-family: var(--font-body, 'Public Sans', sans-serif); } .ds-field-label { font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.01em; color: var(--color-ink, #12161d); } .ds-input { width: 100%; border: 1.5px solid var(--color-line, #dde1e6); border-radius: 6px; background: var(--color-paper-raised, #fff); padding: 11px 16px; font-size: 1rem; line-height: 1.4; color: var(--color-ink, #12161d); transition: border-color 200ms ease, box-shadow 200ms ease; } .ds-input:hover:not(:focus) { border-color: color-mix(in srgb, var(--color-line, #dde1e6) 40%, var(--color-ink-muted, #5b6472)); } .ds-input:focus { outline: none; border-color: var(--color-brass, #a9782e); box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brass, #a9782e) 18%, transparent); }"
+    },
+    {
+      "name": "Badge",
+      "kind": "chip",
+      "refersTo": "badge-action",
+      "description": "Status pill; action (brass), active (navy), danger.",
+      "html": "<span class=\"ds-badge ds-badge-action\">Action needed</span> <span class=\"ds-badge ds-badge-active\">Accepted</span> <span class=\"ds-badge ds-badge-danger\">Rejected</span>",
+      "css": ".ds-badge { display: inline-block; font-family: var(--font-body, 'Public Sans', sans-serif); font-size: 0.8125rem; font-weight: 600; padding: 4px 12px; border-radius: 999px; white-space: nowrap; } .ds-badge-action { background: color-mix(in srgb, var(--color-brass, #a9782e) 16%, transparent); color: var(--color-brass-strong, #8c621f); } .ds-badge-active { background: color-mix(in srgb, var(--color-navy, #1b2a4a) 12%, transparent); color: var(--color-navy, #1b2a4a); } .ds-badge-danger { background: var(--color-danger-bg, #fbeceb); color: var(--color-danger, #b3261e); }"
+    },
+    {
+      "name": "Row List",
+      "kind": "card",
+      "refersTo": "row-list",
+      "description": "The app's container: raised paper, hairlines between rows, slab figures.",
+      "html": "<div class=\"ds-rowlist\"><div class=\"ds-row\"><div><p class=\"ds-row-title\">Phoenix Mall, Lower Parel</p><p class=\"ds-row-meta\">Sat 4 Oct · 12-hour shift</p></div><p class=\"ds-row-amount\">₹1,450</p></div><div class=\"ds-row\"><div><p class=\"ds-row-title\">BKC corporate lobby</p><p class=\"ds-row-meta\">Mon 6 Oct · 8-hour shift</p></div><p class=\"ds-row-amount\">₹1,100</p></div></div>",
+      "css": ".ds-rowlist { border: 1px solid var(--color-line, #dde1e6); border-radius: 12px; background: var(--color-paper-raised, #fff); overflow: hidden; font-family: var(--font-body, 'Public Sans', sans-serif); } .ds-rowlist > * + * { border-top: 1px solid var(--color-line, #dde1e6); } .ds-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding: 16px 20px; } .ds-row-title { margin: 0; font-weight: 600; color: var(--color-ink, #12161d); } .ds-row-meta { margin: 2px 0 0; font-size: 0.875rem; color: var(--color-ink-muted, #5b6472); } .ds-row-amount { margin: 0; font-family: var(--font-display, 'Roboto Slab', Georgia, serif); font-size: 1.125rem; font-weight: 700; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; color: var(--color-ink, #12161d); }"
+    },
+    {
+      "name": "Ruled Document",
+      "kind": "custom",
+      "refersTo": "document-sheet",
+      "description": "Signature: flat, square, 4px ink opener, brass-strong subject, hairline rows.",
+      "html": "<figure class=\"ds-doc\"><p class=\"ds-doc-title\">Rate card</p><p class=\"ds-doc-subject\">Security guard · Mumbai</p><table class=\"ds-doc-table\"><tbody><tr><th>Daily<span>12-hour shift</span></th><td>₹1,450</td></tr><tr><th>Monthly<span>26 shifts</span></th><td>₹34,000</td></tr><tr><th>Hourly</th><td class=\"ds-none\">Not offered</td></tr></tbody></table></figure>",
+      "css": ".ds-doc { margin: 0; padding-top: 24px; border-top: 4px solid var(--color-ink, #12161d); font-family: var(--font-body, 'Public Sans', sans-serif); color: var(--color-ink, #12161d); } .ds-doc p { margin: 0; } .ds-doc-title { font-family: var(--font-display, 'Roboto Slab', Georgia, serif); font-size: 1.375rem; font-weight: 600; line-height: 1.2; } .ds-doc-subject { margin-top: 4px !important; padding-bottom: 12px; border-bottom: 1px solid var(--color-ink, #12161d); font-size: 0.9375rem; font-weight: 600; color: var(--color-brass-strong, #8c621f); } .ds-doc-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; } .ds-doc-table th, .ds-doc-table td { padding: 12px 0; border-bottom: 1px solid var(--color-line, #dde1e6); font-size: 0.9375rem; vertical-align: top; } .ds-doc-table th { text-align: left; font-weight: 600; } .ds-doc-table th span { display: block; font-size: 0.8125rem; font-weight: 400; color: var(--color-ink-muted, #5b6472); } .ds-doc-table td { text-align: right; font-weight: 600; } .ds-doc-table td.ds-none { font-weight: 400; color: var(--color-ink-muted, #5b6472); }"
+    },
+    {
+      "name": "Settlement Statement",
+      "kind": "custom",
+      "refersTo": "statement-sheet",
+      "description": "Signature: raised-paper sheet with a brass top rule, laid on the navy passage.",
+      "html": "<div class=\"ds-navy-band\"><div class=\"ds-statement\"><table class=\"ds-st\"><tbody><tr><th>Your listed price<span>12-hour shift</span></th><td>₹1,450.00</td></tr><tr><th>TCS §52<span>0.5% of the base</span></th><td>− ₹7.25</td></tr></tbody><tfoot><tr><th>Paid to you</th><td>₹1,442.75</td></tr></tfoot></table></div></div>",
+      "css": ".ds-navy-band { background: var(--color-navy, #1b2a4a); padding: 32px; } .ds-statement { padding: 28px; border-top: 4px solid var(--color-brass, #a9782e); background: var(--color-paper-raised, #fff); color: var(--color-ink, #12161d); font-family: var(--font-body, 'Public Sans', sans-serif); } .ds-st { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; } .ds-st th, .ds-st td { padding: 12px 0; border-bottom: 1px solid var(--color-line, #dde1e6); font-size: 0.9375rem; vertical-align: top; } .ds-st th { text-align: left; font-weight: 600; } .ds-st th span { display: block; font-size: 0.8125rem; font-weight: 400; color: var(--color-ink-muted, #5b6472); } .ds-st td { text-align: right; white-space: nowrap; } .ds-st tfoot th, .ds-st tfoot td { padding-top: 16px; border-bottom: none; border-top: 2px solid var(--color-ink, #12161d); font-family: var(--font-display, 'Roboto Slab', Georgia, serif); font-size: 1.375rem; font-weight: 600; }"
+    },
+    {
+      "name": "Landing Nav",
+      "kind": "nav",
+      "refersTo": "nav-landing",
+      "description": "Sticky navy bar, slab wordmark with brass dot, brass CTA.",
+      "html": "<header class=\"ds-nav\"><a href=\"#\" class=\"ds-wordmark\">20fourr<span class=\"ds-dot\"></span></a><nav class=\"ds-links\"><a href=\"#\">How it works</a><a href=\"#\">Questions</a></nav><a href=\"#\" class=\"ds-nav-cta\">Register</a></header>",
+      "css": ".ds-nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 60px; padding: 0 24px; background: color-mix(in srgb, var(--color-navy, #1b2a4a) 97%, transparent); border-bottom: 1px solid color-mix(in srgb, var(--color-brass, #a9782e) 15%, transparent); font-family: var(--font-body, 'Public Sans', sans-serif); } .ds-wordmark { display: flex; align-items: center; font-family: var(--font-display, 'Roboto Slab', Georgia, serif); font-size: 1.25rem; font-weight: 700; letter-spacing: -0.025em; color: var(--color-navy-ink, #f2f4f8); text-decoration: none; } .ds-dot { width: 6px; height: 6px; margin-left: 1px; border-radius: 50%; background: var(--color-brass, #a9782e); } .ds-links { display: flex; gap: 4px; } .ds-links a { padding: 8px 12px; border-radius: 6px; font-size: 0.9375rem; font-weight: 500; color: color-mix(in srgb, var(--color-navy-ink, #f2f4f8) 72%, transparent); text-decoration: none; } .ds-links a:hover { color: var(--color-navy-ink, #f2f4f8); background: rgba(255,255,255,0.06); } .ds-links a:focus-visible, .ds-nav-cta:focus-visible { outline: 2px solid var(--color-brass, #a9782e); outline-offset: 2px; } .ds-nav-cta { display: inline-flex; align-items: center; min-height: 44px; padding: 10px 16px; border-radius: 6px; background: var(--color-brass, #a9782e); color: var(--color-navy, #1b2a4a); font-size: 0.875rem; font-weight: 600; text-decoration: none; transition: background 200ms ease; } .ds-nav-cta:hover { background: color-mix(in srgb, var(--color-brass, #a9782e) 88%, white); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Credential Register",
+    "overview": "20fourr looks like the paperwork of a regulated trade done properly: a navy uniform ground, a brass insignia that marks what is verified or chosen, and cool paper on which rates, statements and checklists are ruled like documents. The authenticated app is a working register: dense rows, hairline dividers, slab-set figures. The public landing page is the same register at poster scale. The navy becomes a full field, the slab sets large, and ruled documents are the only illustration.\n\nDensity is honest rather than airy. Rows carry real data, amounts sit in tabular slab figures, and verification status is always on screen. Brass is scarce. It marks focus, selection, the chosen option and the one call to action on a navy ground. Nothing competes with it.\n\nThe system rejects generic SaaS: no slogan-and-floating-mockup heroes, no icon-tile feature grids, no numbered step timelines, no emoji or icon packages. The icon set is a monoline SVG component that strokes in `currentColor`.",
+    "keyCharacteristics": [
+      "Navy field, brass as the single active colour, cool paper ground.",
+      "Roboto Slab for titles and money; Public Sans for everything read or typed.",
+      "Documents are flat, square-cornered sheets opened by a heavy rule and divided by hairlines.",
+      "Controls get gentle 6px corners and containers 12px; documents get none.",
+      "Motion is brief and functional, with one authored moment per surface, and it drops to instant under reduced motion."
+    ],
+    "rules": [
+      {
+        "name": "The One Brass Rule",
+        "body": "Brass marks what is active, chosen, focused or verified-in-action. It never fills a section, and a screen carries one brass call to action at most.",
+        "section": "colors"
+      },
+      {
+        "name": "The Navy Legibility Rule",
+        "body": "Small print on navy is Navy Ink mixed into navy at 76% or more (`color-mix(in srgb, navy-ink 76%, navy)`), which holds at least 4.5:1. An unchosen or secondary element on navy recedes through its ground and frame, never by dimming its text.",
+        "section": "colors"
+      },
+      {
+        "name": "The Scoped Night Rule",
+        "body": "In the dark scheme the app shifts to neutral slate (paper `#0e1116`, navy `#23355e`). The landing page stays in the navy world instead. Its root re-scopes navy to `#1b2a4a`, paper to `#0f1829`, raised paper to `#142038` and line to `#26344f`.",
+        "section": "colors"
+      },
+      {
+        "name": "The Slab Figures Rule",
+        "body": "Any amount a provider earns or is charged is set in Roboto Slab with tabular numerals. Money is the headline of a row.",
+        "section": "typography"
+      },
+      {
+        "name": "The Sentence Case Rule",
+        "body": "Labels, badges, table heads and captions are sentence case at 0.75–0.8125rem. Headlines are never introduced by a tracked uppercase line.",
+        "section": "typography"
+      },
+      {
+        "name": "The Paper Lies Flat Rule",
+        "body": "A document never casts a shadow. It is ruled, not lifted.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do use Navy as a ground and Brass as the single active colour (see The One Brass Rule).",
+      "Do set small print on navy at 76% or more Navy Ink into navy, and hold 4.5:1.",
+      "Do set every amount in Roboto Slab with tabular numerals.",
+      "Do draw information as ruled documents: a 4px ink opener, hairline rows, square corners, no shadow.",
+      "Do use the global brass focus ring (2px, offset 2px) and brass selection (32%) unchanged.",
+      "Do keep motion to 150–240ms state transitions plus at most one authored moment per surface, and make everything instant under `prefers-reduced-motion`.",
+      "Do keep the landing page in the navy world in the dark scheme by re-scoping its tokens on the page root.",
+      "Do extend the shared primitives (Button, Field, Badge, RowList, PageHeader, EmptyState, Icon) instead of restyling them per page."
+    ],
+    "donts": [
+      "Don't build a slogan hero with a floating app mockup, an icon-tile feature grid or a numbered step timeline on public surfaces.",
+      "Don't put gradient fills or rounded card stacks on the landing page. The faint brass hatch of the empty state is an app texture, not a fill to spread.",
+      "Don't dim text to show that something is unselected. Recede the ground and frame instead.",
+      "Don't give a document rounded corners or a shadow.",
+      "Don't use emoji, icon packages or glyph characters as icons. Use the monoline `Icon` component.",
+      "Don't introduce a headline kicker or tracked-uppercase eyebrow above a title.",
+      "Don't use a status colour (danger, success, warning) for decoration."
+    ]
+  }
+}
