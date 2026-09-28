@@ -33,7 +33,12 @@ export function BookingDetailPage({ bookingId }: { bookingId: string }) {
 
   return (
     <AppShell title="Booking detail">
-      <BookingDetail bookingId={bookingId} isVerified={profile.isVerified} accessToken={session.tokens.accessToken} />
+      <BookingDetail
+        bookingId={bookingId}
+        isVerified={profile.isVerified}
+        isAgency={profile.providerType === "firm"}
+        accessToken={session.tokens.accessToken}
+      />
     </AppShell>
   );
 }

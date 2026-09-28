@@ -1,4 +1,5 @@
 import { apiRequest } from "./client";
+import type { AssignedPersonnel } from "./personnel";
 import { SERVICE_CATEGORY_LABELS, type ServiceCategory } from "./provider";
 import type { BookingStatus } from "@/lib/constants/bookingStatus";
 
@@ -29,6 +30,9 @@ export type Booking = {
   status: BookingStatus;
   address?: string | null;
   notes?: string | null;
+  // The agency's team for this booking (backend spec 0017). Entries with `replacedAt` set are
+  // history — people who were swapped out — and are kept so incidents stay attributable.
+  assignedPersonnel?: AssignedPersonnel[];
 };
 
 export const headcountOf = (booking: Pick<Booking, "headcount">): number => booking.headcount ?? 1;

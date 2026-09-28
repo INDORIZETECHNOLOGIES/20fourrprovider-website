@@ -18,15 +18,18 @@ import { RateBookingControl } from "./RateBookingControl";
 import { PaymentStatusSection } from "./PaymentStatusSection";
 import { ProviderInvoiceSection } from "./ProviderInvoiceSection";
 import { StaffingCheck } from "./StaffingCheck";
+import { TeamSection } from "./TeamSection";
 import styles from "./BookingDetail.module.css";
 
 type BookingDetailProps = {
   bookingId: string;
   isVerified: boolean;
   accessToken: string;
+  /** Agencies assign a team from their roster (spec 0017). */
+  isAgency?: boolean;
 };
 
-export function BookingDetail({ bookingId, isVerified, accessToken }: BookingDetailProps) {
+export function BookingDetail({ bookingId, isVerified, isAgency = false, accessToken }: BookingDetailProps) {
   const [booking, setBooking] = useState<BookingDetailType | null>(null);
   const [threatProfile, setThreatProfile] = useState<ThreatAssessment | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -150,6 +153,31 @@ export function BookingDetail({ bookingId, isVerified, accessToken }: BookingDet
             </div>
           ) : null}
         </div>
+
+        {isAgency ? (
+          <TeamSection
+            booking={booking}
+            isVerified={isVerified}
+            accessToken={accessToken}
+            onAssigned={(ids) =>
+              setBooking((current) =>
+                current
+                  ? {
+                      ...current,
+                      assignedPersonnel: [
+                        ...(current.assignedPersonnel ?? []).map((a) =>
+                          a.replacedAt || ids.includes(a.personnelId) ? a : { ...a, replacedAt: new Date().toISOString() },
+                        ),
+                        ...ids
+                          .filter((id) => !(current.assignedPersonnel ?? []).some((a) => !a.replacedAt && a.personnelId === id))
+                          .map((personnelId) => ({ personnelId, assignedAt: new Date().toISOString(), replacedAt: null, replacedBy: null })),
+                      ],
+                    }
+                  : current,
+              )
+            }
+          />
+        ) : null}
 
         {booking.status === "pending" && headcountOf(booking) > 1 ? (
           <StaffingCheck
