@@ -75,6 +75,7 @@ export function AppSidebar() {
   ];
 
   const complianceNav: NavItem[] = [
+    { href: "/performance", label: "Performance", icon: "target" },
     { href: "/ratings", label: "Ratings", icon: "star" },
     { href: "/penalties", label: "Penalties", icon: "shield" },
     { href: "/tax-profile", label: "Tax profile", icon: "percent" },

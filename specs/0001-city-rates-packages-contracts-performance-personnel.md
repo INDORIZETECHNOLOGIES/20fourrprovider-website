@@ -92,6 +92,23 @@ update within seconds when their data changes.
   days") and the server's tip. Charts, if any, follow the `dataviz` skill. There's no number to
   chart, so this is likely a status list.
 
+**As built:**
+- `/performance` is a status list with no chart, since the server sends statuses and never numbers.
+  - The Compliance nav gets a "Performance" link above Ratings.
+  - The page opens with a one-line headline ("2 of 6 need attention: …").
+  - Rows that need attention come first, then by importance.
+- Each row shows:
+  - a three-bar importance mark, with the word;
+  - what the signal measures, in our copy;
+  - the server's count line;
+  - a status badge;
+  - the server's tip, under "What helps", on rows that need attention.
+- `newProviderBoost` shows an info banner.
+- The dashboard's "How clients find you" row sits after Availability. It links to the page, with
+  one mark per signal.
+- **Server copy issue:** the count lines use "job(s)" and print "0.0★ from 0 rating(s)". That's a
+  small backend follow-up, since the page renders these strings as sent.
+
 ### F. Team: new `/team` (0017), agencies only
 
 - List / add / edit personnel: photo, name, phone, category, experience, languages, documents

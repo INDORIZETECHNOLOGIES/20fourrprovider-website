@@ -146,6 +146,11 @@ headcount per category per date, capped by `numberOfPersonnel`, with a bulk date
 That's a firm/agency surface, built at `/staff-availability` (linked from the Profile hub for agencies only); it's the only place a "how many bouncers can
 I field on the 14th" answer could come from.
 
+**`/performance` shows search ranking as statuses, never scores** (backend spec 0015 rule 8).
+`GET /provider/performance` returns each signal's status, its importance and a server-worded count
+line, plus a tip when it needs attention. It does not return the weights or values, so don't chart
+or invent them. Labels and ordering are in `lib/performance.ts`.
+
 **Link to a booking with `booking._id`, never `booking.bookingId`.** The detail route and
 `GET /bookings/:bookingId` take the Mongo id; `bookingId` is the human-readable reference. The first
 dashboard design linked recent bookings by the reference, so every one of those links 404'd.
