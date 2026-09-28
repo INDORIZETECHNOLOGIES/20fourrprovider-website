@@ -155,6 +155,24 @@ headcount per category per date, capped by `numberOfPersonnel`, with a bulk date
 That's a firm/agency surface, built at `/staff-availability` (linked from the Profile hub for agencies only); it's the only place a "how many bouncers can
 I field on the 14th" answer could come from.
 
+**Bookings carry a headcount, and agencies' staff calendars are now enforced** (backend spec 0011).
+- `booking.headcount` is absent on older bookings; read it through `headcountOf()` and print the
+  service through `serviceLabel()` ("6 × Bouncer"), matching the backend's documents. The price on
+  the booking is already the whole team's.
+- Capacity for a date = staff declared in the calendar minus the headcount of bookings from
+  `provider_accepted` onwards (and accepted contracts' future cycles). `GET /provider/capacity`
+  answers **one category** and **at most 92 days** per call, so the calendar makes one call per
+  category for the month. Pure merge/summary logic lives in `lib/staffCapacity.ts`, with tests.
+- The calendar shows booked out of declared per day, filterable by category. Declared figures come
+  from the staff-day rows (which the editors update in place); booked comes from capacity.
+- A multi-person request needs every date filled in while `requireStaffAvailabilityForBulk` is on
+  (it is by default). Accepting re-checks inside the booking lock, and that check decides:
+  `SC_1503` → short-staffed. Show it with a link to `/staff-availability`. The "Staffing" section
+  on a pending booking's detail page is only a preview of that check. Note `SC_1494` (payout
+  account) is checked first, so it masks `SC_1503` on an account Razorpay hasn't activated.
+- Declaring fewer staff than are already booked is allowed, and the bookings stand. The day editor
+  warns rather than blocks.
+
 **Link to a booking with `booking._id`, never `booking.bookingId`.** The detail route and
 `GET /bookings/:bookingId` take the Mongo id; `bookingId` is the human-readable reference. The first
 dashboard design linked recent bookings by the reference, so every one of those links 404'd.

@@ -12,11 +12,14 @@ export const countTextsFrom = (counts?: Partial<Record<StaffCategory, number>> |
 export function CountsFields({
   idPrefix,
   values,
+  booked,
   disabled,
   onChange,
 }: {
   idPrefix: string;
   values: CountTexts;
+  /** Already booked per category, shown under each field. Only for a single day. */
+  booked?: Partial<Record<StaffCategory, number>>;
   disabled?: boolean;
   onChange: (next: CountTexts) => void;
 }) {
@@ -34,6 +37,7 @@ export function CountsFields({
           value={values[key]}
           disabled={disabled}
           error={validateCountText(values[key])}
+          hint={booked?.[key] ? `${booked[key]} already booked` : undefined}
           onChange={(e) => onChange({ ...values, [key]: e.target.value })}
         />
       ))}

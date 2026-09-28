@@ -5,7 +5,14 @@ import { Banner } from "@/components/ui/Banner";
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Textarea";
 import { ApiError } from "@/lib/api/client";
-import { emptyCounts, setStaffDay, setStaffRange, type StaffCounts, type StaffDay } from "@/lib/api/staffAvailability";
+import {
+  emptyCounts,
+  setStaffDay,
+  setStaffRange,
+  STAFF_CATEGORY_LABELS,
+  type StaffCounts,
+  type StaffDay,
+} from "@/lib/api/staffAvailability";
 import { formatDayLong } from "@/lib/staffCalendar";
 import {
   NOTES_MAX,
@@ -21,6 +28,8 @@ import styles from "./StaffAvailability.module.css";
 type Props = {
   date: string;
   day: StaffDay | undefined;
+  /** Headcount already accepted per category on this date (spec 0011). */
+  booked: Partial<Record<keyof StaffCounts, number>>;
   maxStaff: number | null;
   disabled: boolean;
   accessToken: string;
@@ -35,7 +44,7 @@ const toCounts = (texts: CountTexts): StaffCounts => {
 };
 
 // Mounted with key={date}, so choosing another day starts from that day's saved values.
-export function DayEditor({ date, day, maxStaff, disabled, accessToken, onChanged, onClose }: Props) {
+export function DayEditor({ date, day, booked, maxStaff, disabled, accessToken, onChanged, onClose }: Props) {
   const [texts, setTexts] = useState<CountTexts>(() => countTextsFrom(day?.counts));
   const [notes, setNotes] = useState(day?.notes ?? "");
   const [busy, setBusy] = useState<"save" | "off" | null>(null);
@@ -47,6 +56,11 @@ export function DayEditor({ date, day, maxStaff, disabled, accessToken, onChange
   const overMessage = Number.isNaN(total) ? null : validateWithinStrength(total, maxStaff);
   const anyInvalid = Object.values(texts).some((t) => validateCountText(t));
   const notesError = validateNotes(notes);
+  // Declaring fewer than are already booked doesn't cancel anything — the backend keeps those
+  // bookings — but it leaves the day oversubscribed, so say so before it's saved.
+  const belowBooked = (Object.keys(counts) as (keyof StaffCounts)[]).filter(
+    (k) => !Number.isNaN(counts[k]) && counts[k] < (booked[k] ?? 0),
+  );
 
   async function handleSave(event: FormEvent) {
     event.preventDefault();
@@ -99,7 +113,19 @@ export function DayEditor({ date, day, maxStaff, disabled, accessToken, onChange
       {error ? <Banner>{error}</Banner> : null}
 
       <form onSubmit={handleSave} noValidate className={styles.stack}>
-        <CountsFields idPrefix="day" values={texts} disabled={disabled || busy !== null} onChange={setTexts} />
+        <CountsFields
+          idPrefix="day"
+          values={texts}
+          booked={booked}
+          disabled={disabled || busy !== null}
+          onChange={setTexts}
+        />
+        {belowBooked.length > 0 ? (
+          <Banner tone="warning">
+            You&apos;ve already accepted more {belowBooked.map((k) => STAFF_CATEGORY_LABELS[k].toLowerCase()).join(" and ")} than
+            this for {formatDayLong(date)}. Those bookings stand, and you&apos;ll need the people to cover them.
+          </Banner>
+        ) : null}
 
         <p className={`${styles.total} ${overMessage ? styles.totalOver : ""}`}>
           Total {Number.isNaN(total) ? "—" : total}

@@ -28,9 +28,13 @@ export function PendingBookingActions({
   // SC_1494: Razorpay hasn't approved the payout account yet, so the backend won't let a v6
   // booking be accepted. Shown as the gate note with a link, not as a raw error.
   const [payoutPending, setPayoutPending] = useState(false);
+  // SC_1503: not enough staff free on one or more dates (spec 0011). Another booking can take the
+  // last places between the request and the accept, so this is the check that decides.
+  const [shortStaffed, setShortStaffed] = useState(false);
 
   async function handleAccept() {
     setError(null);
+    setShortStaffed(false);
     setAccepting(true);
     try {
       await acceptBooking(bookingId, accessToken);
@@ -38,6 +42,8 @@ export function PendingBookingActions({
     } catch (err) {
       if (err instanceof ApiError && err.code === "SC_1494") {
         setPayoutPending(true);
+      } else if (err instanceof ApiError && err.code === "SC_1503") {
+        setShortStaffed(true);
       } else {
         setError(err instanceof ApiError ? err.message : "Something went wrong. Try again.");
       }
@@ -68,6 +74,12 @@ export function PendingBookingActions({
   return (
     <>
       {error ? <p className={styles.error}>{error}</p> : null}
+      {shortStaffed ? (
+        <p className={styles.error}>
+          You don&apos;t have enough staff free on one or more of these dates.{" "}
+          <Link href="/staff-availability">Update staff availability</Link>, then accept again.
+        </p>
+      ) : null}
 
       <div className={styles.actions}>
         {isVerified && payoutPending ? (

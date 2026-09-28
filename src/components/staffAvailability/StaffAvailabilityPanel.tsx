@@ -1,14 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Banner } from "@/components/ui/Banner";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ApiError } from "@/lib/api/client";
 import { getProviderProfile, type ProviderProfile } from "@/lib/api/provider";
-import { getStaffAvailability, type StaffDay } from "@/lib/api/staffAvailability";
-import { addMonths, monthKey, todayString } from "@/lib/staffCalendar";
+import { getCapacity } from "@/lib/api/capacity";
+import { getStaffAvailability, STAFF_CATEGORIES, type StaffDay } from "@/lib/api/staffAvailability";
+import { addMonths, monthKey, toDateString, todayString } from "@/lib/staffCalendar";
+import { mergeCapacity, withCalendarDay, type CapacityFilter, type DayLoad } from "@/lib/staffCapacity";
 import { DayEditor } from "./DayEditor";
 import { RangeEditor } from "./RangeEditor";
 import { StaffCalendar } from "./StaffCalendar";
@@ -33,6 +35,11 @@ export function StaffAvailabilityPanel({ accessToken }: { accessToken: string })
   const [settled, setSettled] = useState<{ key: string; error: string | null } | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
+  // Booked headcount per date and category (spec 0011). Null until the first month loads; stays
+  // empty if the capacity read fails, which only hides the booked figures.
+  const [capacity, setCapacity] = useState<Map<string, DayLoad>>(new Map());
+  const [requireBulk, setRequireBulk] = useState<boolean | null>(null);
+  const [filter, setFilter] = useState<CapacityFilter>("all");
 
   const isFirm = profile?.providerType === "firm";
   const requestKey = `${monthKey(view.year, view.month)}#${reloadKey}`;
@@ -56,11 +63,21 @@ export function StaffAvailabilityPanel({ accessToken }: { accessToken: string })
   useEffect(() => {
     if (!isFirm) return;
     let cancelled = false;
-    getStaffAvailability(accessToken, monthKey(view.year, view.month))
-      .then((result) => {
+    const from = toDateString(view.year, view.month, 1);
+    const to = toDateString(view.year, view.month, new Date(view.year, view.month + 1, 0).getDate());
+    // One capacity read per category — the endpoint takes one. A failed read drops only the
+    // booked figures for that category, never the calendar itself.
+    const capacityReads = Promise.all(
+      STAFF_CATEGORIES.map((category) => getCapacity(accessToken, { category, from, to }).catch(() => null)),
+    );
+    Promise.all([getStaffAvailability(accessToken, monthKey(view.year, view.month)), capacityReads])
+      .then(([result, reads]) => {
         if (cancelled) return;
+        const ok = reads.filter((r) => r !== null);
         setDays(new Map(result.staffAvailability.map((d) => [d.date, d])));
         setMaxStaff(result.maxStaff);
+        setCapacity(mergeCapacity(ok));
+        if (ok[0]) setRequireBulk(ok[0].requireStaffAvailabilityForBulk);
         setSettled({ key: requestKey, error: null });
       })
       .catch((err) => {
@@ -74,6 +91,17 @@ export function StaffAvailabilityPanel({ accessToken }: { accessToken: string })
       cancelled = true;
     };
   }, [accessToken, isFirm, view.year, view.month, requestKey]);
+
+  const loads = useMemo(() => {
+    const dates = new Set([...capacity.keys(), ...days.keys()]);
+    return new Map([...dates].map((date) => [date, withCalendarDay(capacity.get(date), days.get(date))]));
+  }, [capacity, days]);
+
+  // "All" plus each category the provider offers; ex-servicemen are counted in "All" only.
+  const filters: CapacityFilter[] = [
+    "all",
+    ...STAFF_CATEGORIES.filter((c) => (profile?.serviceCategories as string[] | undefined)?.includes(c)),
+  ];
 
   const readOnly = profile ? !profile.isVerified : true;
   const canGoBack = view.year * 12 + view.month > now.getFullYear() * 12 + now.getMonth();
@@ -116,11 +144,22 @@ export function StaffAvailabilityPanel({ accessToken }: { accessToken: string })
               </p>
             ) : null}
 
+            {requireBulk !== null ? (
+              <p className={styles.sectionText}>
+                {requireBulk
+                  ? "Clients can book more than one person only on dates you've filled in. A one-person booking doesn't need the calendar."
+                  : "Dates you haven't filled in are open to bookings of any size."}
+              </p>
+            ) : null}
+
             <section className={styles.section} aria-label="Calendar">
               <StaffCalendar
+                loads={loads}
+                filter={filter}
+                filters={filters}
+                onFilterChange={setFilter}
                 year={view.year}
                 month={view.month}
-                days={days}
                 selected={selected}
                 today={today}
                 loading={loading}
@@ -138,6 +177,7 @@ export function StaffAvailabilityPanel({ accessToken }: { accessToken: string })
                 key={selected}
                 date={selected}
                 day={days.get(selected)}
+                booked={loads.get(selected)?.booked ?? {}}
                 maxStaff={maxStaff}
                 disabled={readOnly}
                 accessToken={accessToken}
