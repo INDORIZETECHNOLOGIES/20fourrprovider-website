@@ -3,8 +3,7 @@ import type { BookingStatus } from "@/lib/constants/bookingStatus";
 import type { ServiceCategory } from "./provider";
 
 // Backend spec 0014. A long-term contract billed month by month: one booking per cycle, each paid
-// before it starts. Built switched off — every endpoint answers SC_1530 until the platform turns
-// contracts on, which is how this site knows whether to show them at all.
+// before it starts. Built switched off; GET /public/billing-flags says whether it's on.
 
 export type ContractStatus =
   | "requested"
@@ -52,10 +51,17 @@ export function listContracts(accessToken: string): Promise<{ contracts: Contrac
   return apiRequest("/provider/contracts?limit=100", { accessToken });
 }
 
-/** True when contracts are switched on for the platform; any failure reads as off. */
-export function contractsEnabled(accessToken: string): Promise<boolean> {
-  return apiRequest("/provider/contracts?limit=1", { accessToken }).then(
-    () => true,
+/**
+ * True when contracts are switched on for the platform; any failure reads as off.
+ *
+ * Read from GET /public/billing-flags (`contractsEnabled` = billingV6 and contracts both on, the
+ * pair the contract service checks). It used to be inferred from GET /provider/contracts
+ * succeeding, but the list and detail reads aren't gated (only the actions answer SC_1530), so
+ * the Contracts nav showed with contracts switched off.
+ */
+export function contractsEnabled(): Promise<boolean> {
+  return apiRequest<{ contractsEnabled?: boolean }>("/public/billing-flags").then(
+    (flags) => flags?.contractsEnabled === true,
     () => false,
   );
 }

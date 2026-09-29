@@ -9,7 +9,7 @@ import { Icon } from "@/components/ui/Icon";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { RowList } from "@/components/ui/RowList";
 import { ApiError } from "@/lib/api/client";
-import { listContracts, type Contract } from "@/lib/api/contracts";
+import { contractsEnabled, listContracts, type Contract } from "@/lib/api/contracts";
 import { SERVICE_CATEGORY_LABELS } from "@/lib/api/provider";
 import { formatPaise } from "@/lib/format";
 import { CONTRACT_STATUS, CONTRACT_TAB, formatDay, termMonths, type ContractTab } from "@/lib/contracts";
@@ -36,7 +36,12 @@ export function ContractsList({ accessToken }: { accessToken: string }) {
 
   useEffect(() => {
     let cancelled = false;
-    listContracts(accessToken)
+    // The list itself isn't gated by the switch, so a direct visit checks the flag first.
+    contractsEnabled()
+      .then((on) => {
+        if (!on) throw new ApiError(403, "Contracts are switched off", "SC_1530");
+        return listContracts(accessToken);
+      })
       .then(({ contracts }) => {
         if (!cancelled) setContracts(contracts);
       })
