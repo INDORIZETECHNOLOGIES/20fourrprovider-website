@@ -25,8 +25,7 @@ export function AppSidebar() {
 
   const [isVerified, setIsVerified] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
-  // Contracts are switched off platform-wide until Razorpay confirms mandates (backend spec 0014);
-  // every contract endpoint answers SC_1530 until then, so a successful read is the switch.
+  // Contracts are switched off platform-wide until Razorpay confirms mandates (backend spec 0014).
   const [contractsOn, setContractsEnabled] = useState(false);
 
   useEffect(() => {
@@ -40,7 +39,7 @@ export function AppSidebar() {
       })
       .catch(() => {});
 
-    contractsEnabled(token).then((on) => {
+    contractsEnabled().then((on) => {
       if (!cancelled) setContractsEnabled(on);
     });
 
