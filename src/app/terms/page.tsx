@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { INDEXABLE } from "@/lib/site";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
   title: "Terms of Service & Privacy Policy — 20fourr",
   description:
     "The full agreement between you and 20fourr. Read before accepting during sign-up.",
+  alternates: { canonical: "/terms" },
+  robots: INDEXABLE,
 };
 
 export default function TermsPage() {
