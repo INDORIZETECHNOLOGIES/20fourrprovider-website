@@ -6,12 +6,15 @@ import Image from "next/image";
 import { AgencyBody, IndividualBody, Spotlight } from "@/components/landing/Bodies";
 import { PHOTOS } from "@/components/landing/photos";
 import { Faq } from "@/components/landing/Faq";
+import { INDEXABLE } from "@/lib/site";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
   title: "20fourr for security agencies and professionals",
   description:
     "Clients in India book verified, PSARA-compliant security on 20fourr. Join as an agency with your whole team, or on your own. Set your rates per city and get paid per booking.",
+  alternates: { canonical: "/" },
+  robots: INDEXABLE,
 };
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/v1";

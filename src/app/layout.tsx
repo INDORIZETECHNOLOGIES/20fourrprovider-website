@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Roboto_Slab, Public_Sans } from "next/font/google";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 import styles from "./layout.module.css";
 
@@ -19,8 +20,12 @@ const bodyFont = Public_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "20fourr for providers",
   description: "Manage bookings, duty shifts, and payouts as a verified security professional.",
+  // Noindex by default: almost every route here is an account page or a step in sign-up.
+  // The public pages opt back in — see PUBLIC_PATHS in lib/site.ts.
+  robots: { index: false, follow: true },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
