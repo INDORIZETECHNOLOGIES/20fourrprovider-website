@@ -145,7 +145,11 @@ export function StaffAvailabilityPanel({ accessToken }: { accessToken: string })
               </p>
             ) : maxStaff != null ? (
               <p className={styles.sectionText}>
-                Your team size is {maxStaff}. A single day can&apos;t total more than that.
+                A single day can&apos;t total more than {maxStaff}, the number of personnel on your{" "}
+                <Link href="/profile/public" className={styles.link}>
+                  Public profile
+                </Link>
+                . Change it there if your agency has grown or shrunk.
               </p>
             ) : null}
 

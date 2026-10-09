@@ -3,6 +3,7 @@
 import { useEffect, useId, useState } from "react";
 import Link from "next/link";
 import { Icon } from "@/components/ui/Icon";
+import { useSession } from "@/lib/auth/session";
 import styles from "./LandingNav.module.css";
 
 const LINKS = [
@@ -14,6 +15,9 @@ const LINKS = [
 export function LandingNav() {
   const [open, setOpen] = useState(false);
   const panelId = useId();
+  // Server render and first paint show the signed-out links; a signed-in provider's
+  // session resolves right after hydration and swaps them for one way back in.
+  const signedIn = useSession() !== null;
 
   useEffect(() => {
     if (!open) return;
@@ -82,12 +86,20 @@ export function LandingNav() {
         </ul>
 
         <div className={styles.actions}>
-          <Link href="/login" className={styles.signIn}>
-            Sign in
-          </Link>
-          <Link href="/register" className={styles.cta}>
-            Register
-          </Link>
+          {signedIn ? (
+            <Link href="/dashboard" className={styles.cta}>
+              Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link href="/login" className={styles.signIn}>
+                Sign in
+              </Link>
+              <Link href="/register" className={styles.cta}>
+                Register
+              </Link>
+            </>
+          )}
           <button
             type="button"
             className={styles.menuButton}
@@ -114,12 +126,20 @@ export function LandingNav() {
             ))}
           </ul>
           <div className={styles.panelActions}>
-            <Link href="/login" className={styles.panelSignIn} onClick={() => setOpen(false)}>
-              Sign in
-            </Link>
-            <Link href="/register" className={styles.panelCta} onClick={() => setOpen(false)}>
-              Register
-            </Link>
+            {signedIn ? (
+              <Link href="/dashboard" className={styles.panelCta} onClick={() => setOpen(false)}>
+                Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link href="/login" className={styles.panelSignIn} onClick={() => setOpen(false)}>
+                  Sign in
+                </Link>
+                <Link href="/register" className={styles.panelCta} onClick={() => setOpen(false)}>
+                  Register
+                </Link>
+              </>
+            )}
           </div>
         </div>
       ) : null}
