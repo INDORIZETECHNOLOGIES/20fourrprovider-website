@@ -6,6 +6,7 @@ import Image from "next/image";
 import { AgencyBody, IndividualBody, Spotlight } from "@/components/landing/Bodies";
 import { PHOTOS } from "@/components/landing/photos";
 import { Faq } from "@/components/landing/Faq";
+import { CloseAccountLine, FooterAccountLinks } from "@/components/landing/AccountLinks";
 import { INDEXABLE } from "@/lib/site";
 import styles from "./page.module.css";
 
@@ -70,9 +71,7 @@ export default async function LandingPage() {
                 Register on your own
               </Link>
             </div>
-            <p className={styles.closeSignIn}>
-              Already registered? <Link href="/login">Sign in</Link>
-            </p>
+            <CloseAccountLine className={styles.closeSignIn} />
           </div>
         </section>
       </main>
@@ -83,8 +82,7 @@ export default async function LandingPage() {
             20fourr<span className={styles.footerDot} aria-hidden="true" />
           </p>
           <nav className={styles.footerLinks} aria-label="Footer">
-            <Link href="/login">Sign in</Link>
-            <Link href="/register">Register</Link>
+            <FooterAccountLinks />
             <Link href="/terms">Terms</Link>
             <Link href="/privacy">Privacy</Link>
             <a href="mailto:grievance@20fourr.com">grievance@20fourr.com</a>
