@@ -294,7 +294,7 @@ function PublicForm({
             <div className={styles.stack}>
               <div className={styles.pair}>
                 <Field id="yearEstablished" label="Year established" value={yearEstablished} onChange={(e) => setYearEstablished(e.target.value.replace(/\D/g, "").slice(0, 4))} error={errors.yearEstablished} inputMode="numeric" />
-                <Field id="personnel" label="Number of personnel" value={personnel} onChange={(e) => setPersonnel(e.target.value.replace(/\D/g, "").slice(0, 6))} error={errors.numberOfPersonnel} inputMode="numeric" />
+                <Field id="personnel" label="Number of personnel" hint="Also the most staff you can list for one day under Staff availability." value={personnel} onChange={(e) => setPersonnel(e.target.value.replace(/\D/g, "").slice(0, 6))} error={errors.numberOfPersonnel} inputMode="numeric" />
               </div>
               <Field id="responseTime" label="Typical response time" placeholder="e.g. Within 30 minutes" value={responseTime} onChange={(e) => setResponseTime(e.target.value)} error={errors.responseTime} maxLength={60} />
               <Field id="iso" label="ISO certification (optional)" placeholder="e.g. ISO 9001:2015" value={iso} onChange={(e) => setIso(e.target.value)} error={errors.isoCertification} maxLength={120} />
